@@ -1,0 +1,19 @@
+Here is a circuit that sign-extends an 8-bit number to 32 bits:
+
+```
+module top_module (
+    input [7:0] in,
+    output [31:0] out );
+
+    wire [31:0] sign_extended_number;
+
+    assign sign_extended_number = { in, {24{in[7]}}};
+
+    assign out = sign_extended_number;
+
+endmodule
+```
+
+The circuit works by first replicating the sign bit 24 times. This is done by creating a 32-bit vector with all 0 bits except for the sign bit, which is set to 1. The 8-bit input is then concatenated to the front of this vector. The result is a 32-bit number with the sign bit extended to the left.
+
+The circuit can be implemented in any hardware description language (HDL), such as Verilog or VHDL.

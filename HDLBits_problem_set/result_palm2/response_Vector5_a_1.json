@@ -1,0 +1,16 @@
+Here is a possible solution:
+```
+module top_module (
+    input a, b, c, d, e,
+    output [24:0] out );//
+
+    // The output is XNOR of two vectors created by 
+    // concatenating and replicating the five inputs.
+    // assign out = ~{ ... } ^ { ... };
+    // Insert your code below
+    
+    assign out = ~({a, a, a, a, a, b, b, b, b, b, c, c, c, c, c, d, d, d, d, d, e, e, e, e, e}) ^ ({a, b, c, d, e, a, b, c, d, e, a, b, c, d, e, a, b, c, d, e, a, b, c, d, e});
+
+endmodule
+```
+The output of the module is a 25-bit vector that contains the results of all 25 pairwise one-bit comparisons of the five inputs. The output is 1 if the two bits being compared are equal, and 0 otherwise.

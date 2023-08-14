@@ -1,0 +1,60 @@
+Sure, here is the code for the module with four AND gates and two OR gates:
+
+```
+module top_module ( 
+    input p1a, p1b, p1c, p1d, p1e, p1f,
+    output p1y,
+    input p2a, p2b, p2c, p2d,
+    output p2y );
+
+    logic [1:0] and1_out, and2_out, and3_out, and4_out;
+    logic [1:0] or1_out, or2_out;
+
+    assign p1y = and1_out & and2_out;
+    assign p2y = and3_out & and4_out;
+
+    and (and1_out, p1a, p1b);
+    and (and2_out, p1c, p1d);
+    and (and3_out, p1e, p1f);
+    and (and4_out, p2a, p2b);
+
+    or (or1_out, and1_out, and2_out);
+    or (or2_out, and3_out, and4_out);
+
+endmodule
+```
+
+Here is the code for the module with intermediate signals:
+
+```
+module top_module ( 
+    input p1a, p1b, p1c, p1d, p1e, p1f,
+    output p1y,
+    input p2a, p2b, p2c, p2d,
+    output p2y );
+
+    logic p1_and1, p1_and2, p1_and3, p1_and4;
+    logic p2_and1, p2_and2, p2_and3, p2_and4;
+    logic p1_or1, p1_or2;
+    logic p2_or1, p2_or2;
+
+    and (p1_and1, p1a, p1b);
+    and (p1_and2, p1c, p1d);
+    and (p1_and3, p1e, p1f);
+    and (p1_and4, p2a, p2b);
+
+    and (p2_and1, p2a, p2b);
+    and (p2_and2, p2c, p2d);
+    and (p2_and3, p2e, p2f);
+
+    or (p1_or1, p1_and1, p1_and2);
+    or (p1_or2, p1_and3, p1_and4);
+
+    or (p2_or1, p2_and1, p2_and2);
+    or (p2_or2, p2_and3, p2_and4);
+
+    assign p1y = p1_or1;
+    assign p2y = p2_or1;
+
+endmodule
+```

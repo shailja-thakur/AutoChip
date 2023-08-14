@@ -1,0 +1,29 @@
+Here is a combinational circuit that implements the above truth table:
+
+```
+module top_module( 
+    input x3,
+    input x2,
+    input x1,  // three inputs
+    output f   // one output
+);
+
+    // AND gate 1
+    wire a1 = x3 & x2 & x1;
+
+    // AND gate 2
+    wire a2 = x3 & x2 & ~x1;
+
+    // AND gate 3
+    wire a3 = x3 & ~x2 & x1;
+
+    // AND gate 4
+    wire a4 = x3 & ~x2 & ~x1;
+
+    // OR gate
+    wire f = a1 | a2 | a3 | a4;
+
+endmodule
+```
+
+The output of the circuit is 1 if any of the AND gates output 1. This is because the OR gate will output 1 if any of its inputs are 1. The AND gates output 1 if the inputs match the rows of the truth table that result in a 1 output. Therefore, the circuit will output 1 if the input matches any of the rows 2, 3, 5, or 7.

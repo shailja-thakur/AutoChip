@@ -1,0 +1,22 @@
+Sure, here is a Verilog code for an AND gate using both an assign statement and a combinational always block:
+
+```
+module top_module (
+  input wire a,
+  input wire b,
+  output wire out_assign,
+  output reg out_alwaysblock
+);
+
+  always @(a or b) begin
+    out_assign = a & b;
+  end
+
+  always @(posedge clk) begin
+    out_alwaysblock <= out_assign;
+  end
+
+endmodule
+```
+
+The assign statement assigns the value of the expression `a & b` to the output wire `out_assign`. The combinational always block always evaluates the expression `a & b` and assigns its value to the output register `out_alwaysblock` on the positive edge of the clock signal `clk`.

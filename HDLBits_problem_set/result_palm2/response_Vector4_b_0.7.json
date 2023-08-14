@@ -1,0 +1,16 @@
+Here is a circuit that sign-extends an 8-bit number to 32 bits:
+
+```
+module top_module (
+    input [7:0] in,
+    output [31:0] out );//
+
+    // Insert your code below
+    // assign out = { replicate-sign-bit , the-input };
+
+    assign out = { in[7:0] } << 24 | in;
+
+endmodule
+```
+
+The `replicate-sign-bit` is a 24-bit value that is all 1s if the input is negative and all 0s if the input is positive. The `the-input` is the 8-bit input number. The `<< 24` operator shifts the `the-input` number 24 bits to the left, which fills the left 24 bits with 0s. The `|` operator ORs the `replicate-sign-bit` and the `the-input` number, which produces the desired 32-bit result.

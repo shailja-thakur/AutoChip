@@ -1,0 +1,32 @@
+Here is a Verilog code for a decade counter that counts from 0 through 9, inclusive, with a period of 10. The reset input is synchronous, and should reset the counter to 0. We want to be able to pause the counter rather than always incrementing every clock cycle, so the slowena input indicates when the counter should increment.
+
+```module top_module (
+    input clk,
+    input slowena,
+    input reset,
+    output [3:0] q);
+
+    reg [3:0] counter;
+    reg enable;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            counter <= 0;
+            enable <= 1;
+        end else begin
+            if (slowena) begin
+                counter <= counter + 1;
+            end
+        end
+    end
+
+    assign q = counter;
+
+endmodule
+```
+
+This code uses a D flip-flop to store the current state of the counter. The enable signal is used to control when the counter increments. When the enable signal is high, the counter increments on every clock edge. When the enable signal is low, the counter does not increment.
+
+The reset signal is used to reset the counter to 0. When the reset signal is asserted, the counter is reset to 0 and the enable signal is set to 1.
+
+The slowena signal is used to pause the counter. When the slowena signal is asserted, the counter does not increment. When the slowena signal is de-asserted, the counter resumes incrementing.

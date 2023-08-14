@@ -1,0 +1,82 @@
+module top_module(
+    input clk,
+    input areset,
+
+    input  predict_valid,
+    input  [6:0] predict_pc,
+    output predict_taken,
+    output [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history,
+    input [6:0] train_pc
+);
+
+    // The PHT is a 128-entry table of two-bit saturating counters.
+    logic [11:0] pt;
+
+    // The global history register is a 7-bit register.
+    logic [6:0] gh;
+
+    // The prediction logic takes the pc and global history as input and outputs the predicted branch direction and state of the branch history register.
+    logic predict_taken;
+    logic [6:0] predict_history;
+    always @(posedge clk) begin
+        if (areset) begin
+            pt <= 2'b01;
+            gh <= 0;
+        end else begin
+            if (predict_valid) begin
+                // Compute the PHT index.
+                int index = predict_pc ^ gh;
+
+                // Get the value of the PHT entry.
+                int pt_entry = pt[index];
+
+                // Predict the branch direction.
+                predict_taken = (pt_entry & 1) > 0;
+
+                // Update the branch history register.
+                gh = (gh >> 1) | (predict_taken << 6);
+            end
+        end
+    end
+
+    // The training logic takes the pc, branch history register value, actual branch outcome, and whether the branch was a misprediction as input and updates the PHT to train the branch predictor to predict this branch more accurately next time.
+    always @(posedge clk) begin
+        if (areset) begin
+            pt <= 2'b01;
+            gh <= 0;
+        end else begin
+            if (train_valid) begin
+                // Compute the PHT index.
+                int index = train_pc ^ gh;
+
+                // Get the value of the PHT entry.
+                int pt_entry = pt[index];
+
+                // Update the PHT entry.
+                if (train_taken) begin
+                    pt_entry |= 1;
+                end else begin
+                    pt_entry &= ~1;
+                end
+
+                // Update the global history register.
+                if (train_mispredicted) begin
+                    gh = 0;
+                end
+
+                // Write the updated PHT entry back to the PHT.
+                pt[index] = pt_entry;
+            end
+        end
+    end
+
+    // Output the predicted branch direction and state of the branch history register.
+    assign predict_taken = predict_taken;
+    assign predict_history = predict_history;
+
+endmodule

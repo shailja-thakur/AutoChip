@@ -1,0 +1,32 @@
+Sure, here is the code for a 8-bit D flip-flop with active high synchronous reset, reset to 0x34, and triggered by the negative edge of clk:
+
+```module top_module (
+    input clk,
+    input reset,
+    input [7:0] d,
+    output [7:0] q
+);
+
+    reg [7:0] q;
+    reg [7:0] d_reg;
+
+    always @(posedge clk or negedge reset) begin
+        if (reset) begin
+            q <= 0x34;
+        end else begin
+            q <= d_reg;
+        end
+    end
+
+    always @(posedge clk or negedge reset) begin
+        if (reset) begin
+            d_reg <= 0;
+        end else begin
+            d_reg <= d;
+        end
+    end
+
+endmodule
+```
+
+This code uses a D flip-flop to store the value of the input signal d, and a register to store the previous value of q. The D flip-flop is reset to 0x34 on the negative edge of clk, and the register is updated on the positive edge of clk. The output q is the value of the register.

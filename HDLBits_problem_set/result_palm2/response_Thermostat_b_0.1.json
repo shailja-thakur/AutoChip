@@ -1,0 +1,28 @@
+Here is a possible implementation of the heating/cooling thermostat circuit using only assign statements:
+
+```
+module top_module (
+    input too_cold,
+    input too_hot,
+    input mode,
+    input fan_on,
+    output heater,
+    output aircon,
+    output fan
+); 
+
+    heater <= (mode == 1) && too_cold;
+    aircon <= (mode == 0) && too_hot;
+    fan <= heater | aircon | fan_on;
+
+endmodule
+```
+
+This circuit works as follows:
+
+* When the mode is set to heating (mode = 1), the heater will turn on when it is too cold (too_cold = 1).
+* When the mode is set to cooling (mode = 0), the air conditioner will turn on when it is too hot (too_hot = 1).
+* When the heater or air conditioner are on, the fan will also turn on to circulate the air.
+* The fan can also be turned on manually by the user (fan_on = 1), even if the heater and air conditioner are off.
+
+This circuit can be implemented using a variety of logic gates, such as AND gates, OR gates, and NOT gates. The specific implementation will depend on the desired level of performance and cost.

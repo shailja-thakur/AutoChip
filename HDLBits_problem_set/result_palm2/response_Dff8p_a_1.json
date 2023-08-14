@@ -1,0 +1,40 @@
+Sure, here is a Verilog code to create 8 D flip-flops with active high synchronous reset. The flip-flops must be reset to 0x34 rather than zero. All DFFs should be triggered by the negative edge of clk:
+
+```module top_module (
+    input clk,
+    input reset,
+    input [7:0] d,
+    output [7:0] q
+);
+
+    reg [7:0] d1, d2, d3, d4, d5, d6, d7, d8;
+    reg [7:0] q1, q2, q3, q4, q5, q6, q7, q8;
+
+    always @(posedge clk or negedge reset) begin
+        if (reset) begin
+            d1 <= 0x34;
+            d2 <= 0x34;
+            d3 <= 0x34;
+            d4 <= 0x34;
+            d5 <= 0x34;
+            d6 <= 0x34;
+            d7 <= 0x34;
+            d8 <= 0x34;
+        end else begin
+            q1 <= d1;
+            q2 <= d2;
+            q3 <= d3;
+            q4 <= d4;
+            q5 <= d5;
+            q6 <= d6;
+            q7 <= d7;
+            q8 <= d8;
+        end
+    end
+
+    assign q = [q1, q2, q3, q4, q5, q6, q7, q8];
+
+endmodule
+```
+
+This code uses a D flip-flop with a synchronous reset. The reset input is active high, so when it is asserted, all of the flip-flops are reset to 0x34. The clock input is a positive edge-triggered clock, so the flip-flops are updated on every positive edge of the clock. The data input is the data that will be stored in the flip-flops. The output of the flip-flops is the data that is currently stored in them.

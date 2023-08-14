@@ -1,0 +1,26 @@
+Sure, here is the Verilog code for a 2-to-1 mux that chooses between a and b, choosing b if both sel_b1 and sel_b2 are true. Otherwise, it chooses a. The code is written twice, once using assign statements and once using a procedural if statement.
+
+```
+// synthesis verilog_input_version verilog_2001
+module top_module(
+    input a,
+    input b,
+    input sel_b1,
+    input sel_b2,
+    output wire out_assign,
+    output reg out_always   ); 
+
+    // Assign statement implementation
+    out_assign = sel_b1 & sel_b2 ? b : a;
+
+    // Procedural if statement implementation
+    always @(sel_b1 or sel_b2 or a or b) begin
+        if (sel_b1 & sel_b2) begin
+            out_always = b;
+        end else begin
+            out_always = a;
+        end
+    end
+
+endmodule
+```

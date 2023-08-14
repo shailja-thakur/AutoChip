@@ -1,0 +1,50 @@
+Here is a Mealy-type finite state machine that recognizes the sequence "101" on an input signal named x. The FSM has an output signal, z, that is asserted to logic-1 when the "101" sequence is detected. The FSM also has an active-low asynchronous reset. The FSM has only 3 states: S0, S1, and S2.
+
+```
+module top_module (
+    input clk,
+    input aresetn,    // Asynchronous active-low reset
+    input x,
+    output z ); 
+
+    reg [1:0] state;
+    reg z;
+
+    always @(posedge clk or posedge aresetn) begin
+        if (aresetn) begin
+            state <= 0;
+        end else begin
+            case (state)
+                0: begin
+                    if (x == 1) begin
+                        state <= 1;
+                        z <= 1;
+                    end else begin
+                        state <= 0;
+                        z <= 0;
+                    end
+                end
+                1: begin
+                    if (x == 0) begin
+                        state <= 2;
+                        z <= 0;
+                    end else begin
+                        state <= 1;
+                        z <= 1;
+                    end
+                end
+                2: begin
+                    if (x == 1) begin
+                        state <= 0;
+                        z <= 0;
+                    end else begin
+                        state <= 2;
+                        z <= 1;
+                    end
+                end
+            endcase
+        end
+    end
+
+endmodule
+```

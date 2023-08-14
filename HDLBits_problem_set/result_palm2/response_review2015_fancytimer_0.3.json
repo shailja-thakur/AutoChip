@@ -1,0 +1,74 @@
+Here is a possible implementation of the timer:
+
+```module top_module (
+    input clk,
+    input reset,      // Synchronous reset
+    input data,
+    output [3:0] count,
+    output counting,
+    output done,
+    input ack );
+
+    // State machine
+    always @(posedge clk or negedge reset) begin
+        if (reset) begin
+            state <= IDLE;
+        end else begin
+            case (state)
+                IDLE: begin
+                    if (data == 1101) begin
+                        state <= SHIFT_DELAY;
+                    end
+                end
+                SHIFT_DELAY: begin
+                    if (data == 1000) begin
+                        state <= COUNTING;
+                    end
+                end
+                COUNTING: begin
+                    count <= count + 1;
+                    if (count == (delay[3:0] + 1)) begin
+                        state <= DONE;
+                    end
+                end
+                DONE: begin
+                    done <= 1;
+                    while (ack == 0) begin
+                        #1;
+                    end
+                    state <= IDLE;
+                end
+            endcase
+        end
+    end
+
+    // Counter
+    always @(posedge clk or negedge reset) begin
+        if (reset) begin
+            count <= 0;
+        end else begin
+            if (state == COUNTING) begin
+                count <= count + 1;
+            end
+        end
+    end
+
+    // Output signals
+    output [3:0] count;
+    output counting;
+    output done;
+
+    // Logic to generate the output signals
+    always @(posedge clk or negedge reset) begin
+        if (reset) begin
+            counting <= 0;
+            done <= 0;
+        end else begin
+            counting <= state == COUNTING;
+            done <= state == DONE;
+        end
+    end
+endmodule
+```
+
+This implementation uses a state machine to control the operation of the timer. The state machine has four states: IDLE, SHIFT_DELAY, COUNTING, and DONE. In the IDLE state, the timer is waiting for the start sequence (1101) to be received. When the start sequence is received, the state machine transitions to the SHIFT_DELAY state. In the SHIFT_DELAY state, the next four bits of data are shifted in and stored in the delay register. When the four bits have been shifted in, the state machine transitions to the COUNTING state. In the COUNTING state, the counter is incremented on every clock cycle. When the counter reaches the value of the delay register, the state machine transitions to the DONE state. In the DONE state, the done signal is asserted and the timer waits for the ack signal to be asserted before resetting and starting the timer again.

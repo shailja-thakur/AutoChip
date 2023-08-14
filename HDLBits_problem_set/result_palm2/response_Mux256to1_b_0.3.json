@@ -1,0 +1,38 @@
+Here is a possible implementation of a 1-bit wide, 256-to-1 multiplexer in Verilog:
+
+```module top_module(
+    input [255:0] in,
+    input [7:0] sel,
+    output out);
+
+    wire [255:0] sel_mask = 1 << sel;
+    assign out = in[sel_mask];
+
+endmodule
+```
+
+This implementation uses a 256-bit mask to select the desired bit from the input vector. The mask is created by shifting a 1 bit to the right by the sel value. The output is then the AND of the input vector and the mask.
+
+Here is a possible implementation of a 1-bit wide, 256-to-1 multiplexer in VHDL:
+
+```library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity top_module is
+    port (
+        in : std_logic_vector (255 downto 0);
+        sel : std_logic_vector (7 downto 0);
+        out : std_logic);
+end top_module;
+
+architecture Behavioral of top_module is
+    signal sel_mask : std_logic_vector (255 downto 0);
+
+    begin
+        sel_mask := 1 << sel;
+        out <= in & sel_mask;
+    end Behavioral;
+end top_module;
+```
+
+This implementation uses a similar approach to the Verilog implementation. The mask is created by shifting a 1 bit to the right by the sel value. The output is then the AND of the input vector and the mask.

@@ -1,0 +1,39 @@
+Here is a possible implementation of the circuit:
+
+```
+module top_module (
+    input clk,
+    input enable,
+    input S,
+    input A, B, C,
+    output Z ); 
+
+    reg [7:0] Q;
+    reg [7:0] LUT[8:0];
+
+    always @(posedge clk) begin
+        if (enable) begin
+            Q <= Q << 1;
+            Q[0] <= S;
+        end
+    end
+
+    always @(posedge clk) begin
+        if (enable) begin
+            Z <= LUT[A*8+B*4+C];
+        end
+    end
+
+    assign LUT[0] = Q[0];
+    assign LUT[1] = Q[1];
+    assign LUT[2] = Q[2];
+    assign LUT[3] = Q[3];
+    assign LUT[4] = Q[4];
+    assign LUT[5] = Q[5];
+    assign LUT[6] = Q[6];
+    assign LUT[7] = Q[7];
+
+endmodule
+```
+
+This circuit uses a 8-bit shift register to store the data, and a 3-input multiplexer to select the output. The multiplexer is controlled by the three inputs A, B, and C. When ABC is 000, the output of the multiplexer is Q[0], when ABC is 001, the output of the multiplexer is Q[1], and so on.

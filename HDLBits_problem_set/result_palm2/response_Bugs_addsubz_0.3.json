@@ -1,0 +1,58 @@
+The following adder-subtractor with zero flag doesn't work. Fix the bug(s).
+
+```
+// synthesis verilog_input_version verilog_2001
+module top_module ( 
+    input do_sub,
+    input [7:0] a,
+    input [7:0] b,
+    output reg [7:0] out,
+    output reg result_is_zero
+);//
+
+    always @(*) begin
+        case (do_sub)
+          0: out = a+b;
+          1: out = a-b;
+        endcase
+
+        if (~out)
+            result_is_zero = 1;
+    end
+
+endmodule
+```
+
+The bug is that the `result_is_zero` flag is not set correctly when the output is zero. This is because the `if` statement only checks if the output is negative, not if it is zero. To fix this, we can add an additional condition to the `if` statement:
+
+```
+if (~out || out == 0)
+    result_is_zero = 1;
+```
+
+This will ensure that the `result_is_zero` flag is set to 1 when the output is zero, regardless of whether it is negative or positive.
+
+Here is the fixed code:
+
+```
+// synthesis verilog_input_version verilog_2001
+module top_module ( 
+    input do_sub,
+    input [7:0] a,
+    input [7:0] b,
+    output reg [7:0] out,
+    output reg result_is_zero
+);//
+
+    always @(*) begin
+        case (do_sub)
+          0: out = a+b;
+          1: out = a-b;
+        endcase
+
+        if (~out || out == 0)
+            result_is_zero = 1;
+    end
+
+endmodule
+```

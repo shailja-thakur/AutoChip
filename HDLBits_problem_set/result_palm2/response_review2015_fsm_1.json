@@ -1,0 +1,65 @@
+Sure, here is a possible implementation of the finite-state machine that controls the timer:
+
+```
+module top_module (
+    input clk,
+    input reset,      // Synchronous reset
+    input data,
+    output shift_ena,
+    output counting,
+    input done_counting,
+    output done,
+    input ack );
+
+    // The state machine has four states:
+    //   1. IDLE: The timer is not running.
+    //   2. START: The timer has started counting.
+    //   3. COUNTING: The timer is waiting for the counters to finish counting.
+    //   4. DONE: The timer has timed out.
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+        end else begin
+            case (state)
+                IDLE: begin
+                    if (data == 1101) begin
+                        state <= START;
+                        shift_ena <= 1;
+                    end
+                end
+                START: begin
+                    if (shift_ena) begin
+                        if (data == 1000) begin
+                            state <= COUNTING;
+                        end
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                COUNTING: begin
+                    if (done_counting) begin
+                        state <= DONE;
+                        done <= 1;
+                    end
+                end
+                DONE: begin
+                    if (ack) begin
+                        state <= IDLE;
+                        done <= 0;
+                    end
+                end
+            endcase
+        end
+    end
+
+    output reg [3:0] state;
+
+    // The output signals:
+    output shift_ena,
+    output counting,
+    output done,
+    output ack;
+
+endmodule
+```

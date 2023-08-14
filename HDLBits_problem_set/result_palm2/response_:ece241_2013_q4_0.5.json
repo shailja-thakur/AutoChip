@@ -1,0 +1,60 @@
+Here is a moore model for the water reservoir controller:
+
+```
+module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output fr3,
+    output fr2,
+    output fr1,
+    output dfr
+); 
+
+    always @(posedge clk or negedge reset) begin
+        if (reset) begin
+            state <= '000;
+        end else begin
+            case (state)
+                '000:
+                    if (s[1] == 1 && s[2] == 1 && s[3] == 1) begin
+                        state <= '000;
+                    end else if (s[1] == 1 && s[2] == 1) begin
+                        state <= '001;
+                    end else if (s[1] == 1) begin
+                        state <= '010;
+                    end else begin
+                        state <= '011;
+                    end
+                '001:
+                    if (s[1] == 0 && s[2] == 1) begin
+                        state <= '000;
+                    end else begin
+                        state <= '001;
+                    end
+                '010:
+                    if (s[1] == 0) begin
+                        state <= '000;
+                    end else begin
+                        state <= '010;
+                    end
+                '011:
+                    if (s[1] == 0 && s[2] == 0) begin
+                        state <= '000;
+                    end else begin
+                        state <= '011;
+                    end
+            endcase
+        end
+    end
+
+    assign fr3 = (state == '000);
+    assign fr2 = (state == '001);
+    assign fr1 = (state == '010);
+    assign dfr = (state == '011);
+endmodule
+```
+
+This moore model has four states, corresponding to the four possible water levels. The state transitions are determined by the values of the sensors. When the water level is above the highest sensor, the state machine stays in state 000 and all four outputs are asserted. When the water level is between the highest and middle sensors, the state machine transitions to state 001 and only FR1 is asserted. When the water level is between the middle and lowest sensors, the state machine transitions to state 010 and FR1 and FR2 are asserted. When the water level is below the lowest sensor, the state machine transitions to state 011 and all four outputs are asserted.
+
+The active-high synchronous reset resets the state machine to state 000, which corresponds to a water level above the highest sensor.

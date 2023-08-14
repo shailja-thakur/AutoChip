@@ -1,0 +1,19 @@
+Here is a possible implementation of the top module:
+
+```module top_module ( 
+    input clk, 
+    input [7:0] d, 
+    input [1:0] sel, 
+    output [7:0] q 
+);
+
+    my_dff8 dff1 (clk, d[7:0], q[7:0]);
+    my_dff8 dff2 (clk, q[7:0], q[6:0]);
+    my_dff8 dff3 (clk, q[6:0], q[5:0]);
+
+    assign q = sel[1:0] == 0 ? d : sel[1:0] == 1 ? q[7:0] : sel[1:0] == 2 ? q[6:0] : q[5:0];
+
+endmodule
+```
+
+The multiplexer is implemented using a case statement inside an always block. The case statement selects the output based on the value of sel. When sel is 0, the output is d. When sel is 1, the output is q[7:0]. When sel is 2, the output is q[6:0]. When sel is 3, the output is q[5:0].

@@ -1,0 +1,20 @@
+module top_module( 
+    input [99:0] in,
+    output [98:0] out_both,
+    output [99:1] out_any,
+    output [99:0] out_different );
+
+    always @(posedge clk) begin
+        for (int i = 0; i < 99; i++) begin
+            out_both[i] <= (in[i] & in[i+1]);
+        end
+        out_any <= (in[0] | in[1]);
+        for (int i = 1; i < 99; i++) begin
+            out_any[i] <= (in[i] | in[i-1]);
+        end
+        for (int i = 0; i < 99; i++) begin
+            out_different[i] <= (in[i] != in[i+1]);
+        end
+    end
+
+endmodule

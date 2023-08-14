@@ -1,0 +1,25 @@
+Here is the Verilog code for the state machine:
+
+```module top_module(
+    input in,
+    input [3:0] state,
+    output [3:0] next_state,
+    output out); //
+
+    parameter A=0, B=1, C=2, D=3;
+
+    // Insert your code below
+
+    // State transition logic: Derive an equation for each state flip-flop.
+    assign next_state[A] = in ? B : A;
+    assign next_state[B] = in ? C : B;
+    assign next_state[C] = in ? A : D;
+    assign next_state[D] = in ? C : B;
+
+    // Output logic: 
+    assign out = state == A;
+
+endmodule
+```
+
+The state transition logic is derived by looking at the in-edges of the state transition diagram. For example, the state A has two in-edges, one from state A and one from state B. This means that the next state of A is either A or B, depending on the value of the input. The output logic is simply a function of the current state.

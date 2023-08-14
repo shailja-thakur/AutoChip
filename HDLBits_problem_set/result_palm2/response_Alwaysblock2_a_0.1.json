@@ -1,0 +1,31 @@
+Sure, here is the Verilog code for an XOR gate built three ways:
+
+```
+// synthesis verilog_input_version verilog_2001
+module top_module(
+    input clk,
+    input a,
+    input b,
+    output wire out_assign,
+    output reg out_always_comb,
+    output reg out_always_ff   );
+
+    // Assign statement
+    always @(posedge clk) begin
+        out_assign = a ^ b;
+    end
+
+    // Combinational always block
+    always @(a or b) begin
+        out_always_comb = a ^ b;
+    end
+
+    // Clocked always block
+    always @(posedge clk) begin
+        out_always_ff <= a ^ b;
+    end
+
+endmodule
+```
+
+The assign statement is the simplest way to implement an XOR gate. It simply assigns the output to the XOR of the two inputs. The combinational always block is a bit more complex, but it still does not require any state. It simply evaluates the XOR of the two inputs and assigns the output to the result. The clocked always block is the most complex, but it also provides the most flexibility. It can be used to implement an XOR gate with state, or it can be used to implement a synchronous XOR gate.

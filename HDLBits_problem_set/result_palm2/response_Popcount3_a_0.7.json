@@ -1,0 +1,27 @@
+module top_module (
+    input [2:0] in,
+    output [1:0] out );
+
+    reg [2:0] count;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            count <= 0;
+        end else begin
+            if (in[2] == 1) begin
+                count <= count + 1;
+            end
+            if (in[1] == 1) begin
+                count <= count + 1;
+            end
+            if (in[0] == 1) begin
+                count <= count + 1;
+            end
+        end
+    end
+
+    assign out = count[1:0];
+
+endmodule
+
+The above code implements a population count circuit for a 3-bit input vector. The circuit counts the number of 1's in the input vector and stores the result in the register `count`. The output of the circuit is the value of `count`.

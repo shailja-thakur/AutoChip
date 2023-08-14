@@ -1,0 +1,59 @@
+Here is a possible implementation of the top module:
+
+```module top_module(
+    input clk,
+    input in,
+    input reset,    // Synchronous reset
+    output [7:0] out_byte,
+    output done
+); //
+
+	// Insert your code below
+	
+    // Use FSM from Fsm_serial
+
+    // New: Datapath to latch input bits.
+
+    reg [7:0] data_byte;
+    reg start_bit_detected;
+    reg [7:0] shift_register;
+    reg [1:0] state;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+        end else begin
+            switch (state) begin
+                case (IDLE) begin
+                    if (in == '1') begin
+                        state <= START_BIT;
+                    end
+                end
+                case (START_BIT) begin
+                    if (in == '0') begin
+                        state <= DATA_BIT;
+                        shift_register <= '0';
+                    end
+                end
+                case (DATA_BIT) begin
+                    shift_register <= shift_register << 1;
+                    shift_register[0] <= in;
+                    if (in == '1') begin
+                        state <= STOP_BIT;
+                    end
+                end
+                case (STOP_BIT) begin
+                    if (in == '0') begin
+                        state <= IDLE;
+                        data_byte <= shift_register;
+                        done <= 1;
+                    end
+                end
+            endcase
+        end
+    end
+
+endmodule
+```
+
+The FSM in this module is similar to the one in the previous example, but it has an additional state to handle the start bit. The data path consists of a shift register that stores the incoming bits and a flag that indicates when a complete byte has been received. The shift register is clocked on the rising edge of the clock, and the data bit is shifted in on each clock edge. When a stop bit is detected, the data byte is latched into the output register and the done flag is set.

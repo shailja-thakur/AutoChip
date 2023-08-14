@@ -1,0 +1,75 @@
+The function $f$ can be implemented using a 4-input OR gate followed by an AND gate with two inputs. The OR gate will produce a 1 output if any of its inputs are 1, so it will produce a 1 output for the following inputs:
+
+* $x_1'x_2'x_3'x_4'$
+* $x_1'x_2'x_3x_4$
+* $x_1'x_2x_3'x_4$
+* $x_1'x_2x_3x_4'$
+
+The AND gate will produce a 1 output only if both of its inputs are 1, so it will produce a 1 output for the following inputs:
+
+* $(x_1'x_2'x_3'x_4') \land (x_3'x_4)$
+* $(x_1'x_2'x_3x_4) \land (x_3'x_4)$
+* $(x_1'x_2x_3'x_4) \land (x_3'x_4)$
+* $(x_1'x_2x_3x_4') \land (x_3'x_4)$
+
+The overall circuit can be represented as follows:
+
+[Image of circuit]
+
+The output of the OR gate is connected to the inputs of the AND gate, and the output of the AND gate is the output of the circuit.
+
+The following is the Verilog code for the circuit:
+
+module top_module (
+    input [4:1] x,
+    output f
+);
+
+    logic [4:0] y;
+
+    always @(x or y) begin
+        y = or(x, y);
+    end
+
+    always @(y) begin
+        f = and(y, y[2:1]);
+    end
+
+endmodule
+
+The following is the VHDL code for the circuit:
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity top_module is
+    port (
+        x : in std_logic_vector(4 downto 1);
+        f : out std_logic
+    );
+end top_module;
+
+architecture Behavioral of top_module is
+begin
+    proc y (x : in std_logic_vector(4 downto 1); y : out std_logic_vector(4 downto 0)) is
+        begin
+            for i in 0 to 3 loop
+                y(i) <= or(x(i), y(i));
+            end loop;
+        end proc;
+
+    proc f (y : in std_logic_vector(4 downto 0); f : out std_logic) is
+        begin
+            for i in 2 to 3 loop
+                f <= and(y(i), y(i-1));
+            end loop;
+        end proc;
+
+    signal s : std_logic_vector(4 downto 0);
+
+    begin
+        s <= x;
+        y <= proc y (x, s);
+        f <= proc f (y);
+    end Behavioral;
+end top_module;

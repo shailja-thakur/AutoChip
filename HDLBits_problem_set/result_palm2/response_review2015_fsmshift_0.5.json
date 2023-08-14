@@ -1,0 +1,44 @@
+Here is a possible implementation of the FSM:
+
+```module top_module (
+    input clk,
+    input reset,      // Synchronous reset
+    output shift_ena);
+
+    reg [1:0] state;
+    reg [3:0] counter;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= 0;
+            counter <= 0;
+        end else begin
+            case (state)
+                0: begin
+                    if (shift_ena) begin
+                        state <= 1;
+                        counter <= 4;
+                    end else begin
+                        state <= 0;
+                    end
+                end
+                1: begin
+                    if (counter == 0) begin
+                        state <= 2;
+                    end else begin
+                        counter <= counter - 1;
+                    end
+                end
+                2: begin
+                    state <= 0;
+                end
+            endcase
+        end
+    end
+
+    assign shift_ena = state == 1;
+
+endmodule
+```
+
+This FSM has three states: 0, 1, and 2. In state 0, the FSM waits for the shift_ena signal to be asserted. When it is, the FSM transitions to state 1 and starts a 4-cycle counter. In state 1, the shift_ena signal is asserted and the shift register is enabled. When the counter reaches 0, the FSM transitions to state 2 and the shift_ena signal is deasserted. The FSM remains in state 2 until it is reset.

@@ -1,0 +1,28 @@
+Sure, here is the Verilog code for the Moore state machine:
+
+```module top_module (
+  input wire in,
+  input wire [1:0] state,
+  output wire [1:0] next_state,
+  output wire out
+);
+
+  parameter A = 0, B = 1, C = 2, D = 3;
+
+  // State transition logic: next_state = f(state, in)
+  assign next_state = ({
+    when (state == A and in == 0) => B,
+    when (state == A and in == 1) => B,
+    when (state == B and in == 0) => C,
+    when (state == B and in == 1) => B,
+    when (state == C and in == 0) => A,
+    when (state == C and in == 1) => D,
+    when (state == D and in == 0) => C,
+    when (state == D and in == 1) => B
+  });
+
+  // Output logic: out = f(state) for a Moore state machine
+  assign out = state;
+
+endmodule
+```

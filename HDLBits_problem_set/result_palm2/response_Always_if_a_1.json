@@ -1,0 +1,39 @@
+Sure. Here is a 2-to-1 mux that chooses between a and b using assign statements:
+
+```
+module top_module (
+    input a,
+    input b,
+    input sel_b1,
+    input sel_b2,
+    output wire out_assign
+);
+
+    assign out_assign = (sel_b1 && sel_b2) ? b : a;
+
+endmodule
+```
+
+And here is the same mux using a procedural if statement:
+
+```
+module top_module (
+    input a,
+    input b,
+    input sel_b1,
+    input sel_b2,
+    output reg out_always
+);
+
+    always @(posedge clk) begin
+        if (sel_b1 && sel_b2) begin
+            out_always <= b;
+        else begin
+            out_always <= a;
+        end
+    end
+
+endmodule
+```
+
+I hope this is helpful!

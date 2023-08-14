@@ -1,0 +1,21 @@
+Here is a possible implementation of the top module:
+
+```module top_module (
+    input [7:0] a,
+    input [7:0] b,
+    output [7:0] s,
+    output overflow
+);
+
+    reg [7:0] s;
+    reg overflow;
+
+    always @(posedge clk) begin
+        s <= a + b;
+        overflow <= (s[7] & (a[7] | b[7]));
+    end
+
+endmodule
+```
+
+The s register stores the sum of a and b. The overflow flag is set if the sum is too large to be represented in 8 bits. This can happen if either a or b is negative and the sum is greater than or equal to 127.

@@ -1,0 +1,13 @@
+module top_module (
+    input ring,
+    input vibrate_mode,
+    output ringer,       // Make sound
+    output motor         // Vibrate
+);
+
+    assign ringer = ring & ~vibrate_mode;
+    assign motor = ring | vibrate_mode;
+
+endmodule
+
+The above code uses an AND gate to combine the `ring` and `~vibrate_mode` signals, and an OR gate to combine the `ring` and `vibrate_mode` signals. The `AND` gate will only output a 1 if both inputs are 1, which means that the ringer will only turn on if the phone is ringing and vibrate mode is off. The `OR` gate will output a 1 if either input is 1, which means that the motor will turn on if the phone is ringing or if it is in vibrate mode.

@@ -1,0 +1,40 @@
+Sure, here is a circuit that will compute a parity bit for an 8-bit byte (which will add a 9th bit to the byte). We will use "even" parity, where the parity bit is just the XOR of all 8 data bits.
+
+```
+module top_module (
+    input [7:0] in,
+    output parity); 
+    
+    XOR gate1 (
+        input [7:0] a,
+        input [7:0] b,
+        output y);
+    
+    XOR gate2 (
+        input [7:0] c,
+        input [7:0] d,
+        output z);
+    
+    XOR gate3 (
+        input [7:0] e,
+        input [7:0] f,
+        output w);
+    
+    XOR gate4 (
+        input [7:0] g,
+        input [7:0] h,
+        output x);
+    
+    XOR gate5 (
+        input [7:0] y,
+        input [7:0] z,
+        output parity);
+    
+    assign parity = gate5.y;
+    
+endmodule
+```
+
+This circuit uses 5 XOR gates to compute the parity bit. The first XOR gate takes the first two data bits and outputs their XOR. The second XOR gate takes the next two data bits and outputs their XOR. This continues for all 8 data bits. The final XOR gate takes the outputs of the first 4 XOR gates and outputs their XOR. This is the parity bit.
+
+If all 8 data bits are even, then the parity bit will be 0. If any of the data bits are odd, then the parity bit will be 1. This can be used to detect errors in data transmission. If the received data does not have the correct parity bit, then it is likely that there has been an error in transmission.

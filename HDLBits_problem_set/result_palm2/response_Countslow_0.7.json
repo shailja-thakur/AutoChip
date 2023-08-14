@@ -1,0 +1,29 @@
+Here is a possible implementation of a decade counter that counts from 0 through 9, inclusive, with a period of 10. The reset input is synchronous, and should reset the counter to 0. We want to be able to pause the counter rather than always incrementing every clock cycle, so the slowena input indicates when the counter should increment.
+
+```
+module top_module (
+    input clk,
+    input slowena,
+    input reset,
+    output [3:0] q);
+
+    reg [3:0] counter;
+    reg enable;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            counter <= 0;
+            enable <= 1;
+        end else begin
+            if (slowena) begin
+                counter <= counter + 1;
+            end
+        end
+    end
+
+    assign q = counter;
+
+endmodule
+```
+
+This implementation uses a D flip-flop to store the counter value, and a synchronous reset to ensure that the counter is always reset to 0 when the reset input is asserted. The enable signal is used to control whether the counter is incremented on each clock cycle. When slowena is asserted, the counter is enabled and increments on each clock cycle. When slowena is deasserted, the counter is disabled and does not increment.

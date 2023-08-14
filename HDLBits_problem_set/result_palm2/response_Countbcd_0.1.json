@@ -1,0 +1,55 @@
+Here is a possible implementation of a 4-digit BCD counter:
+
+```module top_module (
+    input clk,
+    input reset,   // Synchronous active-high reset
+    output [3:1] ena,
+    output [15:0] q);
+
+    // Instantiate four one-digit decade counters
+    decade_counter d0 (clk, reset, ena[0], q[0:3]);
+    decade_counter d1 (clk, reset, ena[1], q[4:7]);
+    decade_counter d2 (clk, reset, ena[2], q[8:11]);
+    decade_counter d3 (clk, reset, ena[3], q[12:15]);
+
+    // Connect the enable signals
+    assign ena[0] = d1.ena;
+    assign ena[1] = d2.ena;
+    assign ena[2] = d3.ena;
+
+endmodule
+```
+
+The four decade counters are instantiated using the `decade_counter` module, which is defined as follows:
+
+```module decade_counter (
+    input clk,
+    input reset,   // Synchronous active-high reset
+    output enable,
+    output [3:0] q);
+
+    // Counter state
+    flipflop state [3:0];
+
+    // Counter enable
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= 0;
+        end else begin
+            if (enable) begin
+                state <= state + 1;
+            end
+        end
+    end
+
+    // Output the counter value
+    assign q = state;
+
+endmodule
+```
+
+The `decade_counter` module has four inputs: clk, reset, enable, and q. The clk input is the clock signal, the reset input is a synchronous active-high reset, the enable input is a control signal that indicates when the counter should be incremented, and the q output is the 4-bit counter value.
+
+The `decade_counter` module has one state register, which stores the current value of the counter. The state register is updated on the positive edge of the clock signal, and the value of the counter is incremented if the enable signal is asserted.
+
+The `decade_counter` module also has one output, which is the 4-bit counter value. The counter value is updated on the positive edge of the clock signal, and the value of the output is equal to the value of the state register.

@@ -1,0 +1,20 @@
+Sure, here is a possible implementation of the top module:
+
+```module top_module (
+    input clk,
+    input d, 
+    input ar,   // asynchronous reset
+    output q);
+
+    reg q;
+    
+    always @(posedge clk or posedge ar) begin
+        if (ar) begin
+            q <= d;
+        end
+    end
+
+endmodule
+```
+
+This module implements a simple D flip-flop with asynchronous reset. The D input is sampled on the rising edge of the clock, and the output is updated accordingly. The asynchronous reset overrides the D input and sets the output to 0.

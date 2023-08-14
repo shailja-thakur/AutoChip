@@ -1,0 +1,76 @@
+Here is a possible implementation of the gshare branch predictor:
+
+```module top_module(
+    input clk,
+    input areset,
+
+    input  predict_valid,
+    input  [6:0] predict_pc,
+    output predict_taken,
+    output [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history,
+    input [6:0] train_pc
+);
+
+    // The PHT is a 128-entry table of two-bit saturating counters.
+    reg [1:0]  [127:0] pt;
+
+    // The global history register is a 7-bit register.
+    reg [6:0] gh;
+
+    // The prediction logic takes the pc and global history register as input and produces the predicted branch direction and state of the branch history register used to make the prediction.
+    always @(posedge clk) begin
+        if (areset) begin
+            pt <= 2'b01;
+            gh <= 0;
+        end else begin
+            if (predict_valid) begin
+                // Compute the PHT index.
+                int index = predict_pc ^ gh;
+
+                // Get the value of the PHT entry.
+                int pt_val = pt[index];
+
+                // Predict the branch direction.
+                predict_taken = pt_val[0];
+
+                // Update the branch history register.
+                gh = gh ^ predict_pc;
+            end
+        end
+    end
+
+    // The training logic takes the pc, branch history register value, actual branch outcome, and whether the branch was a misprediction as input and updates the PHT to train the branch predictor to predict this branch more accurately next time.
+    always @(posedge clk) begin
+        if (areset) begin
+            pt <= 2'b01;
+            gh <= 0;
+        end else begin
+            if (train_valid) begin
+                // Compute the PHT index.
+                int index = train_pc ^ gh;
+
+                // Get the value of the PHT entry.
+                int pt_val = pt[index];
+
+                // Update the PHT entry.
+                if (train_taken) begin
+                    pt[index] = pt_val | 2'b10;
+                end else begin
+                    pt[index] = pt_val & 2'b11;
+                end
+
+                // If the branch was mispredicted, recover the branch history register to the state immediately after the mispredicting branch completes execution.
+                if (train_mispredicted) begin
+                    gh = gh ^ train_pc;
+                end
+            end
+        end
+    end
+
+endmodule
+```

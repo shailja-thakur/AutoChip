@@ -1,0 +1,48 @@
+Here is a possible implementation of the top_module module:
+
+```
+module top_module (
+    input [31:0] a,
+    input [31:0] b,
+    output [31:0] sum
+    // Insert your code here
+);//
+
+endmodule
+
+module add1 ( input a, input b, input cin,   output sum, output cout );
+
+    // Full adder module here
+
+    wire s0, s1, s2;
+    wire c0, c1;
+
+    xor xor1 (s0, a[0], b[0]);
+    xor xor2 (s1, a[1], b[1]);
+    xor xor3 (s2, a[2], b[2]);
+    and and1 (c0, a[3], b[3]);
+    and and2 (c1, a[4], b[4]);
+
+    or or1 (sum[0], s0, c0);
+    or or2 (sum[1], s1, c1);
+    or or3 (sum[2], s2, c0);
+    or or4 (sum[3], s0, c1);
+    or or5 (sum[4], s1, c0);
+    or or6 (sum[5], s2, c1);
+    or or7 (sum[6], s0, c0);
+    or or8 (sum[7], s1, c1);
+    or or9 (sum[8], s2, c0);
+    or or10 (sum[9], s0, c1);
+    or or11 (sum[10], s1, c0);
+    or or12 (sum[11], s2, c1);
+    or or13 (sum[12], s0, c0);
+    or or14 (sum[13], s1, c1);
+    or or15 (sum[14], s2, c0);
+    or or16 (sum[15], s0, c1);
+
+    assign cout = c0 | c1;
+
+endmodule
+```
+
+This implementation uses a carry-lookahead adder to perform the addition. The carry-lookahead adder is a more efficient way to perform addition than a ripple-carry adder, which is the type of adder that is used in the add16 module.

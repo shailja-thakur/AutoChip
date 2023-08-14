@@ -1,0 +1,23 @@
+Sure, here is a Verilog code for a 100-bit binary ripple-carry adder:
+
+```module top_module (
+  input [99:0] a,
+  input [99:0] b,
+  input cin,
+  output [99:0] cout,
+  output [99:0] sum
+);
+
+  genvar i;
+  for (i = 0; i < 100; i++) begin
+    wire carry_in = (i == 0) ? cin : cout[i - 1];
+    wire sum_i = a[i] + b[i] + carry_in;
+    wire carry_out = (sum_i >= 2'b10);
+    assign cout[i] = carry_out;
+    assign sum[i] = sum_i;
+  end
+
+endmodule
+```
+
+This code uses a generate statement to instantiate 100 full adders. The carry-in to each full adder is the carry-out from the previous full adder, or cin if this is the first full adder. The sum of each full adder is the sum of the two inputs plus the carry-in, and the carry-out of each full adder is 1 if the sum is greater than or equal to 2'b10. The final carry-out, cout[99], is the carry-out from the last full adder.

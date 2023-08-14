@@ -1,0 +1,41 @@
+The following circuit implements the given Karnaugh map using one 4-to-1 multiplexer and as many 2-to-1 multiplexers as required, but using as few as possible. The 4-to-1 multiplexer is used to select the output of the 2-to-1 multiplexers, which are used to implement the four minterms of the function.
+
+```
+module top_module (
+    input c,
+    input d,
+    output [3:0] mux_in
+); 
+
+    // 4-to-1 multiplexer
+    4to1mux u1 (
+        input [1:0] sel,
+        input [3:0] a,
+        input [3:0] b,
+        output [3:0] y
+    );
+
+    // 2-to-1 multiplexer
+    2to1mux u2 (
+        input sel,
+        input x,
+        input y,
+        output z
+    );
+
+    // Minterm 1
+    assign mux_in[0] = u1.y[0];
+
+    // Minterm 2
+    assign mux_in[1] = u2.z[0];
+
+    // Minterm 3
+    assign mux_in[2] = u2.z[1];
+
+    // Minterm 4
+    assign mux_in[3] = u1.y[1];
+
+endmodule
+```
+
+The 4-to-1 multiplexer is configured to select the output of the 2-to-1 multiplexer that is connected to the minterm that is true for the given inputs. For example, if the inputs are $c=0$ and $d=1$, then the 4-to-1 multiplexer will select the output of the 2-to-1 multiplexer that is connected to the minterm 2, which is $a'b'$.

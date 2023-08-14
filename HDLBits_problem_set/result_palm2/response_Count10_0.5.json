@@ -1,0 +1,27 @@
+Here is a possible implementation of a decade counter that counts from 0 through 9, inclusive, with a period of 10. The reset input is synchronous, and should reset the counter to 0.
+
+```
+module top_module (
+    input clk,
+    input reset,        // Synchronous active-high reset
+    output [3:0] q);
+
+    reg [3:0] counter;
+    
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            counter <= 0;
+        end else begin
+            counter <= counter + 1;
+            if (counter == 10) begin
+                counter <= 0;
+            end
+        end
+    end
+
+    assign q = counter;
+
+endmodule
+```
+
+This counter uses a synchronous counter, which means that the counter is reset and updated on the rising edge of the clock signal. The reset input is active-high, so the counter will be reset to 0 when the reset input is asserted. The counter counts from 0 through 9, inclusive, and has a period of 10. The output of the counter is a 4-bit value that indicates the current state of the counter.

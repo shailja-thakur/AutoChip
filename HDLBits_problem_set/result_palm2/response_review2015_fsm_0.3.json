@@ -1,0 +1,59 @@
+Here is a possible implementation of the finite-state machine that controls the timer:
+
+```module top_module (
+    input clk,
+    input reset,      // Synchronous reset
+    input data,
+    output shift_ena,
+    output counting,
+    input done_counting,
+    output done,
+    input ack );
+
+    // State machine
+    state machine state (
+        start,
+        shift,
+        count,
+        done
+    );
+
+    // FSM transitions
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= start;
+        end else begin
+            case (state)
+                start:
+                    if (data == 1101) begin
+                        state <= shift;
+                        shift_ena <= 1;
+                    end
+                shift:
+                    if (data == 1101) begin
+                        state <= count;
+                        shift_ena <= 0;
+                    end
+                count:
+                    if (done_counting) begin
+                        state <= done;
+                        done <= 1;
+                    end
+                done:
+                    if (ack) begin
+                        state <= start;
+                        done <= 0;
+                    end
+            endcase
+        end
+    end
+
+    // Output signals
+    shift_ena = state == shift;
+    counting = state == count;
+    done = state == done;
+
+endmodule
+```
+
+This FSM has four states: start, shift, count, and done. In the start state, the FSM waits for the input sequence 1101. When this sequence is received, the FSM enters the shift state and asserts the shift_ena output for four clock cycles. In the count state, the FSM waits for the counters to finish counting. When this happens, the FSM enters the done state and asserts the done output. The FSM remains in the done state until the input ack is asserted, at which point it resets and returns to the start state.

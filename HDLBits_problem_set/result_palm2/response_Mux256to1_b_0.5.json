@@ -1,0 +1,19 @@
+Here is a VHDL code for a 1-bit wide, 256-to-1 multiplexer:
+
+```
+module top_module( 
+    input [255:0] in,
+    input [7:0] sel,
+    output out );
+
+    wire [255:0] sel_mask;
+    assign sel_mask = (1 << sel);
+
+    assign out = in[sel_mask];
+
+endmodule
+```
+
+This code uses a vector index to select the desired bit from the input vector. The vector index is a variable, which allows the synthesizer to figure out that the width of the bits being selected is constant. In particular, selecting one bit out of a vector using a variable index will work.
+
+The code first creates a mask, `sel_mask`, which is a 256-bit vector with a 1 in the bit position corresponding to the selected input. The mask is then used to select the desired bit from the input vector, and the result is assigned to the output.

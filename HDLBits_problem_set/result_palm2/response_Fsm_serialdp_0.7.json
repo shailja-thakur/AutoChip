@@ -1,0 +1,125 @@
+Sure, here is the code for the serial receiver with odd parity checking:
+
+```module top_module(
+    input clk,
+    input in,
+    input reset,    // Synchronous reset
+    output [7:0] out_byte,
+    output done
+); //
+
+    // Insert your code below
+
+    // Modify FSM and datapath from Fsm_serialdata
+
+    // New: Add parity checking.
+
+    always @(posedge clk) begin
+        if (reset) begin
+            done <= 1'b0;
+            state <= IDLE;
+        end else begin
+            case (state)
+                IDLE: begin
+                    if (in) begin
+                        state <= START_BIT;
+                    end
+                end
+                START_BIT: begin
+                    if (in) begin
+                        state <= DATA_BIT0;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                DATA_BIT0: begin
+                    if (in) begin
+                        data[0] <= in;
+                        state <= DATA_BIT1;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                DATA_BIT1: begin
+                    if (in) begin
+                        data[1] <= in;
+                        state <= DATA_BIT2;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                DATA_BIT2: begin
+                    if (in) begin
+                        data[2] <= in;
+                        state <= DATA_BIT3;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                DATA_BIT3: begin
+                    if (in) begin
+                        data[3] <= in;
+                        state <= DATA_BIT4;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                DATA_BIT4: begin
+                    if (in) begin
+                        data[4] <= in;
+                        state <= DATA_BIT5;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                DATA_BIT5: begin
+                    if (in) begin
+                        data[5] <= in;
+                        state <= DATA_BIT6;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                DATA_BIT6: begin
+                    if (in) begin
+                        data[6] <= in;
+                        state <= DATA_BIT7;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                DATA_BIT7: begin
+                    if (in) begin
+                        data[7] <= in;
+                        state <= PARITY_BIT;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                PARITY_BIT: begin
+                    if (in) begin
+                        parity <= ~in;
+                        state <= STOP_BIT;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                STOP_BIT: begin
+                    if (in) begin
+                        state <= IDLE;
+                    end else begin
+                        if (parity) begin
+                            done <= 1'b1;
+                        end
+                    end
+                end
+            endcase
+        end
+    end
+
+    assign out_byte = data;
+
+endmodule
+```
+
+The FSM has been modified to include a new state, `PARITY_BIT`, where the parity bit is calculated. The parity bit is then checked in the `STOP_BIT` state to see if it is correct. If the parity bit is correct, then the `done` signal is asserted.

@@ -1,0 +1,24 @@
+Here is a possible implementation of a JK flip-flop with only a D-type flip-flop and gates:
+
+```
+module top_module (
+    input clk,
+    input j,
+    input k,
+    output Q);
+
+    reg Qold;
+    D flip_flop (
+        input D,
+        input clk,
+        output Q);
+
+    always @(posedge clk) begin
+        Qold <= Q;
+        Q <= (j & ~k) | (~j & k) & Qold;
+    end
+
+endmodule
+```
+
+The D flip-flop is configured to have a D input and a clock input. The output of the D flip-flop is Q. The always block is triggered on the positive edge of the clock. The Qold register stores the value of Q before the positive clock edge. The Q output is updated to the value of D if J and K are both 0, or if J is 1 and K is 0, and Qold is 0. Otherwise, Q is updated to the value of 1 if J and K are both 1, or if J is 0 and K is 1, and Qold is 1.

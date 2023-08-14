@@ -1,0 +1,29 @@
+Here is a possible implementation of a timer that counts down for a given number of clock cycles, then asserts a signal to indicate that the given duration has elapsed:
+
+```
+module top_module(
+	input clk, 
+	input load, 
+	input [9:0] data, 
+	output tc
+);
+
+	reg [9:0] counter;
+	reg load_state;
+
+	always @(posedge clk) begin
+		if (load) begin
+			counter <= data;
+			load_state <= 1;
+		end else if (load_state) begin
+			counter <= counter - 1;
+			if (counter == 0) begin
+				tc <= 1;
+			end
+		end
+	end
+
+endmodule
+```
+
+This implementation uses a register to store the current value of the counter, and a state machine to control the loading and counting of the counter. The state machine has two states: the loading state and the counting state. In the loading state, the counter is loaded with the value of the data signal. In the counting state, the counter is decremented by 1 at each clock cycle. If the counter reaches 0, the tc signal is asserted.

@@ -1,0 +1,40 @@
+Here is a possible implementation of the top module:
+
+```
+module top_module ( 
+    input clk, 
+    input [7:0] d, 
+    input [1:0] sel, 
+    output [7:0] q 
+);
+
+    my_dff8 dff1 (clk, d[7:0], q[7:0]);
+    my_dff8 dff2 (clk, q[7:0], q[6:0]);
+    my_dff8 dff3 (clk, q[6:0], q[5:0]);
+
+    mux4way #(8) mux (clk, sel, d[7:0], q[7:0], q[6:0], q[5:0], q[4:0], q[3:0], q[2:0], q[1:0], q[0:0]);
+
+    output wire [7:0] sel_d, sel_q1, sel_q2, sel_q3;
+
+    always @(posedge clk) begin
+        case (sel)
+            2'b00: sel_d <= d[7:0];
+            2'b01: sel_d <= q[7:0];
+            2'b10: sel_d <= q[6:0];
+            2'b11: sel_d <= q[5:0];
+        endcase
+    end
+
+    always @(posedge clk) begin
+        case (sel)
+            2'b00: q <= sel_d;
+            2'b01: q <= mux.y[0];
+            2'b10: q <= mux.y[1];
+            2'b11: q <= mux.y[2];
+        endcase
+    end
+
+endmodule
+```
+
+The multiplexer is implemented using a 4-to-1 mux with a case statement. The case statement selects the output based on the value of sel. The output of the multiplexer is then fed into the third D flip-flop, which is the output of the shift register.

@@ -1,0 +1,37 @@
+Here is a module with the same functionality as the 7458 chip:
+
+```
+module top_module ( 
+    input p1a, p1b, p1c, p1d, p1e, p1f,
+    output p1y,
+    input p2a, p2b, p2c, p2d,
+    output p2y );
+
+    logic p1_and1, p1_and2, p1_and3, p1_and4;
+    logic p2_and1, p2_and2, p2_and3, p2_and4;
+    logic p1_or1, p1_or2;
+    logic p2_or1, p2_or2;
+
+    assign p1_and1 = p1a & p1b;
+    assign p1_and2 = p1c & p1d;
+    assign p1_and3 = p1e & p1f;
+    assign p1_and4 = p1_and1 & p1_and2;
+
+    assign p2_and1 = p2a & p2b;
+    assign p2_and2 = p2c & p2d;
+    assign p2_and3 = p2_and1 & p2_and2;
+    assign p2_and4 = p2_and3 & p2_and4;
+
+    assign p1_or1 = p1_and3 | p1_and4;
+    assign p1_or2 = p1_or1 | p1_and2;
+
+    assign p2_or1 = p2_and3 | p2_and4;
+    assign p2_or2 = p2_or1 | p2_and2;
+
+    output p1y = p1_or1;
+    output p2y = p2_or2;
+
+endmodule
+```
+
+This module has four AND gates and two OR gates, just like the 7458 chip. The AND gates are used to combine the inputs to produce the intermediate signals p1_and1, p1_and2, p1_and3, and p1_and4. The OR gates are then used to combine these intermediate signals to produce the output signals p1y and p2y.

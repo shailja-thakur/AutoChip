@@ -1,0 +1,55 @@
+Sure, here are three ways to build an XOR gate in Verilog:
+
+1. Using an assign statement:
+
+```module top_module (
+    input wire clk,
+    input wire a,
+    input wire b,
+    output wire out_assign
+);
+
+    always @(posedge clk) begin
+        out_assign = a ^ b;
+    end
+
+endmodule
+```
+
+2. Using a combinational always block:
+
+```module top_module (
+    input wire clk,
+    input wire a,
+    input wire b,
+    output reg out_always_comb
+);
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            out_always_comb <= 0;
+        end else begin
+            out_always_comb <= a ^ b;
+        end
+    end
+
+endmodule
+```
+
+3. Using a clocked always block:
+
+```module top_module (
+    input wire clk,
+    input wire a,
+    input wire b,
+    output reg out_always_ff
+);
+
+    always @(posedge clk) begin
+        out_always_ff <= a ^ b;
+    end
+
+endmodule
+```
+
+I hope this helps!

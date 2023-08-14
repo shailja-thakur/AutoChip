@@ -1,0 +1,40 @@
+Sure, here is a 100-digit BCD ripple-carry adder:
+
+```module top_module( 
+    input [399:0] a, b,
+    input cin,
+    output cout,
+    output [399:0] sum );
+
+    generate
+        for i in 0:99 generate
+            bcd_fadd u(a[i*4+3:i*4], b[i*4+3:i*4], cin[i], cout[i], sum[i*4+3:i*4]);
+        endgenerate
+    endgenerate
+
+endmodule
+```
+
+The BCD one-digit adder is defined as follows:
+
+```module bcd_fadd (
+    input [3:0] a,
+    input [3:0] b,
+    input     cin,
+    output   cout,
+    output [3:0] sum );
+
+    wire [3:0] s0, s1, s2, s3;
+
+    assign s0 = a[0] + b[0] + cin;
+    assign s1 = a[1] + b[1] + cin + s0[3];
+    assign s2 = a[2] + b[2] + cin + s1[3];
+    assign s3 = a[3] + b[3] + cin + s2[3];
+
+    assign cout = s3[3];
+    assign sum = s0 + s1 + s2 + s3;
+
+endmodule
+```
+
+The BCD ripple-carry adder can be implemented using 100 instances of the BCD one-digit adder. The carry-in for each BCD one-digit adder is the carry-out from the previous adder. The sum of the 100 BCD digits is the output of the last BCD one-digit adder.

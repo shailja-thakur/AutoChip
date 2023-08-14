@@ -1,0 +1,32 @@
+Here is a Verilog implementation of a 64-bit arithmetic shift register with synchronous load:
+
+```module top_module (
+    input clk,
+    input load,
+    input ena,
+    input [1:0] amount,
+    input [63:0] data,
+    output reg [63:0] q);
+
+    reg [63:0] shift_reg;
+    reg [63:0] carry;
+
+    always @(posedge clk) begin
+        if (load) begin
+            shift_reg <= data;
+        end else if (ena) begin
+            case (amount)
+                2'b00: shift_reg <= shift_reg << 1;
+                2'b01: shift_reg <= shift_reg << 8;
+                2'b10: shift_reg <= shift_reg >> 1;
+                2'b11: shift_reg <= shift_reg >> 8;
+            endcase
+        end
+    end
+
+    assign q = shift_reg;
+
+endmodule
+```
+
+The `shift_reg` register stores the current contents of the shift register. The `carry` register is used to track the carry bit from the previous shift operation. The `always` block is executed on every positive edge of the clock. If the `load` signal is asserted, the `data` signal is loaded into the shift register. Otherwise, if the `ena` signal is asserted, the shift register is shifted according to the value of the `amount` signal. The `case` statement selects the appropriate shift operation based on the value of `amount`. The `q` output signal is the current contents of the shift register.

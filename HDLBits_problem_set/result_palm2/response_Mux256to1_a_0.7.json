@@ -1,0 +1,20 @@
+Here is a Verilog module for a 1-bit wide, 256-to-1 multiplexer:
+
+```module top_module( 
+    input [255:0] in,
+    input [7:0] sel,
+    output out );
+
+    wire [255:0] sel_lines;
+    assign sel_lines[sel] = 1;
+
+    mux256x1 #(.N(256)) mux (
+        in, sel_lines, out
+    );
+
+endmodule
+```
+
+This module has three inputs: `in`, `sel`, and `out`. `in` is a 256-bit input vector, `sel` is a 8-bit select vector, and `out` is a 1-bit output.
+
+The module first creates a 256-bit vector of select lines, `sel_lines`, where the `i`th bit of `sel_lines` is 1 if `sel[i]` is 1. Then, it uses a 256-to-1 multiplexer to select the input bit corresponding to the selected bit of `sel` and output it on `out`.

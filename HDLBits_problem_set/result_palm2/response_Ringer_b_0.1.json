@@ -1,0 +1,27 @@
+Here is a possible solution to the problem:
+
+```
+module top_module (
+    input ring,
+    input vibrate_mode,
+    output ringer,       // Make sound
+    output motor         // Vibrate
+);
+
+    assign ringer = ring & ~vibrate_mode;
+    assign motor = ring | vibrate_mode;
+
+endmodule
+```
+
+This circuit uses two AND gates and an OR gate to implement the desired behavior. The AND gates are used to ensure that the ringer is only turned on when the phone is ringing and not in vibrate mode, and the motor is only turned on when the phone is ringing or in vibrate mode. The OR gate is used to combine the outputs of the AND gates so that either the ringer or the motor is turned on, but not both.
+
+Here is a step-by-step explanation of how the circuit works:
+
+1. When the phone is ringing, the input signal `ring` is high.
+2. If the phone is in vibrate mode, the input signal `vibrate_mode` is high.
+3. The AND gate with inputs `ring` and `~vibrate_mode` (not vibrate mode) will only output a high signal if both inputs are high. This means that the ringer will only be turned on when the phone is ringing and not in vibrate mode.
+4. The AND gate with inputs `ring` and `vibrate_mode` will only output a high signal if both inputs are high. This means that the motor will only be turned on when the phone is ringing or in vibrate mode.
+5. The OR gate with inputs `ringer` and `motor` will output a high signal if either input is high. This means that either the ringer or the motor will be turned on, but not both.
+
+I hope this explanation is helpful!

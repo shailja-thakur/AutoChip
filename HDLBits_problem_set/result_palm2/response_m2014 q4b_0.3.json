@@ -1,0 +1,29 @@
+Sure, here is a possible implementation of the top module:
+
+```
+module top_module (
+    input clk,
+    input d, 
+    input ar,   // asynchronous reset
+    output q);
+
+    reg [1:0] state;
+    reg q;
+
+    always @(posedge clk or posedge ar) begin
+        if (ar) begin
+            state <= 1;
+        end else begin
+            if (state == 1) begin
+                q <= d;
+                state <= 0;
+            end
+        end
+    end
+
+endmodule
+```
+
+This implementation uses a D flip-flop to store the current state of the circuit. The state is initialized to 0 when the asynchronous reset signal is asserted. When the clock signal is asserted, the state is updated to 1 if the asynchronous reset signal is not asserted. If the state is 1, the output is updated to the value of the data input.
+
+I hope this is helpful! Let me know if you have any other questions.

@@ -1,0 +1,29 @@
+Here is a Verilog code for the top module:
+
+```module top_module (
+    input clk,
+    input reset,
+    input [31:0] in,
+    output [31:0] out
+);
+
+    reg [31:0] state;
+    reg [31:0] d;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= 0;
+        end else begin
+            if (in[state] == 1 && in[state+1] == 0) begin
+                d <= 1;
+            end
+            state <= state+1;
+        end
+    end
+
+    assign out = d;
+
+endmodule
+```
+
+The state register keeps track of the current state of the input signal. The data register stores the value of the input signal at the last time it changed from 1 to 0. The always block updates the state register and the data register on the positive edge of the clock. If the input signal is 1 and then changes to 0, the data register is set to 1. The output signal is the value of the data register.

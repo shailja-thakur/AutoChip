@@ -1,0 +1,26 @@
+Sure, here is a 3-bit binary ripple-carry adder:
+
+```
+module top_module( 
+    input [2:0] a, b,
+    input cin,
+    output [2:0] cout,
+    output [2:0] sum );
+
+    full_adder fa1 (a[0], b[0], cin, sum[0], cout[0]);
+    full_adder fa2 (a[1], b[1], cout[0], sum[1], cout[1]);
+    full_adder fa3 (a[2], b[2], cout[1], sum[2], cout[2]);
+
+endmodule
+```
+
+The full adder is a basic building block in digital logic that can be used to add two binary numbers. It has three inputs: two operands (a and b) and a carry-in (cin). It also has two outputs: a sum (sum) and a carry-out (cout).
+
+The operation of the full adder is as follows:
+
+1. The two operands (a and b) are ANDed together. This produces the AND sum (a & b).
+2. The carry-in (cin) is ORed with the AND sum (a & b). This produces the OR sum (cin | a & b).
+3. The OR sum (cin | a & b) is XORed with the carry-out from the previous stage (cout[n-1]). This produces the sum (sum).
+4. The carry-out from the full adder is the OR of the AND sum (a & b) and the carry-in (cin). This is written as cout = a & b | cin.
+
+In the 3-bit binary ripple-carry adder, the carry-out from the first full adder (cout[0]) is used as the carry-in to the second full adder, and the carry-out from the second full adder (cout[1]) is used as the carry-in to the third full adder. The carry-out from the third full adder (cout[2]) is the final carry-out from the ripple-carry adder.

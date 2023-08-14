@@ -1,0 +1,60 @@
+Here is a possible solution to the problem:
+
+```
+module bcdcount (
+	input clk,
+	input reset,
+	input enable,
+	output reg [3:0] Q
+);
+
+	reg [3:0] counter;
+
+	always @(posedge clk) begin
+		if (reset) begin
+			counter <= 0;
+		end else if (enable) begin
+			counter <= counter + 1;
+		end
+	end
+
+	assign Q = counter;
+
+endmodule
+
+module top_module (
+    input clk,
+    input reset,
+    output OneHertz,
+    output [2:0] c_enable
+); //
+
+	// Insert your code below
+	
+    bcdcount counter0 (clk, reset, c_enable[0], Q0);
+    bcdcount counter1 (clk, reset, c_enable[1], Q1);
+
+	always @(posedge clk) begin
+		if (Q0 == 9) begin
+			c_enable[0] <= 1;
+		end else begin
+			c_enable[0] <= 0;
+		end
+
+		if (Q1 == 9) begin
+			c_enable[1] <= 1;
+		end else begin
+			c_enable[1] <= 0;
+		end
+
+		if (Q0 == 0 && Q1 == 0) begin
+			OneHertz <= 1;
+		end else begin
+			OneHertz <= 0;
+		end
+	end
+
+endmodule
+```
+
+This circuit uses two BCD counters to divide the 1000 Hz clock signal by 100 and 1000, respectively. The enable signals from the counters are used to control the operation of the OneHertz signal. The OneHertz signal is asserted for one clock cycle every second, as desired.

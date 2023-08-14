@@ -1,0 +1,37 @@
+Here is a possible implementation of the function $f$ shown in the Karnaugh map:
+
+```
+module top_module (
+    input [4:1] x,
+    output f
+); 
+
+    wire [4:0] a;
+    assign a[0] = x[0];
+    assign a[1] = x[1];
+    assign a[2] = x[2];
+    assign a[3] = x[3];
+
+    wire [4:0] b;
+    assign b[0] = x[0] & x[1];
+    assign b[1] = x[0] & x[2];
+    assign b[2] = x[0] & x[3];
+    assign b[3] = x[1] & x[2];
+    assign b[4] = x[1] & x[3];
+    assign b[5] = x[2] & x[3];
+
+    wire [4:0] c;
+    assign c[0] = x[0] ^ x[1];
+    assign c[1] = x[0] ^ x[2];
+    assign c[2] = x[0] ^ x[3];
+    assign c[3] = x[1] ^ x[2];
+    assign c[4] = x[1] ^ x[3];
+    assign c[5] = x[2] ^ x[3];
+
+    wire f;
+    assign f = (a[0] & b[0]) | (a[0] & b[4]) | (a[1] & b[1]) | (a[1] & b[5]) | (a[2] & b[2]) | (a[2] & b[3]);
+
+endmodule
+```
+
+This implementation uses four 4-to-1 multiplexers to select the appropriate input based on the values of $x_3$ and $x_4$. The multiplexers are controlled by the outputs of the AND gates, which are themselves controlled by the values of $x_1$ and $x_2$. The OR gate at the end of the circuit combines the outputs of the multiplexers to produce the final output, $f$.

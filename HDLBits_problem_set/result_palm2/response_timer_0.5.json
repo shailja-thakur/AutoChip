@@ -1,0 +1,28 @@
+Here is a Verilog implementation of a timer that counts down for a given number of clock cycles, then asserts a signal to indicate that the given duration has elapsed:
+
+```module top_module (
+  input clk,
+  input load,
+  input [9:0] data,
+  output tc
+);
+
+  reg [9:0] counter;
+  reg tc;
+
+  always @(posedge clk) begin
+    if (load) begin
+      counter <= data;
+    end else begin
+      counter <= counter - 1;
+    end
+
+    if (counter == 0) begin
+      tc <= 1;
+    end
+  end
+
+endmodule
+```
+
+This implementation uses a down-counter to count down from the number of clock cycles specified by the data input. The counter is loaded with the data input at the rising edge of the clk input. At each clock cycle, the counter is decremented by 1. If the counter reaches 0, the tc output is asserted.

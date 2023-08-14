@@ -1,0 +1,22 @@
+module top_module (
+	input clk,
+	input L,
+	input r_in,
+	input q_in,
+	output reg Q);
+
+	// Create a flip-flop
+	flipflop FF (
+		.D(r_in),
+		.Q(Q),
+		.CLK(clk),
+		.CE(L));
+
+	// Create a multiplexer
+	mux M (
+		.I0(q_in),
+		.I1(Q),
+		.S(L),
+		.Y(Q));
+
+endmodule

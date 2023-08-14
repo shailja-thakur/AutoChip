@@ -1,0 +1,32 @@
+Here is a Verilog module that implements a two-bit saturating counter:
+
+```module top_module (
+  input clk,
+  input areset,
+  input train_valid,
+  input train_taken,
+  output reg [1:0] state
+);
+
+  always @(posedge clk or posedge areset) begin
+    if (areset) begin
+      state <= 2'b01;
+    end else begin
+      if (train_valid && train_taken) begin
+        state <= state + 1;
+        if (state > 3) begin
+          state <= 3;
+        end
+      end else if (train_valid && !train_taken) begin
+        state <= state - 1;
+        if (state < 0) begin
+          state <= 0;
+        end
+      end
+    end
+  end
+
+endmodule
+```
+
+This module uses a D flip-flop to store the current counter value. The D flip-flop is clocked by the clk signal. The areset signal is used to reset the counter to its initial value (2'b01). The train_valid and train_taken signals are used to control the increment and decrement of the counter. When train_valid is asserted and train_taken is also asserted, the counter increments by 1. When train_valid is asserted and train_taken is deasserted, the counter decrements by 1. The state of the counter is output on the state signal.

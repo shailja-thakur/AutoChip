@@ -1,0 +1,19 @@
+The following is a 8-bit wide 2-to-1 multiplexer that works:
+
+```
+module top_module (
+    input sel,
+    input [7:0] a,
+    input [7:0] b,
+    output out  );
+
+    assign out = sel ? b : a;
+
+endmodule
+```
+
+The previous multiplexer does not work because the '|' operator is used to perform a logical OR operation. This means that if the select signal is 0, then the output will be equal to A, and if the select signal is 1, then the output will be equal to B. However, this is not what we want. We want the output to be equal to A if the select signal is 0, and to be equal to B if the select signal is 1.
+
+The correct way to implement a 2-to-1 multiplexer is to use the '?' operator, which is called the conditional operator. The '?' operator takes three operands: a condition, a value for if the condition is true, and a value for if the condition is false. In this case, the condition is the select signal, the value for if the condition is true is B, and the value for if the condition is false is A.
+
+The '?' operator will return the value of the first operand if the condition is true, and the value of the second operand if the condition is false. In this case, the condition is the select signal, which is 0 or 1. If the select signal is 0, then the '?' operator will return the value of B, which is the value for if the condition is true. If the select signal is 1, then the '?' operator will return the value of A, which is the value for if the condition is false.

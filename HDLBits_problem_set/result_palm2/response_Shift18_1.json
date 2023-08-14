@@ -1,0 +1,38 @@
+Sure, here is a Verilog implementation of a 64-bit arithmetic shift register with synchronous load:
+
+```module top_module (
+  input clk,
+  input load,
+  input ena,
+  input [1:0] amount,
+  input [63:0] data,
+  output reg [64:0] q
+);
+
+  reg [63:0] shift_reg;
+  reg [63:0] old_q;
+
+  always @(posedge clk or negedge reset) begin
+    if (load) begin
+      shift_reg <= data;
+    end else if (ena) begin
+      shift_reg <= shift_reg << amount;
+      if (amount[0] == 1) begin
+        shift_reg[63:64] <= q[63];
+      end else if (amount[1] == 1) begin
+        shift_reg[63:64] <= q[56];
+        shift_reg[55:0] <= q[0:55];
+      end
+    end
+  end
+
+  assign q = shift_reg;
+
+endmodule
+```
+
+This implementation uses a single 64-bit register to store the contents of the shift register. The register is clocked with the `clk` signal. The `load` signal is used to load the shift register with new data. The `ena` signal is used to enable shifting. The `amount` signal selects the amount of shift, which can be 1 or 8 bits.
+
+When the `load` signal is asserted, the contents of the shift register are loaded with the value of the `data` signal. When the `ena` signal is asserted, the shift register is shifted according to the value of the `amount` signal. If the `amount[0]` bit is 1, the shift register is shifted left by 1 bit. If the `amount[1]` bit is 1, the shift register is shifted left by 8 bits. If the `amount` signal is 00, the shift register is not shifted.
+
+The output of the shift register is always equal to the contents of the shift register, except when the `load` signal is asserted. In that case, the output of the shift register is equal to the value of the `data` signal.

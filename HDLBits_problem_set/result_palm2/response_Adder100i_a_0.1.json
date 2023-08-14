@@ -1,0 +1,43 @@
+Sure, here is a Verilog code for a 100-bit binary ripple-carry adder:
+
+```module top_module( 
+    input [99:0] a, b,
+    input cin,
+    output [99:0] cout,
+    output [99:0] sum );
+
+    full_adder fa[99:0];
+
+    always @(posedge clk) begin
+        for (i = 99; i >= 0; i--) begin
+            sum[i] = a[i] + b[i] + cin;
+            cout[i] = fa[i].cout;
+        end
+    end
+
+endmodule
+
+module full_adder (
+    input wire [1:0] a, b, cin,
+    output wire [1:0] sum, cout );
+
+    and gate and1 (
+        input wire [1:0] a, b,
+        output wire s );
+
+    or gate or1 (
+        input wire s, cin,
+        output wire c );
+
+    or gate or2 (
+        input wire a, b,
+        output wire s );
+
+    endmodule
+```
+
+This code instantiates a 100-bit full adder for each bit of the input numbers. The full adders are connected in a ripple-carry chain, with the carry-out from each full adder being the carry-in to the next full adder. The final carry-out from the last full adder is the carry-out of the entire adder.
+
+The full adder is implemented using two AND gates, an OR gate, and a NOT gate. The AND gates are used to compute the sum of the two input bits, and the OR gate is used to compute the carry. The NOT gate is used to invert the carry-in bit.
+
+The full adder is a basic building block in digital logic, and it can be used to implement a variety of other circuits, such as adders, subtractors, and multipliers.

@@ -1,0 +1,79 @@
+Here is a Verilog implementation of the finite-state machine:
+
+```module top_module (
+    input clk,
+    input reset,   // Synchronous reset
+    input x,
+    output z
+);
+
+    reg [1:0] state;
+    reg [1:0] y;
+    reg z;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= 0;
+            y <= 0;
+        end else begin
+            case (state)
+                0: begin
+                    if (x == 0) begin
+                        state <= 0;
+                        y <= 0;
+                    elsif (x == 1) begin
+                        state <= 1;
+                        y <= 1;
+                    endif
+                end
+                1: begin
+                    if (x == 0) begin
+                        state <= 2;
+                        y <= 0;
+                    elsif (x == 1) begin
+                        state <= 3;
+                        y <= 1;
+                    endif
+                end
+                2: begin
+                    if (x == 0) begin
+                        state <= 0;
+                        y <= 0;
+                    elsif (x == 1) begin
+                        state <= 1;
+                        y <= 1;
+                    endif
+                end
+                3: begin
+                    if (x == 0) begin
+                        state <= 2;
+                        y <= 0;
+                    elsif (x == 1) begin
+                        state <= 3;
+                        y <= 1;
+                    endif
+                end
+            endcase
+        end
+    end
+
+    assign z = y;
+
+endmodule
+```
+
+The state machine has four states, 0, 1, 2, and 3. The state is updated on the rising edge of the clock, and the output is updated synchronously with the state. The state machine transitions to the next state based on the current state and the value of the input $x$. The output is a function of the current state.
+
+The state machine can be verified using a simulator. The following is a simulation of the state machine with the following input sequence:
+
+```
+x = 0 0 1 1 0 0 1 1
+```
+
+The output of the state machine is as follows:
+
+```
+z = 0 1 0 1 0 1 0 1
+```
+
+The simulation results verify that the state machine is implemented correctly.

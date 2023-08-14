@@ -1,0 +1,26 @@
+Here is a Verilog code for a 32-bit Galois LFSR with taps at bit positions 32, 22, 2, and 1:
+
+```module top_module(
+    input clk,
+    input reset,    // Active-high synchronous reset to 32'h1
+    output [31:0] q
+); 
+
+    reg [31:0] state;
+    reg [31:0] next_state;
+
+    always @(posedge clk or negedge reset) begin
+        if (reset) begin
+            state <= 32'h1;
+        end else begin
+            next_state <= state ^ (state >> 22) ^ (state >> 2) ^ state[1];
+            state <= next_state;
+        end
+    end
+
+    assign q = state;
+
+endmodule
+```
+
+This code uses a 32-bit register to store the state of the LFSR. The next state is calculated by XORing the current state with the bits at positions 32, 22, 2, and 1. The output of the LFSR is the value of the state register.

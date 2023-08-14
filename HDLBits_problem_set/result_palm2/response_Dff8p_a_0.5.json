@@ -1,0 +1,24 @@
+Here is a Verilog code for 8 D flip-flops with active high synchronous reset. The flip-flops must be reset to 0x34 rather than zero. All DFFs should be triggered by the negative edge of clk.
+
+```module top_module (
+    input clk,
+    input reset,
+    input [7:0] d,
+    output [7:0] q
+);
+
+    reg [7:0] q[7:0];
+    reg [7:0] d[7:0];
+
+    always @(posedge clk or negedge reset) begin
+        if (reset) begin
+            q <= 0x34;
+        end else begin
+            q <= d;
+        end
+    end
+
+    assign q[7:0] = q[7:0];
+
+endmodule
+```

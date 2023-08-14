@@ -1,0 +1,26 @@
+Sure, here is a VHDL code for a counter that counts from 0 to 999, inclusive, with a period of 1000 cycles. The reset input is synchronous, and should reset the counter to 0:
+
+```
+module top_module (
+    input clk,
+    input reset,
+    output [9:0] q);
+
+    reg [9:0] count;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            count <= 0;
+        end else begin
+            count <= count + 1;
+        end
+    end
+
+    assign q = count;
+
+endmodule
+```
+
+This code uses a register to store the current value of the counter. The counter is incremented on every positive edge of the clock signal, unless the reset input is asserted. When the reset input is asserted, the counter is reset to 0.
+
+The output of the counter, q, is a 10-bit value that represents the current count. The counter can be used in a variety of applications, such as a timer or a sequencer.

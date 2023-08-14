@@ -1,0 +1,43 @@
+Here is a 4-digit BCD ripple-carry adder implemented in Verilog:
+
+```module top_module ( 
+    input [15:0] a, b,
+    input cin,
+    output cout,
+    output [15:0] sum );
+
+    bcd_fadd bcd_fadd_0 (
+        input [3:0] a0,
+        input [3:0] b0,
+        input     cin0,
+        output   cout0,
+        output [3:0] sum0 );
+
+    bcd_fadd bcd_fadd_1 (
+        input [3:0] a1,
+        input [3:0] b1,
+        input     cin1,
+        output   cout1,
+        output [3:0] sum1 );
+
+    bcd_fadd bcd_fadd_2 (
+        input [3:0] a2,
+        input [3:0] b2,
+        input     cin2,
+        output   cout2,
+        output [3:0] sum2 );
+
+    bcd_fadd bcd_fadd_3 (
+        input [3:0] a3,
+        input [3:0] b3,
+        input     cin3,
+        output   cout3,
+        output [3:0] sum3 );
+
+    assign cout = bcd_fadd_0.cout3 + bcd_fadd_1.cout2 + bcd_fadd_2.cout1 + bcd_fadd_3.cout0;
+    assign sum = bcd_fadd_0.sum3 + bcd_fadd_1.sum2 + bcd_fadd_2.sum1 + bcd_fadd_3.sum0;
+
+endmodule
+```
+
+The BCD ripple-carry adder works by adding the two 4-digit BCD numbers (packed into 16-bit vectors) one digit at a time. The carry-in is used to propagate the carry from one digit to the next. The sum of the two 4-digit BCD numbers is stored in the 16-bit vector `sum`. The carry-out is stored in the 1-bit vector `cout`.

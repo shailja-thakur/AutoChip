@@ -1,0 +1,28 @@
+module top_module (
+    input wire clk,
+    input wire reset,   // active-high synchronous reset
+    input wire t,       // toggle
+    output wire q
+);
+
+    tff tff (
+        .clk(clk),
+        .reset(reset),
+        .t(t),
+        .q(q)
+    );
+
+    initial begin
+        reset = 1;
+        t = 0;
+        #10;
+        reset = 0;
+        #10;
+        t = 1;
+        #10;
+        $stop;
+    end
+
+endmodule
+
+The testbench instantiates one T flip-flop and connects its inputs and outputs to the testbench's signals. The initial block sets the reset signal to 1 and the toggle signal to 0. After 10 clock cycles, the reset signal is set to 0 and the toggle signal is set to 1. After another 10 clock cycles, the simulation stops.

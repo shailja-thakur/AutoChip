@@ -1,0 +1,34 @@
+Here is a behavioural code for a 100-bit binary adder:
+
+```
+module top_module( 
+    input [99:0] a, b,
+    input cin,
+    output cout,
+    output [99:0] sum );
+
+    function [99:0] add(input [99:0] a, input [99:0] b, input cin);
+        reg [99:0] sum;
+        for (i = 0; i < 100; i++) begin
+            sum[i] = a[i] + b[i] + cin;
+            if (sum[i] >= 2**99) begin
+                sum[i] = sum[i] - 2**99;
+                cin = 1;
+            else
+                cin = 0;
+            end
+        end
+        return sum;
+    endfunction
+
+    assign sum = add(a, b, cin);
+    assign cout = sum[99];
+
+endmodule
+```
+
+This code uses a function to perform the addition of two 100-bit numbers. The function takes three inputs: the two numbers to be added and a carry-in. The function returns the sum of the two numbers and the carry-out.
+
+The function is implemented using a for loop that iterates over the 100 bits of the two numbers. For each bit, the function adds the two bits and the carry-in. If the sum is greater than 2**99, the function subtracts 2**99 from the sum and sets the carry-out to 1. Otherwise, the function sets the carry-out to 0.
+
+The output of the function is assigned to the `sum` and `cout` signals. The `sum` signal is the 100-bit sum of the two numbers, and the `cout` signal is the carry-out.

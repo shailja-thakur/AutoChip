@@ -1,0 +1,52 @@
+The following is a Verilog implementation of the state machine described in the question:
+
+```module top_module (
+    input clk,
+    input [2:0] y,
+    input x,
+    output Y0,
+    output z
+);
+
+    always @(posedge clk) begin
+        case (y)
+            3'b000:
+                if (x == 1) begin
+                    y <= 3'b001;
+                end else begin
+                    y <= 3'b000;
+                end
+            3'b001:
+                if (x == 1) begin
+                    y <= 3'b100;
+                end else begin
+                    y <= 3'b001;
+                end
+            3'b010:
+                if (x == 1) begin
+                    y <= 3'b001;
+                end else begin
+                    y <= 3'b010;
+                end
+            3'b011:
+                if (x == 1) begin
+                    y <= 3'b010;
+                end else begin
+                    y <= 3'b011;
+                end
+            3'b100:
+                if (x == 1) begin
+                    y <= 3'b100;
+                end else begin
+                    y <= 3'b000;
+                end
+        endcase
+
+        Y0 <= y[0];
+        z <= y[2];
+    end
+
+endmodule
+```
+
+The state machine has five states, represented by the values 000, 001, 010, 011, and 100. The next state is determined by the current state and the value of the input x. The output z is always equal to the value of the state bit Y[2].

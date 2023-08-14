@@ -1,0 +1,52 @@
+Here is a module with the same functionality as the 7458 chip, using an assign statement to drive each of the output wires:
+
+```
+module top_module ( 
+    input p1a, p1b, p1c, p1d, p1e, p1f,
+    output p1y,
+    input p2a, p2b, p2c, p2d,
+    output p2y );
+
+    wire a1, a2, a3, a4, b1, b2, b3, b4;
+
+    a1 = p1a & p1b;
+    a2 = p1c & p1d;
+    a3 = p1e & p1f;
+    a4 = p2a & p2b;
+    b1 = p2c & p2d;
+    b2 = a1 & a2;
+    b3 = a3 & a4;
+    b4 = b1 | b2;
+
+    p1y = b3;
+    p2y = b4;
+
+endmodule
+```
+
+Here is a module with the same functionality as the 7458 chip, using four intermediate signals:
+
+```
+module top_module ( 
+    input p1a, p1b, p1c, p1d, p1e, p1f,
+    output p1y,
+    input p2a, p2b, p2c, p2d,
+    output p2y );
+
+    wire a1, a2, a3, a4, b1, b2, b3, b4;
+
+    a1 = p1a & p1b;
+    a2 = p1c & p1d;
+    a3 = p1e & p1f;
+    a4 = p2a & p2b;
+    b1 = p2c & p2d;
+
+    assign b2 = a1 & a2;
+    assign b3 = a3 & a4;
+    assign b4 = b1 | b2;
+
+    p1y = b3;
+    p2y = b4;
+
+endmodule
+```

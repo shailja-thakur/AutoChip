@@ -1,0 +1,60 @@
+Here is a possible implementation of the FSM:
+
+```module top_module (
+    input clk,
+    input reset,      // Synchronous reset
+    output shift_ena);
+
+    reg [1:0] state;
+    reg [3:0] counter;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= 0;
+            counter <= 0;
+        end else begin
+            case (state)
+                0: begin
+                    if (shift_ena) begin
+                        state <= 1;
+                        counter <= 4;
+                    end else begin
+                        state <= 0;
+                    end
+                end
+                1: begin
+                    if (counter == 0) begin
+                        state <= 2;
+                        counter <= 4;
+                    end else begin
+                        counter <= counter - 1;
+                    end
+                end
+                2: begin
+                    if (counter == 0) begin
+                        state <= 3;
+                        counter <= 4;
+                    end else begin
+                        counter <= counter - 1;
+                    end
+                end
+                3: begin
+                    if (counter == 0) begin
+                        state <= 0;
+                        counter <= 4;
+                    end else begin
+                        counter <= counter - 1;
+                    end
+                end
+            endcase
+        end
+    end
+
+    assign shift_ena = (state == 1) or (state == 2) or (state == 3);
+
+endmodule
+```
+
+This FSM has four states: 0, 1, 2, and 3. In state 0, the FSM is idle and does not assert shift_ena. In state 1, the FSM is enabled and asserts shift_ena for four cycles. In state 2, the FSM is still enabled but is counting down from four to zero. In state 3, the FSM is disabled and does not assert shift_ena.
+
+The FSM is reset to state 0 when the reset signal is asserted. When the reset signal is de-asserted, the FSM enters state 1 and asserts shift_ena for four cycles. After four cycles, the FSM enters state 2 and starts counting down from four to zero. When the counter reaches zero, the FSM enters state 3 and disables shift_ena. The FSM will remain in state 3 until it is reset again.

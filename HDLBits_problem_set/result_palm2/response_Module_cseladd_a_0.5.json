@@ -1,0 +1,51 @@
+module add16 ( input[15:0] a, input[15:0] b, input cin, output[15:0] sum, output cout );
+
+  reg [15:0] a, b, sum;
+  reg cout;
+
+  always @(posedge clk) begin
+    if (reset) begin
+      a <= 16'h0;
+      b <= 16'h0;
+      sum <= 16'h0;
+      cout <= 1'b0;
+    end else begin
+      sum <= a + b + cin;
+      cout <= (a[15] & b[15]) | (sum[15] & cin);
+    end
+  end
+
+endmodule
+
+module carry_select_adder (
+  input [31:0] a,
+  input [31:0] b,
+  output [31:0] sum,
+  output cout
+);
+
+  reg [15:0] a1, a2, b1, b2, sum1, sum2, cout1, cout2;
+
+  assign a1 = a[15:0];
+  assign a2 = a[31:16];
+  assign b1 = b[15:0];
+  assign b2 = b[31:16];
+  assign sum1 = add16(a1, b1);
+  assign sum2 = add16(a2, b2);
+  assign cout1 = add16(sum1[15:0], sum2[15:0], cout);
+  assign cout2 = add16(sum1[31:16], sum2[31:16], cout);
+
+  assign sum = cout1[15:0] | cout2[31:16];
+  assign cout = cout1[15] | cout2[31:16];
+
+endmodule
+
+module top_module(
+  input [31:0] a,
+  input [31:0] b,
+  output [31:0] sum
+);
+
+  carry_select_adder carry_select_adder (a, b, sum, cout);
+
+endmodule

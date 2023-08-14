@@ -1,0 +1,48 @@
+Sure. Here is the code for a 3-bit binary ripple-carry adder:
+
+```module top_module( 
+    input [2:0] a, b,
+    input cin,
+    output [2:0] cout,
+    output [2:0] sum );
+
+    // Instantiate 3 full adders
+    full_adder fa1 (a[0], b[0], cin, cout[0], sum[0]);
+    full_adder fa2 (a[1], b[1], cout[0], cout[1], sum[1]);
+    full_adder fa3 (a[2], b[2], cout[1], cout[2], sum[2]);
+
+endmodule
+```
+
+The full adder is a basic building block in digital electronics. It takes two inputs, augend $A$ and addend $B$, and a carry-in $C_i$, and produces two outputs, sum $S$ and carry-out $C_o$. The sum is calculated as follows:
+
+$$S = A + B + C_i$$
+
+The carry-out is calculated as follows:
+
+$$C_o = \overline{A}B + A\overline{B} + C_i$$
+
+The full adder can be implemented using a variety of logic gates, such as AND gates, OR gates, and XOR gates. The following is a truth table for the full adder:
+
+| $A$ | $B$ | $C_i$ | $S$ | $C_o$ |
+|---|---|---|---|---|
+| 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 1 | 0 | 1 |
+| 0 | 1 | 0 | 1 | 1 |
+| 0 | 1 | 1 | 1 | 0 |
+| 1 | 0 | 0 | 1 | 1 |
+| 1 | 0 | 1 | 1 | 0 |
+| 1 | 1 | 0 | 1 | 0 |
+| 1 | 1 | 1 | 0 | 1 |
+
+The following is a diagram of a full adder implemented using AND gates, OR gates, and XOR gates:
+
+[Diagram of a full adder implemented using AND gates, OR gates, and XOR gates]
+
+The 3-bit binary ripple-carry adder is a cascade of three full adders. The first full adder adds the two least significant bits of the augend and addend, and produces a carry-out to be used by the second full adder. The second full adder adds the next two significant bits of the augend and addend, and also produces a carry-out to be used by the third full adder. The third full adder adds the most significant bits of the augend and addend, and produces the final sum and carry-out.
+
+The following is a diagram of a 3-bit binary ripple-carry adder:
+
+[Diagram of a 3-bit binary ripple-carry adder]
+
+The 3-bit binary ripple-carry adder is a simple and efficient way to add two 3-bit numbers. However, it can be slow, because the carry propagates from one full adder to the next. There are more efficient ways to add two 3-bit numbers, such as the carry-lookahead adder and the Wallace tree adder.

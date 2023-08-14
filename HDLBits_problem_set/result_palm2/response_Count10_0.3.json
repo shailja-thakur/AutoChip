@@ -1,0 +1,33 @@
+Here is a Verilog code for a decade counter that counts from 0 through 9, inclusive, with a period of 10. The reset input is synchronous, and should reset the counter to 0.
+
+```module top_module (
+    input clk,
+    input reset,        // Synchronous active-high reset
+    output [3:0] q);
+
+    reg [3:0] count;
+    reg [1:0] state;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            count <= 0;
+            state <= 0;
+        end else begin
+            if (state == 0) begin
+                count <= count + 1;
+                if (count == 10) begin
+                    count <= 0;
+                    state <= 1;
+                end
+            end else begin
+                state <= 0;
+            end
+        end
+    end
+
+    assign q = count;
+
+endmodule
+```
+
+This code uses a two-state machine to control the counter. The state machine has two states: 0 and 1. In state 0, the counter is incremented on every clock edge. When the counter reaches 10, it resets to 0 and the state machine transitions to state 1. In state 1, the counter is held steady. The output of the counter is the value of the counter register.

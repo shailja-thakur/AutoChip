@@ -1,0 +1,27 @@
+Here is a possible implementation of the heating/cooling thermostat using only assign statements:
+
+```
+module top_module (
+    input too_cold,
+    input too_hot,
+    input mode,
+    input fan_on,
+    output heater,
+    output aircon,
+    output fan
+); 
+
+    heater <= (too_cold & mode);
+    aircon <= (too_hot & ~mode);
+    fan <= (heater | aircon | fan_on);
+
+endmodule
+```
+
+The above code uses the following logic:
+
+* The heater is turned on when it is too cold and the thermostat is in heating mode.
+* The air conditioner is turned on when it is too hot and the thermostat is in cooling mode.
+* The fan is turned on when the heater or air conditioner are on, or when the user requests it.
+
+This implementation is simple and easy to understand, and it can be easily modified to meet specific requirements. For example, if you want to add a delay before the heater or air conditioner turns on, you can simply add a delay element to the appropriate assign statement.

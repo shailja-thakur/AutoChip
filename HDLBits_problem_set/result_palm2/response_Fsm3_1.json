@@ -1,0 +1,38 @@
+Sure, here is a Verilog implementation of the state machine:
+
+```module top_module(
+    input clk,
+    input in,
+    input areset,
+    output out); //
+
+    // Insert your code below
+    
+    // State transition logic
+    reg [1:0] state;
+    reg [1:0] next_state;
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            state <= 0;
+        end else begin
+            next_state <= state;
+            case (state)
+                2'b00: next_state <= in == 1 ? 2'b10 : 2'b00;
+                2'b01: next_state <= in == 0 ? 2'b00 : 2'b10;
+                2'b10: next_state <= in == 1 ? 2'b01 : 2'b11;
+                2'b11: next_state <= in == 0 ? 2'b10 : 2'b11;
+            endcase
+        end
+    end
+
+    // State flip-flops with asynchronous reset
+    reg [1:0] q;
+    dsr #(1) s0 (q, state, clk, areset);
+
+    // Output logic
+    assign out = q[0];
+
+endmodule
+```
+
+This implementation uses two D flip-flops to store the state of the FSM, and a state transition table to determine the next state based on the current state and the input. The output is driven by the Q output of the state machine.

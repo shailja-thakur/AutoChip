@@ -1,0 +1,62 @@
+Here is a possible implementation of the timer state machine:
+
+```module top_module (
+    input clk,
+    input reset,      // Synchronous reset
+    input data,
+    output shift_ena,
+    output counting,
+    input done_counting,
+    output done,
+    input ack );
+
+    reg [1:0] state;
+    reg [3:0] counter;
+    reg shift_ena_reg;
+    reg counting_reg;
+    reg done_reg;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= IDLE;
+        end else begin
+            case (state)
+                IDLE: begin
+                    if (data == 1101) begin
+                        state <= SHIFT_ENA;
+                        shift_ena_reg <= 1;
+                        counter <= 4;
+                    end
+                end
+                SHIFT_ENA: begin
+                    if (counter == 0) begin
+                        state <= COUNTING;
+                        shift_ena_reg <= 0;
+                        counting_reg <= 1;
+                    end
+                end
+                COUNTING: begin
+                    if (done_counting) begin
+                        state <= DONE;
+                        counting_reg <= 0;
+                        done_reg <= 1;
+                    end
+                end
+                DONE: begin
+                    if (ack) begin
+                        state <= IDLE;
+                        done_reg <= 0;
+                    end
+                end
+            endcase
+        end
+    end
+
+    assign shift_ena = shift_ena_reg;
+    assign counting = counting_reg;
+    assign done = done_reg;
+
+endmodule
+```
+
+This state machine has five states: IDLE, SHIFT_ENA, COUNTING, DONE, and ACK. In the IDLE state, the state machine waits for the start sequence (1101) to be received. When the start sequence is received, the state machine enters the SHIFT_ENA state and asserts the shift_ena output for four clock cycles. This allows the four bits of data following the start sequence to be shifted into the counter. After the four bits have been shifted in, the state machine enters the COUNTING state and waits for the counters to finish counting. When the counters finish counting, the state machine enters the DONE state and asserts the done output. The state machine remains in the DONE state until the ack input is asserted, at which point it enters the IDLE state and begins searching for the next occurrence of the start sequence.

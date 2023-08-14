@@ -1,0 +1,28 @@
+Here is a Verilog code for 8 D flip-flops with active high asynchronous reset, all triggered by the positive edge of clk:
+
+```module top_module (
+    input clk,
+    input areset,   // active high asynchronous reset
+    input [7:0] d,
+    output [7:0] q
+);
+
+    reg [7:0] d_reg;
+    reg [7:0] q_reg;
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            d_reg <= 8'h0;
+        end else begin
+            d_reg <= d;
+        end
+
+        q_reg <= d_reg;
+    end
+
+    assign q = q_reg;
+
+endmodule
+```
+
+The above code uses a D flip-flop with a positive edge-triggered clock. The D flip-flop is reset asynchronously by the areset signal. The d_reg register stores the value of the d input, and the q_reg register stores the output of the D flip-flop. The q output is assigned the value of the q_reg register.

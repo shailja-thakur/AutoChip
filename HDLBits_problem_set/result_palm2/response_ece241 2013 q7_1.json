@@ -1,0 +1,37 @@
+Here is a possible implementation of a JK flip-flop using a D-type flip-flop and gates:
+
+```
+module top_module (
+    input clk,
+    input j,
+    input k,
+    output Q);
+
+    D-type flip-flop FF1 (
+        input clk,
+        input D,
+        output Q,
+        output Q_n);
+
+    AND gate AND1 (
+        input j,
+        input k,
+        output Jk);
+
+    NOT gate NOT1 (
+        input Qold,
+        output ~Qold);
+
+    OR gate OR1 (
+        input Jk,
+        input ~Qold,
+        output Q);
+
+    assign Q = OR1.Y;
+
+endmodule
+```
+
+The D-type flip-flop is configured to capture the input D on the positive edge of the clock. The AND gate AND1 produces a logic 1 output when both J and K are asserted. The NOT gate NOT1 inverts the output of the D-type flip-flop, Qold. The OR gate OR1 produces a logic 1 output when either Jk or ~Qold is asserted. This output is connected to the input of the D-type flip-flop, D. The output of the D-type flip-flop, Q, is the output of the JK flip-flop.
+
+This implementation of a JK flip-flop using a D-type flip-flop and gates is not the only possible implementation. There are many other possible implementations that could be used.

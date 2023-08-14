@@ -1,0 +1,22 @@
+Here is a possible implementation of the adder-subtractor:
+
+```
+module add16 ( input[15:0] a, input[15:0] b, input cin, output[15:0] sum, output cout );
+    Xor32 xor_gate (.a(b), .b(sub), .c(1'b1), .y(b_inv));
+    Add16 adder (.a(a), .b(b_inv), .cin(cin), .sum(sum), .cout(cout));
+endmodule
+
+module top_module(
+    input [31:0] a,
+    input [31:0] b,
+    input sub,
+    output [31:0] sum
+);
+    Add16 adder1 (.a(a[15:0]), .b(b[15:0]), .cin(1'b0), .sum(sum[15:0]), .cout(cout[15:0]));
+    Add16 adder2 (.a(a[31:16]), .b(b_inv[31:16]), .cin(cout[15:0]), .sum(sum[31:16]), .cout(cout[31:16]));
+endmodule
+```
+
+The Xor32 module implements a 32-bit XOR gate. The Add16 module implements a 16-bit adder. The top_module module instantiates two Add16 modules, one for the low 16 bits of the operands and one for the high 16 bits. The carry-in of the high 16-bit adder is connected to the output of the low 16-bit adder. The sub input is connected to the carry-in of both adders.
+
+When the sub input is 1, the b input is inverted. This is done by the Xor32 module. The inverted b input is then added to the a input. The result is stored in the sum output. The cout output indicates whether the carry-out of the addition was 1.

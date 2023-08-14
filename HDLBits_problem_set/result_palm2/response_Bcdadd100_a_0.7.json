@@ -1,0 +1,39 @@
+Sure, here is a 100-digit BCD ripple-carry adder:
+
+```
+module top_module( 
+    input [399:0] a, b,
+    input cin,
+    output cout,
+    output [399:0] sum );
+    
+    wire [399:0] sum_temp;
+    
+    for (int i = 0; i < 100; i++) {
+        module bcd_fadd (
+            input [3:0] a_i,
+            input [3:0] b_i,
+            input     cin_i,
+            output   cout_i,
+            output [3:0] sum_i );
+        
+        assign a_i = a[i*4:i*4+3];
+        assign b_i = b[i*4:i*4+3];
+        assign cin_i = cin;
+        assign cout_i = cout[i*4:i*4+3];
+        assign sum_i = sum_temp[i*4:i*4+3];
+    }
+    
+    assign sum = sum_temp[399:0];
+    assign cout = cout_temp[399];
+endmodule
+```
+
+This adder can be used to add two 100-digit BCD numbers. The first step is to pack the two numbers into 400-bit vectors. This can be done by using the following code:
+
+```
+a = [a[0:399], a[400:799], a[800:1199], a[1200:1599]];
+b = [b[0:399], b[400:799], b[800:1199], b[1200:1599]];
+```
+
+Once the numbers are packed, they can be added using the 100-digit BCD ripple-carry adder. The result of the addition is stored in the vector `sum`.

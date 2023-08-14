@@ -1,0 +1,18 @@
+The Karnaugh map shows that the output is 1 when either $a'b'c'd$ or $a'bc'd'$ or $ab'c'd$ or $abc'd'$ is true. This can be implemented as a sum of four products:
+
+$$\overline{a}\overline{b}\overline{c}\overline{d} + \overline{a}b\overline{c}\overline{d}' + a\overline{b}\overline{c}\overline{d}' + a\overline{b}c\overline{d}'$$
+
+This can be implemented in Verilog as follows:
+
+```module top_module (
+  input wire a,
+  input wire b,
+  input wire c,
+  input wire d,
+  output wire out
+);
+
+  assign out = ~a & ~b & ~c & ~d + ~a & b & ~c & ~d' + a & ~b & ~c & ~d' + a & ~b & c & ~d';
+
+endmodule
+```

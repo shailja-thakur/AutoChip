@@ -1,0 +1,80 @@
+The Karnaugh map can be simplified to the following product-of-sums form:
+
+$$(a' + b' + c'd) + (a' + b + c'd') + (a + b' + c'd') + (a + b + c'd)$$
+
+or the following sum-of-products form:
+
+$$(a'b'c'd + a'b'cd + ab'c'd + ab'cd' + a'bc'd + a'bcd' + ab'c'd' + ab'cd)$$
+
+The circuit can be implemented using four AND gates, two OR gates, and a NOT gate. The AND gates are used to implement the product terms, and the OR gates are used to implement the sum terms. The NOT gate is used to invert the output of the OR gate.
+
+The following is a circuit diagram that implements the Karnaugh map:
+
+[Circuit diagram]
+
+The following is a Verilog code that implements the circuit:
+
+```module top_module (
+    input wire a,
+    input wire b,
+    input wire c,
+    input wire d,
+    output wire out  ); 
+
+    AND gate1 (
+        output wire g1,
+        input wire a,
+        input wire b
+    );
+
+    AND gate2 (
+        output wire g2,
+        input wire a,
+        input wire c
+    );
+
+    AND gate3 (
+        output wire g3,
+        input wire b,
+        input wire c
+    );
+
+    AND gate4 (
+        output wire g4,
+        input wire a,
+        input wire d
+    );
+
+    AND gate5 (
+        output wire g5,
+        input wire b,
+        input wire d
+    );
+
+    OR gate1 (
+        output wire o1,
+        input wire g1,
+        input wire g2
+    );
+
+    OR gate2 (
+        output wire o2,
+        input wire g3,
+        input wire g4
+    );
+
+    OR gate3 (
+        output wire o3,
+        input wire g5,
+        input wire g2
+    );
+
+    NOT gate1 (
+        output wire n1,
+        input wire o3
+    );
+
+    assign out = n1;
+
+endmodule
+```

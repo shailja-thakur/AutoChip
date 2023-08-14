@@ -1,0 +1,20 @@
+Sure, here is the code for the top module:
+
+```
+module top_module ( 
+    input clk, 
+    input [7:0] d, 
+    input [1:0] sel, 
+    output [7:0] q 
+);
+
+    my_dff8 dff1 ( clk, d[7:0], q[7:0] );
+    my_dff8 dff2 ( clk, q[7:0], q[6:0] );
+    my_dff8 dff3 ( clk, q[6:0], q[5:0] );
+
+    mux4 way_sel ( clk, sel, q[7:0], q[6:0], q[5:0], q );
+
+endmodule
+```
+
+The `my_dff8` module is instantiated three times, with the outputs of the first two flip-flops connected to the inputs of the second and third flip-flops, respectively. The output of the third flip-flop is then connected to the input of the 4-to-1 multiplexer. The multiplexer chooses which of the four inputs to output, depending on the value of the `sel` input. The `sel` input can be used to select the value at the input `d`, after the first D flip-flop, after the second D flip-flop, or after the third D flip-flop.

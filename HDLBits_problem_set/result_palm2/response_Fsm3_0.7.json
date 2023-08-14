@@ -1,0 +1,44 @@
+Sure. Here is a possible implementation of the state machine:
+
+```
+module top_module(
+    input clk,
+    input in,
+    input areset,
+    output out); //
+
+    // Insert your code below
+    
+    // State transition logic
+    reg [1:0] state;
+    reg [1:0] next_state;
+
+    always @(posedge clk or negedge areset) begin
+        if (areset) begin
+            state <= 0;
+        end else begin
+            next_state <= state;
+            case (state)
+                2'b00: next_state <= in ? 2'b01 : 2'b00;
+                2'b01: next_state <= in ? 2'b10 : 2'b01;
+                2'b10: next_state <= in ? 2'b00 : 2'b10;
+                2'b11: next_state <= in ? 2'b01 : 2'b11;
+            endcase
+        end
+    end
+
+    // State flip-flops with asynchronous reset
+    DFF #(1) state_dff (
+        .clk(clk),
+        .d(state),
+        .q(next_state),
+        .rst(areset)
+    );
+
+    // Output logic
+    assign out = state[1];
+
+endmodule
+```
+
+This implementation uses a D flip-flop to store the state of the machine, and a case statement to determine the next state based on the current state and the value of the input. The output is simply the value of the state bit.

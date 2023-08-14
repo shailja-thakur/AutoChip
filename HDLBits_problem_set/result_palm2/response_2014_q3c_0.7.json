@@ -1,0 +1,74 @@
+The following code implements the logic functions Y[0] and z for the given state-assigned table:
+
+```module top_module (
+    input clk,
+    input [2:0] y,
+    input x,
+    output Y0,
+    output z
+);
+
+    reg [2:0] state;
+    reg y0;
+    reg z;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= 0;
+            y0 <= 0;
+            z <= 0;
+        end else begin
+            case (state)
+                0: begin
+                    if (x == 0) begin
+                        state <= 0;
+                        y0 <= 0;
+                        z <= 0;
+                    end else begin
+                        state <= 1;
+                        y0 <= 1;
+                        z <= 0;
+                    end
+                end
+                1: begin
+                    if (x == 0) begin
+                        state <= 2;
+                        y0 <= 0;
+                        z <= 0;
+                    end else begin
+                        state <= 3;
+                        y0 <= 1;
+                        z <= 1;
+                    end
+                end
+                2: begin
+                    if (x == 0) begin
+                        state <= 0;
+                        y0 <= 0;
+                        z <= 0;
+                    end else begin
+                        state <= 1;
+                        y0 <= 1;
+                        z <= 0;
+                    end
+                end
+                3: begin
+                    if (x == 0) begin
+                        state <= 2;
+                        y0 <= 0;
+                        z <= 0;
+                    end else begin
+                        state <= 3;
+                        y0 <= 1;
+                        z <= 1;
+                    end
+                end
+            endcase
+        end
+    end
+
+    assign Y0 = y0;
+    assign z = z;
+
+endmodule
+```

@@ -1,0 +1,71 @@
+Here is a possible implementation of the timer in Verilog:
+
+```module top_module (
+    input clk,
+    input reset,      // Synchronous reset
+    input data,
+    output [3:0] count,
+    output counting,
+    output done,
+    input ack );
+
+    // FSM state machine
+    always @(posedge clk or negedge reset) begin
+        if (reset) begin
+            state <= IDLE;
+        end else begin
+            case (state)
+                IDLE: begin
+                    if (data == 1101) begin
+                        state <= SHIFT_DELAY;
+                    end
+                end
+                SHIFT_DELAY: begin
+                    if (data == 1000) begin
+                        state <= COUNT;
+                    end
+                end
+                COUNT: begin
+                    count <= count + 1;
+                    if (count == (delay[3:0] + 1)) begin
+                        state <= DONE;
+                    end
+                end
+                DONE: begin
+                    if (ack) begin
+                        state <= IDLE;
+                    end
+                end
+            endcase
+        end
+    end
+
+    // Counter
+    always @(posedge clk) begin
+        if (state == COUNT) begin
+            count <= count + 1;
+        end
+    end
+
+    // Counting output
+    always @(posedge clk) begin
+        if (state == COUNT) begin
+            counting <= 1;
+        end else begin
+            counting <= 0;
+        end
+    end
+
+    // Done output
+    always @(posedge clk) begin
+        if (state == DONE) begin
+            done <= 1;
+        end else begin
+            done <= 0;
+        end
+    end
+
+endmodule
+```
+
+This implementation uses a 4-state FSM to control the timer. The FSM starts in the IDLE state, and transitions to the SHIFT_DELAY state when the start sequence (1101) is detected. In the SHIFT_DELAY state, the next 4 bits of data are shifted into the delay register. Once the delay register is full, the FSM transitions to the COUNT state and begins counting for the specified duration. The counting output is asserted while the FSM is in the COUNT state, and the done output is asserted when the timer expires. The FSM remains in the DONE state until the ACK input is asserted, at which point it resets to the IDLE state and begins searching for the next occurrence of the start sequence.

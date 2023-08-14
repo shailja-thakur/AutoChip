@@ -1,0 +1,41 @@
+Here is a possible implementation of the top module:
+
+```module top_module(
+    input clk,
+    input areset,
+
+    input predict_valid,
+    input predict_taken,
+    output [31:0] predict_history,
+
+    input train_mispredicted,
+    input train_taken,
+    input [31:0] train_history
+);
+
+    reg [31:0] predict_history;
+    reg [31:0] train_history;
+    reg [1:0] state;
+
+    always @(posedge clk) begin
+        if (areset) begin
+            state <= 0;
+        end else begin
+            if (predict_valid) begin
+                predict_history <= predict_history << 1 | predict_taken;
+            end else if (train_mispredicted) begin
+                predict_history <= train_history;
+            end
+        end
+    end
+
+    assign predict_history = state[1:0] ? predict_history : train_history;
+
+endmodule
+```
+
+This implementation uses a 32-bit shift register to store the branch history. The shift register is initialized to zero when the reset signal is asserted. When a branch prediction is made, the predicted branch direction is shifted into the shift register. When a branch misprediction occurs, the branch history register is loaded with the history after the completion of the mispredicted branch. This is the history before the mispredicted branch concatenated with the actual result of the branch.
+
+The state machine has two states: the prediction state and the misprediction state. The prediction state is entered when a branch prediction is made. The misprediction state is entered when a branch misprediction occurs. In the prediction state, the branch history is updated with the predicted branch direction. In the misprediction state, the branch history register is loaded with the history after the completion of the mispredicted branch.
+
+The output of the top module is the value of the branch history register. This value is used by the branch predictor to make future predictions.

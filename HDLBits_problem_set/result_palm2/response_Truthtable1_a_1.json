@@ -1,0 +1,38 @@
+Here is a combinational circuit that implements the above truth table:
+
+```
+module top_module( 
+    input x3,
+    input x2,
+    input x1,  // three inputs
+    output f   // one output
+);
+
+    AND gate and1 (x3, x2, f);
+    AND gate and2 (x3, x1, f);
+    AND gate and3 (x2, x1, f);
+    OR gate or1 (and1.f, and2.f, f);
+    OR gate or2 (and3.f, or1.f, f);
+
+endmodule
+```
+
+The AND gates implement the following logic:
+
+* and1.f = x3 & x2
+* and2.f = x3 & x1
+* and3.f = x2 & x1
+
+The OR gates implement the following logic:
+
+* or1.f = and1.f | and2.f
+* f = or1.f | or2.f
+
+This circuit will produce a 1 output for any of the following input combinations:
+
+* 000
+* 011
+* 101
+* 111
+
+For any other input combination, the output will be 0.

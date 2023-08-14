@@ -1,0 +1,60 @@
+Sure, here is a possible implementation of the FSM:
+
+```module top_module(
+    input clk,
+    input [7:0] in,
+    input reset,    // Synchronous reset
+    output done); //
+
+    // Insert your code below
+
+    // State transition logic (combinational)
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= IDLE;
+        end else begin
+            state <= case (state)
+                IDLE: begin
+                    if (in[3] == 1) begin
+                        state <= RECEIVING_FIRST_BYTE;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                RECEIVING_FIRST_BYTE: begin
+                    if (in[3] == 0) begin
+                        state <= IDLE;
+                    end else begin
+                        state <= RECEIVING_SECOND_BYTE;
+                    end
+                end
+                RECEIVING_SECOND_BYTE: begin
+                    if (in[3] == 0) begin
+                        state <= IDLE;
+                    end else begin
+                        state <= RECEIVING_THIRD_BYTE;
+                    end
+                end
+                RECEIVING_THIRD_BYTE: begin
+                    if (in[3] == 0) begin
+                        state <= IDLE;
+                    end else begin
+                        state <= DONE;
+                    end
+                end
+            endcase
+        end
+    end
+
+    // State flip-flops (sequential)
+    reg [1:0] state;
+
+    // Output logic
+    assign done = (state == DONE);
+
+endmodule
+```
+
+This FSM has four states: IDLE, RECEIVING_FIRST_BYTE, RECEIVING_SECOND_BYTE, and RECEIVING_THIRD_BYTE. In the IDLE state, the FSM waits for the next byte. If the next byte has bit[3] = 1, the FSM enters the RECEIVING_FIRST_BYTE state. In this state, the FSM waits for the second byte. If the second byte has bit[3] = 0, the FSM enters the IDLE state. Otherwise, the FSM enters the RECEIVING_SECOND_BYTE state. In this state, the FSM waits for the third byte. If the third byte has bit[3] = 0, the FSM enters the IDLE state. Otherwise, the FSM enters the DONE state. In the DONE state, the FSM asserts the done output.
+
+The FSM is implemented using a state machine with four states. The state machine is controlled by the input signal in[3]. The state machine transitions to the next state based on the current state and the value of in[3]. The state machine asserts the done output when it is in the DONE state.

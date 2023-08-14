@@ -1,0 +1,42 @@
+Sure, here is a solution using a combinational always block:
+
+```
+module top_module( 
+    input [99:0] in,
+    output [99:0] out
+);
+
+    always @(posedge clk) begin
+        for (int i = 0; i < 100; i++) begin
+            out[99 - i] = in[i];
+        end
+    end
+
+endmodule
+```
+
+This code uses a for loop to iterate over the input vector and assign each bit to the corresponding output bit. The loop starts at 0 and ends at 99, which is the number of bits in the input vector. The output bit is assigned the value of the input bit at the same index. For example, the first bit of the output vector will be assigned the value of the last bit of the input vector, and the last bit of the output vector will be assigned the value of the first bit of the input vector.
+
+This code can be improved by using a shift register instead of a for loop. A shift register is a circuit that can store a sequence of bits. The bits in a shift register can be shifted left or right, and the value of each bit can be read or written.
+
+The following code shows how to use a shift register to reverse the bit ordering of an input vector:
+
+```
+module top_module( 
+    input [99:0] in,
+    output [99:0] out
+);
+
+    reg [99:0] shift_reg;
+
+    always @(posedge clk) begin
+        shift_reg <= shift_reg >> 1;
+        out <= shift_reg[99:0];
+    end
+
+endmodule
+```
+
+This code uses a shift register to store the input vector. The shift register is initialized to the value of the input vector. The shift register is then shifted left by one bit each time the clock signal goes high. The value of the rightmost bit of the shift register is read and assigned to the leftmost bit of the output vector. The value of the leftmost bit of the shift register is discarded. This process continues until all of the bits from the input vector have been shifted into the output vector.
+
+The code using a shift register is more efficient than the code using a for loop because it does not require a separate variable for each bit in the input vector. The shift register can be reused to store multiple input vectors.

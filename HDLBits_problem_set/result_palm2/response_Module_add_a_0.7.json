@@ -1,0 +1,29 @@
+Here is a possible implementation of the 32-bit adder:
+
+```module top_module(
+    input [31:0] a,
+    input [31:0] b,
+    output [31:0] sum
+);
+
+    add16 add16_low (
+        input [15:0] a_low,
+        input [15:0] b_low,
+        input cin,
+        output [15:0] sum_low,
+        output cout_low
+    );
+
+    add16 add16_high (
+        input [15:0] a_high,
+        input [15:0] b_high,
+        input cout_low,
+        output [15:0] sum_high,
+        output cout_high
+    );
+
+    assign sum = sum_low + sum_high;
+endmodule
+```
+
+The `add16` module is instantiated twice, once for the lower 16 bits of the addition and once for the upper 16 bits. The carry-out from the lower 16-bit addition is connected to the carry-in of the upper 16-bit addition. The sum of the two 16-bit additions is the final result.

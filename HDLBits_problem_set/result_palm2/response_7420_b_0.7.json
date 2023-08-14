@@ -1,0 +1,32 @@
+module top_module (
+    input p1a, p1b, p1c, p1d,
+    output p1y,
+    input p2a, p2b, p2c, p2d,
+    output p2y
+);
+
+    wire p11, p12, p13, p14, p21, p22, p23, p24;
+
+    NAND gate1 (p11, p1a, p1b, p1c);
+    NAND gate2 (p12, p1a, p1b, p1d);
+    NAND gate3 (p13, p1c, p1d, p1a);
+    NAND gate4 (p14, p1c, p1d, p1b);
+    NAND gate5 (p21, p2a, p2b, p2c);
+    NAND gate6 (p22, p2a, p2b, p2d);
+    NAND gate7 (p23, p2c, p2d, p2a);
+    NAND gate8 (p24, p2c, p2d, p2b);
+
+    assign p1y = p11 & p12 & p13 & p14;
+    assign p2y = p21 & p22 & p23 & p24;
+
+endmodule
+
+The 7420 chip has two 4-input NAND gates. Each NAND gate has four inputs and one output. The output is high if all four inputs are low, and low if any input is high.
+
+The top_module module has eight inputs and two outputs. The inputs are p1a, p1b, p1c, p1d, p2a, p2b, p2c, and p2d. The outputs are p1y and p2y.
+
+The p11, p12, p13, and p14 wires are intermediate signals. They are used to store the results of the NAND gates.
+
+The gate1, gate2, gate3, and gate4 NAND gates are used to compute the value of p1y. The gate5, gate6, gate7, and gate8 NAND gates are used to compute the value of p2y.
+
+The p1y and p2y outputs are driven by the values of the p11, p12, p13, p14, p21, p22, p23, and p24 wires.

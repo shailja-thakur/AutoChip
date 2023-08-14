@@ -1,0 +1,49 @@
+Here is a possible solution:
+
+```
+module top_module (
+    input [7:0] a,
+    input [7:0] b,
+    output [7:0] s,
+    output overflow
+);
+
+    assign s = a + b;
+
+    // Check for overflow
+    assign overflow = (a[7] & b[7]) | ((a[7] | b[7]) & s[7]);
+
+endmodule
+```
+
+The 2's complement addition algorithm is as follows:
+
+1. Add the two numbers in each bit position, starting from the least significant bit.
+2. If the sum of the two bits is greater than $2^n$, where $n$ is the number of bits in the number, then carry the 1 into the next bit position.
+3. Continue adding the bits, carrying as necessary, until all of the bits have been added.
+4. The final result is the sum of the two numbers, with any carries that were generated.
+
+In the case of signed numbers, there are two additional cases to consider:
+
+1. If the sum of the two numbers is negative, then the result is a negative number.
+2. If the sum of the two numbers is greater than the largest possible signed number, then the result is an overflow.
+
+To check for overflow, we can use the following rule:
+
+The result of adding two signed numbers overflows if the sum of the two absolute values is greater than the largest possible signed number.
+
+In this case, the largest possible signed number is $2^{16}-1$. Therefore, the result of adding two signed numbers overflows if the sum of the two absolute values is greater than $2^{16}-1$.
+
+We can use this rule to generate the condition for overflow as follows:
+
+$$overflow = (a[7] | b[7]) | ((a[7] + b[7]) > 2^{16}-1)$$
+
+This condition is equivalent to the following condition:
+
+$$overflow = (a[7] & b[7]) | ((a[7] | b[7]) & s[7])$$
+
+This condition can be implemented in Verilog as follows:
+
+```
+assign overflow = (a[7] & b[7]) | ((a[7] | b[7]) & s[7]);
+```

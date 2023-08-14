@@ -1,0 +1,33 @@
+Here is a possible implementation of the timer:
+
+```module top_module(
+	input clk, 
+	input load, 
+	input [9:0] data, 
+	output tc
+);
+
+	reg [9:0] counter;
+	reg [1:0] state;
+
+	always @(posedge clk) begin
+		if (load) begin
+			counter <= data;
+			state <= 0;
+		end else begin
+			if (state == 0) begin
+				counter <= counter - 1;
+				if (counter == 0) begin
+					state <= 1;
+					tc <= 1;
+				end
+			end else begin
+				state <= 0;
+			end
+		end
+	end
+
+endmodule
+```
+
+This implementation uses a two-state machine to control the operation of the timer. The state machine has two states: the load state and the count state. In the load state, the counter is loaded with the value of the data input. In the count state, the counter is decremented by 1 on each clock cycle. When the counter reaches 0, the state machine transitions to the load state and the tc output is asserted.

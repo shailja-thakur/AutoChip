@@ -1,0 +1,37 @@
+Sure, here is one possible implementation of the top-level module:
+
+```module top_module (
+    input clk,
+    input reset,
+    input [31:0] in,
+    output [31:0] out
+);
+
+    reg [31:0] state;
+    reg [31:0] capture;
+
+    always @(posedge clk or negedge reset) begin
+        if (reset) begin
+            state <= 0;
+        end else begin
+            if (in[state] == 1 and in[state+1] == 0) begin
+                capture <= state;
+            end
+            state <= state+1;
+        end
+    end
+
+    always @(posedge clk) begin
+        out <= capture;
+    end
+
+endmodule
+```
+
+This implementation uses a two-state machine to capture the state of the input signal. The first state is used to store the previous value of the input signal, and the second state is used to store the current value of the input signal. When the input signal changes from 1 to 0, the state machine transitions from the first state to the second state, and the value of the captured state is stored in the capture register. The value of the capture register is then output on the next positive clock edge.
+
+This implementation is synchronous, which means that it operates in lockstep with the clock signal. This is a common design choice for digital circuits, as it simplifies the design and verification process.
+
+The implementation also uses a synchronous reset, which means that the state machine is reset to its initial state when the reset signal is asserted. This is a common design choice for digital circuits, as it ensures that the circuit starts in a known state after a power-on or reset event.
+
+This implementation is just one possible implementation of the top-level module. There are many other possible implementations, each with its own advantages and disadvantages. The specific implementation that is used will depend on the specific requirements of the application.

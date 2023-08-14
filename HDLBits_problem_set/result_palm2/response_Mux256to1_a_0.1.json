@@ -1,0 +1,32 @@
+Here is a Verilog code for a 1-bit wide, 256-to-1 multiplexer:
+
+```module top_module( 
+    input [255:0] in,
+    input [7:0] sel,
+    output out );
+
+    // Create a 256-bit register to store the selected input.
+    reg [255:0] selected_input;
+
+    // Create a 256-bit LUT to implement the multiplexer.
+    LUT256 mux (
+        input [255:0] in,
+        input [7:0] sel,
+        output [255:0] out );
+
+    // Connect the selected input to the output of the multiplexer.
+    always @(sel or in) begin
+        selected_input <= mux.out(sel);
+    end
+
+    // Connect the output of the multiplexer to the output of the module.
+    assign out = selected_input;
+
+endmodule
+```
+
+The LUT256 is a 256-bit lookup table that can be used to implement any 256-to-1 multiplexer. The input to the LUT is a 7-bit select signal and the 256 inputs. The output of the LUT is the selected input.
+
+The always block is used to select the input that is connected to the output of the multiplexer. The sel signal is the select signal and the in signal is the 256-bit input vector. The selected_input register stores the selected input.
+
+The assign statement is used to connect the output of the multiplexer to the output of the module. The out signal is the output of the module and the selected_input register stores the selected input.

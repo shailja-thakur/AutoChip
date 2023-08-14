@@ -1,0 +1,17 @@
+module top_module ( 
+    input p1a, p1b, p1c, p1d,
+    output p1y,
+    input p2a, p2b, p2c, p2d,
+    output p2y );
+
+    wire p1n1, p1n2, p1n3, p1n4, p2n1, p2n2, p2n3, p2n4;
+    
+    AND2 #(.INVERT_A(1), .INVERT_B(1)) a1 (p1a, p1b, p1n1);
+    AND2 #(.INVERT_A(1), .INVERT_B(1)) a2 (p1c, p1d, p1n2);
+    AND2 #(.INVERT_A(1), .INVERT_B(1)) a3 (p2a, p2b, p2n3);
+    AND2 #(.INVERT_A(1), .INVERT_B(1)) a4 (p2c, p2d, p2n4);
+    
+    NAND2 #(.INVERT_A(1), .INVERT_B(1)) b1 (p1n1, p1n2, p1y);
+    NAND2 #(.INVERT_A(1), .INVERT_B(1)) b2 (p2n3, p2n4, p2y);
+
+endmodule

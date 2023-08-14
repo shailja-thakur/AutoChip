@@ -1,0 +1,33 @@
+Here is a possible implementation of the top module:
+
+```module top_module( 
+    input [99:0] in,
+    output [98:0] out_both,
+    output [99:1] out_any,
+    output [99:0] out_different );
+
+    reg [99:0] state;
+
+    always @(posedge clk) begin
+        state <= state + 1;
+        if (state == 1) begin
+            out_both <= in[99] & in[98];
+        end
+        if (state == 2) begin
+            out_any <= in[2] | in[1];
+        end
+        if (state == 3) begin
+            out_different <= in[98] ^ in[99];
+        end
+    end
+
+endmodule
+```
+
+The state machine in this implementation has three states, corresponding to the three output vectors. In state 1, the output vector `out_both` is updated. In state 2, the output vector `out_any` is updated. In state 3, the output vector `out_different` is updated. The state machine then goes back to state 1 and repeats the process.
+
+The output vector `out_both` is updated by ANDing the current input bit with the previous input bit. This will be 1 if and only if both the current input bit and the previous input bit are 1.
+
+The output vector `out_any` is updated by ORing the current input bit with the next input bit. This will be 1 if and only if either the current input bit or the next input bit is 1.
+
+The output vector `out_different` is updated by XORing the current input bit with the previous input bit. This will be 1 if and only if the current input bit is different from the previous input bit.

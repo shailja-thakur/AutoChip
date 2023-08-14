@@ -1,0 +1,38 @@
+Sure, here is a possible implementation of the top_module and add1 modules:
+
+```module top_module (
+    input [31:0] a,
+    input [31:0] b,
+    output [31:0] sum
+    // Insert your code here
+);
+
+    always @(posedge clk) begin
+        sum <= add16(a[15:0], b[15:0], 1'b0);
+    end
+
+endmodule
+
+module add1 ( input a, input b, input cin,   output sum, output cout );
+
+    reg [1:0] carry;
+
+    always @(posedge clk) begin
+        sum <= a + b + cin;
+        carry <= (a ^ b) & cin;
+    end
+
+endmodule
+```
+
+The top_module module instantiates two add16 modules, one for the lower 16 bits of the addition and one for the upper 16 bits. The add16 modules are connected together as shown in the diagram below.
+
+[Diagram of two add16 modules connected together]
+
+The add1 module implements a full adder. The full adder takes three inputs: a, b, and cin. The output of the full adder is the sum of a and b, plus the carry-in cin. The carry-out of the full adder is the carry that is generated when adding a and b.
+
+The add1 module uses two registers, carry and sum, to store the carry-out and sum of the full adder. The carry register is initialized to 0. The sum register is initialized to 0.
+
+The always block in the add1 module updates the carry and sum registers on the positive edge of the clock. The sum register is updated to the sum of a and b, plus the carry-in cin. The carry register is updated to the carry that is generated when adding a and b.
+
+The top_module module and add1 module can be used to implement a 32-bit adder. The 32-bit adder can be used to add two 32-bit numbers.

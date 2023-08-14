@@ -1,0 +1,19 @@
+Here is a population count circuit for a 255-bit input vector:
+
+```module top_module( 
+    input [254:0] in,
+    output [7:0] out );
+    
+    reg [254:0] count;
+    
+    always @(posedge clk) begin
+        count <= 0;
+        for (int i = 0; i < 255; i++) begin
+            count <= count + (in[i] == 1);
+        end
+        out <= count;
+    end
+endmodule
+```
+
+This circuit uses a for loop to iterate over the input vector and count the number of '1's. The count is stored in a register and then output on the rising edge of the clock.

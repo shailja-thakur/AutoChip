@@ -1,0 +1,17 @@
+module top_module (
+    input too_cold,
+    input too_hot,
+    input mode,
+    input fan_on,
+    output heater,
+    output aircon,
+    output fan
+); 
+
+    heater = (mode == 1) && too_cold;
+    aircon = (mode == 0) && too_hot;
+    fan = heater || aircon || fan_on;
+
+endmodule
+
+This circuit uses only assign statements to implement the heating/cooling thermostat. The heater is turned on when it is too cold and the mode is heating, and the air conditioner is turned on when it is too hot and the mode is cooling. The fan is turned on when either the heater or air conditioner is on, or when the user requests it.

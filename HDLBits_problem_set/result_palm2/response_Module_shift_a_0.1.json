@@ -1,0 +1,18 @@
+Sure, here is the code for a 3-bit shift register using D flip-flops:
+
+```
+module my_dff ( input clk, input d, output q );
+    flipflop ff1 ( clk, d, q );
+endmodule
+
+module top_module ( input clk, input d, output q );
+    my_dff ff1 ( clk, d, q1 );
+    my_dff ff2 ( clk, q1, q2 );
+    my_dff ff3 ( clk, q2, q3 );
+    assign q = q3;
+endmodule
+```
+
+The `my_dff` module implements a D flip-flop. The `clk` input is the clock signal, the `d` input is the data input, and the `q` output is the data output. The `top_module` module instantiates three `my_dff` modules and chains them together to make a shift register of length 3. The `clk` port is connected to all three instances. The `d` input is connected to the first `my_dff` module, and the output of the first `my_dff` module is connected to the input of the second `my_dff` module, and so on. The output of the third `my_dff` module is the output of the shift register.
+
+When the clock signal is asserted, the data input is transferred to the output. The data input is held in the flip-flop until the next clock edge. The shift register can be used to shift data in or out, or to store data.

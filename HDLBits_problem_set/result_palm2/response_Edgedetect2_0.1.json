@@ -1,0 +1,19 @@
+Here is a possible implementation of the top module:
+
+```module top_module (
+    input clk,
+    input [7:0] in,
+    output [7:0] anyedge
+);
+
+    always @(posedge clk) begin
+        for (int i = 0; i < 8; i++) begin
+            anyedge[i] <= (in[i] & ~prev_in[i]) | (~in[i] & prev_in[i]);
+        end
+        prev_in <= in;
+    end
+
+endmodule
+```
+
+This implementation uses a D flip-flop to store the previous value of the input signal, and then compares it to the current value to detect any changes. The output signal is set to 1 the cycle after a 0 to 1 transition occurs.

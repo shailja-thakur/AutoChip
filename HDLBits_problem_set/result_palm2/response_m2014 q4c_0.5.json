@@ -1,0 +1,19 @@
+module top_module (
+    input clk,
+    input d, 
+    input r,   // synchronous reset
+    output q);
+
+    reg q;
+
+    always @(posedge clk or posedge r) begin
+        if (r) begin
+            q <= 1'b0;
+        end else begin
+            q <= d;
+        end
+    end
+
+endmodule
+
+This module implements a D flip-flop with a synchronous reset. The D flip-flop stores the value of the input D on the positive edge of the clock clk, unless the reset input r is asserted. When r is asserted, the flip-flop is reset to 0.

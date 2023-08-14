@@ -1,0 +1,19 @@
+Here is a circuit that will reverse the byte ordering of a 4-byte word:
+
+```
+module top_module( 
+    input [31:0] in,
+    output [31:0] out );
+
+    // Insert your code here
+    // assign out[31:24] = ...;
+
+    assign out[31:24] = in[23:16];
+    assign out[23:16] = in[15:8];
+    assign out[15:8] = in[7:0];
+    assign out[7:0] = in[31:24];
+
+endmodule
+```
+
+This circuit uses four 4-to-1 multiplexers to select the appropriate byte from the input word and output it to the correct position in the output word. The multiplexers are controlled by the four bits in the input word that specify the byte order. For example, if the input word is 0x12345678, and the byte order is 0b0001, then the multiplexers will select the bytes in the order 0x78, 0x56, 0x34, and 0x12, and output them to the output word in the order 0x12, 0x34, 0x56, and 0x78.

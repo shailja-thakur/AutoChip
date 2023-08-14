@@ -1,0 +1,38 @@
+Sure, here is a possible implementation of a 16-bit D flip-flop with byte-enable:
+
+```
+module top_module (
+    input clk,
+    input resetn,
+    input [1:0] byteena,
+    input [15:0] d,
+    output [15:0] q
+);
+
+    reg [15:0] d1, d2;
+
+    always @(posedge clk or posedge resetn) begin
+        if (resetn) begin
+            d1 <= 32'h0;
+            d2 <= 32'h0;
+        end else begin
+            if (byteena[1]) begin
+                d1 <= d[15:8];
+            end else begin
+                d1 <= 32'h0;
+            end
+
+            if (byteena[0]) begin
+                d2 <= d[7:0];
+            end else begin
+                d2 <= 32'h0;
+            end
+
+            q <= d1;
+        end
+    end
+
+endmodule
+```
+
+This implementation uses two registers, d1 and d2, to store the data. The byte-enable inputs are used to select which register is updated on each clock cycle. If byteena[1] is high, then d1 is updated with the value of d[15:8]. If byteena[0] is high, then d2 is updated with the value of d[7:0]. The output q is always the value of d1.

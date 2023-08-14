@@ -1,0 +1,57 @@
+The Karnaugh map can be simplified to the following product-of-sums form:
+
+$$f(a, b, c, d) = (a' + b' + c' + d) (a + b + c + d)$$
+
+This can be implemented in a circuit as follows:
+
+```
+module top_module(
+    input a,
+    input b,
+    input c,
+    input d,
+    output out  ); 
+
+    // OR gate 1
+    xor1 (out, a, b);
+
+    // OR gate 2
+    xor2 (out, c, d);
+
+    // AND gate 1
+    and1 (out, xor1, xor2);
+
+endmodule
+```
+
+The circuit can also be implemented in a sum-of-products form:
+
+$$f(a, b, c, d) = (a' + b' + c) (a + b + d)$$
+
+This can be implemented in a circuit as follows:
+
+```
+module top_module(
+    input a,
+    input b,
+    input c,
+    input d,
+    output out  ); 
+
+    // AND gate 1
+    and1 (out, a', b');
+
+    // AND gate 2
+    and2 (out, a', d);
+
+    // AND gate 3
+    and3 (out, b', c);
+
+    // OR gate 1
+    xor1 (out, and1, and2);
+
+    // OR gate 2
+    xor2 (out, and3, xor1);
+
+endmodule
+```

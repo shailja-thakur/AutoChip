@@ -1,0 +1,31 @@
+Here is a Verilog implementation of a 100-bit left/right rotator with synchronous load and left/right enable:
+
+```module top_module (
+  input clk,
+  input load,
+  input [1:0] ena,
+  input [99:0] data,
+  output reg [99:0] q
+);
+
+  reg [99:0] sr;
+  reg [1:0] sra;
+
+  always @(posedge clk) begin
+    if (load) begin
+      sr <= data;
+    end else if (ena[1]) begin
+      sr <= sr[99:1] >> 1;
+      sra <= sra + 1;
+    end else if (ena[0]) begin
+      sr <= sr[99:2] >> 2;
+      sra <= sra + 2;
+    end
+  end
+
+  assign q = sr[sra];
+
+endmodule
+```
+
+This module consists of a shift register (sr) and a shift register pointer (sra). The shift register is initialized with the value of data on the rising edge of clk. If load is asserted, the shift register is loaded with the value of data. Otherwise, if ena[1] is asserted, the shift register is shifted right by one bit. If ena[0] is asserted, the shift register is shifted left by one bit. The value of the shift register is always available on the q output.

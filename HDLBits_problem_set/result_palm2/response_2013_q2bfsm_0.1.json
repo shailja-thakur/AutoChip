@@ -1,0 +1,52 @@
+Here is a possible implementation of the FSM:
+
+```module top_module (
+    input clk,
+    input resetn,    // active-low synchronous reset
+    input x,
+    input y,
+    output f,
+    output g
+); 
+
+    reg [1:0] state;
+    reg f;
+    reg g;
+
+    always @(posedge clk or negedge resetn) begin
+        if (resetn) begin
+            state <= 0;
+        end else begin
+            case (state)
+                0: begin
+                    if (x) begin
+                        state <= 1;
+                        f <= 1;
+                    end
+                end
+                1: begin
+                    if (x) begin
+                        state <= 2;
+                    end else begin
+                        state <= 0;
+                    end
+                end
+                2: begin
+                    if (y) begin
+                        state <= 3;
+                        g <= 1;
+                    end else begin
+                        state <= 0;
+                    end
+                end
+                3: begin
+                    g <= 1;
+                end
+            endcase
+        end
+    end
+
+endmodule
+```
+
+This FSM has four states: A, B, C, and D. In state A, the FSM waits for the reset signal to be de-asserted. When the reset signal is de-asserted, the FSM sets the output f to 1 for one clock cycle. Then, the FSM enters state B. In state B, the FSM monitors the x input. When x has produced the values 1, 0, 1 in three successive clock cycles, then the FSM sets the output g to 1 on the following clock cycle. The FSM then enters state C. In state C, the FSM monitors the y input. If y has the value 1 within at most two clock cycles, then the FSM maintains g = 1 permanently (that is, until reset). But if y does not become 1 within two clock cycles, then the FSM sets g = 0 permanently (until reset). The FSM then enters state D.

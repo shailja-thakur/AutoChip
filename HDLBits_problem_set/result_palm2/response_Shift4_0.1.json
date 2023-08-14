@@ -1,0 +1,32 @@
+Here is a Verilog code for a 4-bit shift register (right shift), with asynchronous reset, synchronous load, and enable:
+
+```module top_module(
+    input clk,
+    input areset,  // async active-high reset to zero
+    input load,
+    input ena,
+    input [3:0] data,
+    output reg [3:0] q); 
+
+    reg [3:0] d;
+    reg [3:0] q_reg;
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            q_reg <= 4'b0;
+        end else begin
+            if (load) begin
+                q_reg <= data;
+            end else if (ena) begin
+                q_reg <= q_reg >> 1;
+                q_reg[0] <= data[3];
+            end
+        end
+    end
+
+    assign q = q_reg;
+
+endmodule
+```
+
+This code uses a D flip-flop to implement the shift register. The D flip-flop is clocked by the clk signal. The areset signal is used to reset the shift register to zero. The load signal is used to load the shift register with the data value on the data signal. The ena signal is used to enable the shift register. When the ena signal is asserted, the shift register shifts the data value on the data signal one bit to the right. The data value on the data signal is shifted into the D input of the D flip-flop. The output of the D flip-flop is then shifted into the q output of the shift register. The q output of the shift register is the current value of the data in the shift register.

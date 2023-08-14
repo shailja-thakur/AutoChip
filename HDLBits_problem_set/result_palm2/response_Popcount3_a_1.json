@@ -1,0 +1,21 @@
+Here is a Verilog code for a population count circuit for a 3-bit input vector:
+```
+module top_module( 
+    input [2:0] in,
+    output [1:0] out );
+
+    reg [2:0] count;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            count <= 0;
+        end else begin
+            count <= count + in;
+        end
+    end
+
+    assign out = count / 2;
+
+endmodule
+```
+This circuit works by first counting the number of 1 bits in the input vector using a 3-bit counter. The counter is initialized to 0 at reset, and then increments each time a 1 bit is detected in the input vector. Once the counter reaches 3, it overflows and resets to 0. The output of the circuit is the value of the counter divided by 2, which is the number of 1 bits in the input vector.

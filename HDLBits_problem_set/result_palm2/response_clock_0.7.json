@@ -1,0 +1,19 @@
+module top_module (
+  input wire clk,
+  output wire [31:0] dut_out
+);
+
+  dut dut (clk);
+
+  always @(posedge clk) begin
+    dut_out <= dut.dut_out;
+  end
+
+endmodule
+
+```
+This testbench creates one instance of module dut (with instance name dut), and creates a clock signal to drive the module's clk input. The clock has a period of 10 ps. The clock should be initialized to zero with its first transition being 0 to 1.
+
+The always block inside the top_module module ensures that the dut_out signal is updated on every positive edge of the clk signal. The dut_out signal is assigned the value of the dut.dut_out signal on each update.
+
+This testbench can be used to verify the functionality of the dut module.

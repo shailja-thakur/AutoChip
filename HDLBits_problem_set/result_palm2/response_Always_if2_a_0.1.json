@@ -1,0 +1,79 @@
+The following code contains incorrect behavior that creates a latch. Fix the bugs so that you will shut off the computer only if it's really overheated, and stop driving if you've arrived at your destination or you need to refuel.
+
+```
+// synthesis verilog_input_version verilog_2001
+module top_module (
+    input      cpu_overheated,
+    output reg shut_off_computer,
+    input      arrived,
+    input      gas_tank_empty,
+    output reg keep_driving  ); //
+
+    // Fix the bug in teh following code
+    
+    always @(*) begin
+        if (cpu_overheated)
+           shut_off_computer = 1;
+    end
+
+    always @(*) begin
+        if (~arrived)
+           keep_driving = ~gas_tank_empty;
+    end
+
+endmodule
+```
+
+The problem with the above code is that the `shut_off_computer` signal is being updated twice per clock cycle, once in the `always @(*)` block that checks for CPU overheating, and once in the `always @(*)` block that checks for arrival at the destination. This can cause the `shut_off_computer` signal to oscillate, which is not what we want.
+
+To fix this problem, we need to make sure that the `shut_off_computer` signal is only updated once per clock cycle. We can do this by using a gated clock. A gated clock is a clock that is only enabled when a certain condition is met. In this case, we want the `shut_off_computer` signal to be updated only when the CPU is overheating.
+
+We can implement a gated clock using a D flip-flop. A D flip-flop is a type of digital circuit that stores one bit of data. It has two inputs, a data input (D) and a clock input (CLK). The data input is the value that will be stored in the flip-flop. The clock input is a signal that tells the flip-flop when to update its state.
+
+When the clock input is high, the D flip-flop will store the value on the data input. When the clock input is low, the D flip-flop will hold its current state.
+
+We can use a D flip-flop to implement a gated clock by connecting the clock input to the `cpu_overheated` signal. This will cause the D flip-flop to only update its state when the CPU is overheating.
+
+We can then connect the output of the D flip-flop to the `shut_off_computer` signal. This will ensure that the `shut_off_computer` signal is only updated when the CPU is overheating.
+
+The following code shows how to implement a gated clock using a D flip-flop:
+
+```
+// synthesis verilog_input_version verilog_2001
+module top_module (
+    input      cpu_overheated,
+    output reg shut_off_computer,
+    input      arrived,
+    input      gas_tank_empty,
+    output reg keep_driving  ); //
+
+    // Fix the bug in teh following code
+    
+    always @(posedge clk) begin
+        if (cpu_overheated)
+           shut_off_computer = 1;
+    end
+
+    always @(posedge clk) begin
+        if (~arrived)
+           keep_driving = ~gas_tank_empty;
+    end
+
+    // Gated clock
+    D flip_flop (
+        input clk,
+        input reset,
+        input d,
+        output q
+    );
+
+    // Connect the clock input of the D flip-flop to the `cpu_overheated` signal
+    assign clk = cpu_overheated;
+
+    // Connect the output of the D flip-flop to the `shut_off_computer` signal
+    assign shut_off_computer = q;
+
+endmodule
+```
+
+The above code fixes the bug in the original code and ensures that the `shut_off_computer` signal is only updated when the CPU is overheating.

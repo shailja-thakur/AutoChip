@@ -1,0 +1,58 @@
+Here is a possible implementation of the finite state machine:
+
+```module top_module(
+    input clk,
+    input in,
+    input reset,    // Synchronous reset
+    output done
+); 
+
+    reg [7:0] state;
+    reg [1:0] bit;
+    reg done;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= IDLE;
+        end else begin
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin
+                        state <= START;
+                    end
+                end
+                START: begin
+                    bit <= in;
+                    if (bit == 1) begin
+                        state <= DATA;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                DATA: begin
+                    if (bit == 1) begin
+                        state <= STOP;
+                    end else begin
+                        state <= DATA;
+                    end
+                end
+                STOP: begin
+                    if (in == 1) begin
+                        state <= IDLE;
+                        done <= 1;
+                    end else begin
+                        state <= STOP;
+                    end
+                end
+            endcase
+        end
+    end
+
+    assign done = state == STOP;
+
+endmodule
+```
+
+This FSM has four states: IDLE, START, DATA, and STOP. In the IDLE state, the FSM waits for the start bit. In the START state, it verifies that the start bit was correct. In the DATA state, it waits for the 8 data bits. In the STOP state, it verifies that the stop bit was correct. If the stop bit does not appear when expected, the FSM goes back to the IDLE state.
+
+The FSM outputs a done signal when it has correctly received a byte.

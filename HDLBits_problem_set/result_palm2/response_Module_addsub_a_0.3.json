@@ -1,0 +1,30 @@
+Here is the code for the adder-subtractor:
+
+```
+module add16 ( input[15:0] a, input[15:0] b, input cin, output[15:0] sum, output cout );
+    always @(posedge clk) begin
+        if (reset) begin
+            sum <= 0;
+            cout <= 0;
+        end else begin
+            sum <= a + b + cin;
+            cout <= 1'b1;
+        end
+    end
+endmodule
+
+module top_module(
+    input [31:0] a,
+    input [31:0] b,
+    input sub,
+    output [31:0] sum
+);
+    wire [31:0] b_inv;
+    xor16 b_inv_xor (b_inv, b, sub);
+    add16 add1 (a, b_inv, 1'b0, sum, cout);
+endmodule
+```
+
+The adder-subtractor works by first inverting the b input whenever sub is 1. This is done using a 32-bit wide XOR gate. The inverted b input is then added to the a input, along with the carry-in. The carry-in is set to 1 if sub is 1. The result of the addition is stored in the sum output.
+
+The adder-subtractor can be used to add or subtract two 32-bit numbers. To add two numbers, simply set the sub input to 0. To subtract two numbers, set the sub input to 1.

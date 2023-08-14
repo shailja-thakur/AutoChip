@@ -1,0 +1,35 @@
+Here is a possible implementation of a four-bit shift register that also acts as a down counter:
+
+```module top_module (
+    input clk,
+    input shift_ena,
+    input count_ena,
+    input data,
+    output [3:0] q);
+
+    reg [3:0] q;
+    reg [3:0] d;
+
+    always @(posedge clk) begin
+        if (shift_ena) begin
+            d <= data;
+        end else if (count_ena) begin
+            d <= d - 1;
+        end
+    end
+
+    always @(posedge clk) begin
+        if (shift_ena) begin
+            q <= d[3];
+            d <= d[2:0];
+        end
+    end
+
+    assign q = q;
+
+endmodule
+```
+
+This circuit uses a D flip-flop to store the current value of the shift register, and a 4-bit counter to decrement the value of the shift register when count_ena is asserted. When shift_ena is asserted, the data input is shifted into the shift register, starting with the most significant bit.
+
+This circuit can be used in a variety of applications, such as a timer, a sequencer, or a data shifter.

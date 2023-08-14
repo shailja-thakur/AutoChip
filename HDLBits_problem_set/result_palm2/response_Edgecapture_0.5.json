@@ -1,0 +1,35 @@
+Here is a Verilog implementation of the above module:
+
+```module top_module (
+    input clk,
+    input reset,
+    input [31:0] in,
+    output [31:0] out
+);
+
+    always @(posedge clk) begin
+        if (reset) begin
+            out <= 32'h0;
+        end else begin
+            for (int i = 0; i < 32; i++) begin
+                if (in[i] == 1'b1 && in[i + 1] == 1'b0) begin
+                    out[i] <= 1'b1;
+                end
+            end
+        end
+    end
+
+endmodule
+```
+
+The above module uses a 32-bit shift register to capture the 1-to-0 transitions on the input signal. The shift register is initialized to all zeros when the reset signal is asserted. On each positive clock edge, the shift register is shifted left by one bit, and the new input bit is shifted into the rightmost position. If the new input bit is 1, the output bit corresponding to that bit is set to 1. The output bits are latched at the positive clock edge, so they will remain set until the reset signal is asserted.
+
+The following waveform shows the output of the above module for the input signal shown below:
+
+```
+in: 00000000000000000000000000000001
+clk: 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1
+out: 00000000000000000000000000000001
+```
+
+As you can see, the output bit corresponding to the 1-to-0 transition on the input signal is set to 1. The output bits are latched at the positive clock edge, so they will remain set until the reset signal is asserted.

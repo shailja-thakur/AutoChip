@@ -1,0 +1,75 @@
+Here is a Moore model for the water reservoir controller:
+
+```module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output fr3,
+    output fr2,
+    output fr1,
+    output dfr
+); 
+
+    parameter [3:0] STATES = 4;
+    parameter [3:0] INIT_STATE = 0;
+
+    reg [3:0] state;
+    reg [1:0] fr;
+    reg [1:0] dfr;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= INIT_STATE;
+            fr <= 0;
+            dfr <= 0;
+        end else begin
+            switch (state) begin
+                case (0) :
+                    if (s[2]) begin
+                        state <= 1;
+                        fr <= 0;
+                        dfr <= 0;
+                    end else begin
+                        state <= 0;
+                        fr <= 0;
+                        dfr <= 0;
+                    end
+                case (1) :
+                    if (s[1]) begin
+                        state <= 2;
+                        fr <= 1;
+                        dfr <= 0;
+                    end else begin
+                        state <= 1;
+                        fr <= 0;
+                        dfr <= 0;
+                    end
+                case (2) :
+                    if (s[0]) begin
+                        state <= 3;
+                        fr <= 1;
+                        dfr <= 1;
+                    end else begin
+                        state <= 2;
+                        fr <= 1;
+                        dfr <= 0;
+                    end
+                case (3) :
+                    state <= 3;
+                    fr <= 1;
+                    dfr <= 1;
+            endcase
+        end
+    end
+
+    assign fr3 = fr[1];
+    assign fr2 = fr[0];
+    assign fr1 = fr[0];
+    assign dfr = dfr[1];
+
+endmodule
+```
+
+This FSM has four states, corresponding to the four possible water levels. The state machine transitions from one state to the next based on the inputs $s_1$, $s_2$, and $s_3$. When the water level is above $s_3$, the state machine remains in state 0 and all outputs are 0. When the water level is between $s_3$ and $s_2$, the state machine transitions to state 1 and the output $fr_1$ is asserted. When the water level is between $s_2$ and $s_1$, the state machine transitions to state 2 and the outputs $fr_1$ and $fr_2$ are asserted. When the water level is below $s_1$, the state machine transitions to state 3 and all outputs are asserted.
+
+The output $dfr$ is asserted when the water level is decreasing. This is useful for controlling a supplemental flow valve that can be used to increase the flow rate when the water level is low.

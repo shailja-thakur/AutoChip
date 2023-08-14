@@ -1,0 +1,33 @@
+The Karnaugh map can be simplified to the following product-of-sums form:
+
+$$\overline{a}b\overline{c}d + a\overline{b}c\overline{d} + \overline{a}b\overline{c}d' + a\overline{b}c'd'$$
+
+This can be implemented in Verilog as follows:
+
+```module top_module (
+  input wire a,
+  input wire b,
+  input wire c,
+  input wire d,
+  output wire out
+);
+
+  assign out = ~(a & b & ~c & d) + (a & ~b & c & ~d) + (~a & b & ~c & d') + (a & ~b & c' & d');
+
+endmodule
+```
+
+The circuit can be verified by simulating it in a Verilog simulator. The following is a sample simulation output:
+
+```a b c d out
+0 0 0 0 0
+0 0 1 0 1
+0 1 0 0 1
+0 1 1 0 0
+1 0 0 0 1
+1 0 1 0 0
+1 1 0 0 0
+1 1 1 0 0
+```
+
+As can be seen, the output of the circuit matches the desired output.

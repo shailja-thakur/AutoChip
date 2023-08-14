@@ -1,0 +1,44 @@
+Here is a possible solution in Verilog:
+
+```module bcdcount (
+    input clk,
+    input reset,
+    input enable,
+    output reg [3:0] Q
+);
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            Q <= 10'b0000;
+        end else if (enable) begin
+            Q <= Q + 1;
+        end
+    end
+
+endmodule
+
+module top_module (
+    input clk,
+    input reset,
+    output OneHertz,
+    output [2:0] c_enable
+);
+
+    bcdcount counter0 (clk, reset, c_enable[0], Q0);
+    bcdcount counter1 (clk, reset, c_enable[1], Q1);
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            OneHertz <= 1'b0;
+        end else if (Q0 == 9'b9999) begin
+            OneHertz <= 1'b1;
+            Q0 <= 0;
+        end
+    end
+
+endmodule
+```
+
+The first counter, counter0, counts from 0 to 9999 in 9999 clock cycles. The second counter, counter1, counts from 0 to 9 in 100 clock cycles. The output of counter0 is connected to the input of counter1, so counter1 only counts when counter0 is at 9999. This means that counter1 counts once per second. The output of counter1 is connected to the OneHertz signal, which is asserted for one clock cycle each second.
+
+The enable signals from each of the counters are also output. These signals can be used to control other parts of the circuit, such as the hour/minute/second counters in a digital wall clock.

@@ -1,0 +1,26 @@
+Here is a Verilog code for a 100-bit binary adder:
+
+```module top_module (
+  input wire [99:0] a,
+  input wire [99:0] b,
+  input wire cin,
+  output wire cout,
+  output wire [99:0] sum
+);
+
+  wire [99:0] carry;
+
+  always @(posedge clk) begin
+    carry <= cin;
+    for (int i = 99; i >= 0; i--) begin
+      sum[i] <= a[i] + b[i] + carry[i];
+      carry[i - 1] <= (sum[i] >= 2'b10);
+    end
+  end
+
+endmodule
+```
+
+This code implements a ripple-carry adder, which is the simplest type of adder to implement. It works by adding the two input numbers bit by bit, starting with the least significant bit. For each bit, the sum of the two bits is added to the carry bit from the previous bit. If the sum is greater than 1, the carry bit is set to 1. The carry bit from the last bit is the carry out of the adder.
+
+The adder can be implemented in any logic family, such as CMOS or TTL. It can also be implemented in hardware, such as an FPGA or ASIC.

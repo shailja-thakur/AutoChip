@@ -1,0 +1,79 @@
+Sure, here is a VHDL code for a decade counter that counts 1 through 10, inclusive. The reset input is synchronous, and should reset the counter to 1.
+
+```
+module top_module (
+    input clk,
+    input reset,
+    output [3:0] q);
+
+    reg [3:0] q;
+    reg [1:0] state;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            q <= 1'b0;
+            state <= 1'b0;
+        end else begin
+            case (state)
+                1'b0: begin
+                    q <= q + 1;
+                    if (q = 10) begin
+                        state <= 1'b1;
+                        q <= 1'b0;
+                    end
+                end
+                1'b1: begin
+                    q <= q + 1;
+                    if (q = 10) begin
+                        state <= 1'b2;
+                        q <= 1'b0;
+                    end
+                end
+                1'b2: begin
+                    q <= q + 1;
+                    if (q = 10) begin
+                        state <= 1'b3;
+                        q <= 1'b0;
+                    end
+                end
+                1'b3: begin
+                    q <= q + 1;
+                    if (q = 10) begin
+                        state <= 1'b4;
+                        q <= 1'b0;
+                    end
+                end
+                1'b4: begin
+                    q <= q + 1;
+                    if (q = 10) begin
+                        state <= 1'b5;
+                        q <= 1'b0;
+                    end
+                end
+                1'b5: begin
+                    q <= q + 1;
+                    if (q = 10) begin
+                        state <= 1'b6;
+                        q <= 1'b0;
+                    end
+                end
+                1'b6: begin
+                    q <= q + 1;
+                    if (q = 10) begin
+                        state <= 1'b7;
+                        q <= 1'b0;
+                    end
+                end
+                1'b7: begin
+                    q <= q + 1;
+                    if (q = 10) begin
+                        state <= 1'b0;
+                        q <= 1'b0;
+                    end
+                end
+            endcase
+        end
+    end
+
+endmodule
+```

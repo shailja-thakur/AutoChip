@@ -1,0 +1,30 @@
+Here is a Verilog code for a population count circuit for a 3-bit input vector:
+
+```module top_module( 
+    input [2:0] in,
+    output [1:0] out );
+
+    reg [2:0] count;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            count <= 0;
+        end else begin
+            if (in[2]) begin
+                count <= count + 1;
+            end
+            if (in[1]) begin
+                count <= count + 2;
+            end
+            if (in[0]) begin
+                count <= count + 4;
+            end
+        end
+    end
+
+    assign out = count;
+
+endmodule
+```
+
+This circuit uses a 3-bit counter to count the number of '1's in the input vector. The counter is initialized to 0 at reset, and then increments each time a '1' is detected in the input vector. The output of the counter is the population count of the input vector.

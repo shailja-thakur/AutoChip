@@ -1,0 +1,39 @@
+Here is a possible implementation of the adder-subtractor:
+
+```module add16 ( input[15:0] a, input[15:0] b, input cin, output[15:0] sum, output cout );
+    logic [15:0] x, y;
+    always @(posedge clk) begin
+        if (reset) begin
+            x <= 0;
+            y <= 0;
+        end else begin
+            x <= a;
+            y <= b;
+            if (sub) begin
+                y <= ~y;
+            end
+        end
+    end
+    assign sum = x + y;
+    assign cout = x[15];
+endmodule
+
+module top_module(
+    input [31:0] a,
+    input [31:0] b,
+    input sub,
+    output [31:0] sum
+);
+    add16 add1 (a[15:0], b[15:0], 1'b0, sum[15:0], sum[16]);
+    add16 add2 (a[15:0], ~b[15:0], 1'b0, sum[31:16], sum[17]);
+    always @(posedge clk) begin
+        if (reset) begin
+            sum <= 0;
+        end else begin
+            sum <= add1.sum + add2.sum;
+        end
+    end
+endmodule
+```
+
+This implementation uses two 16-bit adders to add the two operands, and then a 32-bit XOR gate to invert the second operand if the `sub` input is 1. The carry-in of the adder is connected to the `sub` input, which ensures that the correct carry is generated when the operands are subtracted.

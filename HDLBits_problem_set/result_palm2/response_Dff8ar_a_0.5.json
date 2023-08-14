@@ -1,0 +1,28 @@
+Sure, here is a Verilog code for 8 D flip-flops with active high asynchronous reset. All DFFs should be triggered by the positive edge of clk:
+
+```module top_module (
+    input clk,
+    input areset,   // active high asynchronous reset
+    input [7:0] d,
+    output [7:0] q
+);
+
+    reg [7:0] d_reg;
+    reg [7:0] q_reg;
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            d_reg <= 8'h0;
+            q_reg <= 8'h0;
+        end else begin
+            d_reg <= d;
+            q_reg <= d_reg;
+        end
+    end
+
+    assign q = q_reg;
+
+endmodule
+```
+
+This code uses two registers, D_REG and Q_REG, to store the data and the output of the flip-flops, respectively. The D_REG register is updated on the positive edge of clk, and the Q_REG register is updated on the positive edge of clk or when the asynchronous reset signal is asserted. The output of the flip-flops is assigned to the Q signal.

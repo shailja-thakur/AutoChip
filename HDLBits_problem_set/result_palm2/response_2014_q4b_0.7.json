@@ -1,0 +1,68 @@
+Sure, here is a top-level Verilog module (named top_module) for the shift register, assuming that n = 4. Instantiate four copies of your MUXDFF subcircuit in your top-level module. Assume that you are going to implement the circuit on the DE2 board.
+
+```
+module top_module (
+    input [3:0] SW,
+    input [3:0] KEY,
+    output [3:0] LEDR
+);
+
+    wire [3:0] D;
+    wire clk;
+    wire E;
+    wire L;
+    wire w;
+
+    MUXDFF muxdff[3:0];
+
+    assign D = SW;
+    assign clk = KEY[0];
+    assign E = KEY[1];
+    assign L = KEY[2];
+    assign w = KEY[3];
+
+    for (int i = 0; i < 4; i++) begin
+        muxdff[i] (
+            .D(D[i]),
+            .CLK(clk),
+            .E(E),
+            .L(L),
+            .W(w),
+            .Q(LEDR[i])
+        );
+    end
+
+endmodule
+
+module MUXDFF (
+    input wire D,
+    input wire CLK,
+    input wire E,
+    input wire L,
+    input wire W,
+    output wire Q
+);
+
+    reg [1:0] state;
+    reg [3:0] data;
+
+    always @(posedge CLK) begin
+        if (E) begin
+            state <= state + 1;
+        end
+    end
+
+    always @(posedge CLK) begin
+        if (L) begin
+            data <= D;
+        end
+    end
+
+    always @(posedge CLK) begin
+        if (w) begin
+            Q <= data[state];
+        end
+    end
+
+endmodule
+```

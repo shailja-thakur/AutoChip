@@ -1,0 +1,29 @@
+Here is a 4-bit binary counter that counts from 0 through 15, inclusive, with a period of 16. The reset input is synchronous, and should reset the counter to 0.
+
+```
+module top_module (
+    input clk,
+    input reset,      // Synchronous active-high reset
+    output [3:0] q);
+
+    reg [3:0] q;
+    reg [3:0] d;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            q <= 0;
+        end else begin
+            d <= q + 1;
+            if (d > 15) begin
+                d <= 0;
+            end
+            q <= d;
+        end
+    end
+
+endmodule
+```
+
+This counter uses a D flip-flop to store the current state of the counter. The D flip-flop is clocked by the clk signal. The reset signal is used to reset the counter to 0. The output of the counter is q.
+
+The always block is used to update the state of the counter. The always block is triggered by the clk signal and the reset signal. If the reset signal is asserted, the counter is reset to 0. Otherwise, the counter is updated by adding 1 to the current state. If the current state is greater than 15, the counter is reset to 0.

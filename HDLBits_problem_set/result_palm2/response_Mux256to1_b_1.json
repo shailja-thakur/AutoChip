@@ -1,0 +1,25 @@
+Here is a Verilog code for a 1-bit wide, 256-to-1 multiplexer:
+
+```module top_module( 
+    input [255:0] in,
+    input [7:0] sel,
+    output out );
+
+    reg [255:0] sel_reg;
+    reg [1:0] sel_bit;
+
+    always @(sel or in) begin
+        sel_reg <= sel;
+        sel_bit <= sel[1:0];
+    end
+
+    always @(sel_bit or in) begin
+        out <= in[sel_bit];
+    end
+
+endmodule
+```
+
+This multiplexer works by first selecting the 2-bit value of `sel` into the `sel_reg` register. Then, it uses the `sel_reg` register to select the appropriate bit from the input vector `in` and output it to the `out` pin.
+
+For example, if `sel` is 00, then `sel_reg` will be 00 and `out` will be equal to `in[0]`. If `sel` is 01, then `sel_reg` will be 01 and `out` will be equal to `in[1]`. And so on.

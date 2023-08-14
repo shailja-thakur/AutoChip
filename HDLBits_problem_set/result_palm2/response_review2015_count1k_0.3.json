@@ -1,0 +1,23 @@
+Here is a Verilog code for a counter that counts from 0 to 999, inclusive, with a period of 1000 cycles. The reset input is synchronous, and should reset the counter to 0.
+
+```module top_module (
+    input clk,
+    input reset,
+    output [9:0] q);
+
+    reg [9:0] counter;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            counter <= 0;
+        end else begin
+            counter <= counter + 1;
+        end
+    end
+
+    assign q = counter;
+
+endmodule
+```
+
+This code uses a register to store the current value of the counter. The counter is incremented on every positive edge of the clock signal, unless the reset input is asserted. When the reset input is asserted, the counter is reset to 0. The output of the counter is connected to the `q` output.

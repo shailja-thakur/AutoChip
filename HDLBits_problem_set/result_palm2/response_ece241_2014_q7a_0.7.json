@@ -1,0 +1,59 @@
+Here is a possible implementation of a 1-12 counter with the given inputs and outputs:
+
+```
+module top_module (
+    input clk,
+    input reset,
+    input enable,
+    output [3:0] Q,
+    output c_enable,
+    output c_load,
+    output [3:0] c_d
+);
+
+    count4 the_counter (clk, c_enable, c_load, c_d /*, ... */ );
+
+    // The following logic implements the synchronous counter.
+    reg [3:0] counter;
+    reg enable_signal;
+    reg load_signal;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            counter <= 1'b0;
+        end else begin
+            if (enable) begin
+                counter <= counter + 1;
+            end
+        end
+    end
+
+    always @(posedge clk) begin
+        if (reset) begin
+            enable_signal <= 1'b0;
+        end else begin
+            if (load) begin
+                enable_signal <= 1'b1;
+            end
+        end
+    end
+
+    always @(posedge clk) begin
+        if (reset) begin
+            load_signal <= 1'b0;
+        end else begin
+            if (c_load) begin
+                load_signal <= 1'b1;
+            end
+        end
+    end
+
+    // The following logic connects the counter to the 4-bit binary counter.
+    assign the_counter.enable = enable_signal;
+    assign the_counter.load = load_signal;
+    assign the_counter.d = c_d;
+
+    // The following logic connects the counter's outputs to the output signals.
+    assign Q = the_counter.Q;
+endmodule
+```

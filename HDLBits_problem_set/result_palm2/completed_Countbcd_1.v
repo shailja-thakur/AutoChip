@@ -1,0 +1,60 @@
+module top_module (
+    input clk,
+    input reset,   // Synchronous active-high reset
+    output [3:1] ena,
+    output [15:0] q);
+
+    reg [3:0] d0, d1, d2, d3;
+    reg [3:1] en;
+
+    // 4-bit decade counter
+    always @(posedge clk) begin
+        if (reset) begin
+            d0 <= 0;
+            d1 <= 0;
+            d2 <= 0;
+            d3 <= 0;
+            en <= 0;
+        end else begin
+            if (en) begin
+                d0 <= d0 + 1;
+                d1 <= d1 + 1;
+                d2 <= d2 + 1;
+                d3 <= d3 + 1;
+            end
+        end
+    end
+
+    // Output enable signals
+    always @(posedge clk) begin
+        if (reset) begin
+            ena[0] <= 0;
+            ena[1] <= 0;
+            ena[2] <= 0;
+        end else begin
+            if (d0 == 9) begin
+                ena[0] <= 1;
+            end else if (d1 == 9) begin
+                ena[1] <= 1;
+            end else if (d2 == 9) begin
+                ena[2] <= 1;
+            end
+        end
+    end
+
+    // Output BCD digits
+    always @(posedge clk) begin
+        if (reset) begin
+            q[15:12] <= 0;
+            q[11:8] <= 0;
+            q[7:4] <= 0;
+            q[3:0] <= 0;
+        end else begin
+            q[15:12] <= d3;
+            q[11:8] <= d2;
+            q[7:4] <= d1;
+            q[3:0] <= d0;
+        end
+    end
+
+endmodule

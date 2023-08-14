@@ -1,0 +1,47 @@
+Here is a D flip-flop implemented in Verilog:
+
+```module top_module (
+    input d, 
+    input ena,
+    output q);
+    
+    always @(posedge clk) begin
+        if (ena) begin
+            q <= d;
+        end
+    end
+
+endmodule
+```
+
+This D flip-flop uses a D flip-flop with positive edge-triggered clock. The input signal `d` is stored in the flip-flop when the enable signal `ena` is asserted. The output signal `q` is the value of the stored data.
+
+Here is a D flip-flop implemented in VHDL:
+
+```library ieee;
+use ieee.std_logic_1164.all;
+
+entity top_module is
+    port (
+        d : in std_logic;
+        ena : in std_logic;
+        q : out std_logic);
+end top_module;
+
+architecture Behavioral of top_module is
+    signal d_reg : std_logic;
+
+    begin
+        process (clk) begin
+            if rising_edge(clk) then
+                if ena = '1' then
+                    d_reg <= d;
+                end if;
+            end if;
+        end process;
+
+        q <= d_reg;
+    end Behavioral;
+```
+
+This D flip-flop uses a D flip-flop with positive edge-triggered clock. The input signal `d` is stored in the flip-flop when the enable signal `ena` is asserted. The output signal `q` is the value of the stored data.

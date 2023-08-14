@@ -1,0 +1,22 @@
+Sure, here is a 4-bit wide, 256-to-1 multiplexer in Verilog:
+
+```module top_module(
+  input [1023:0] in,
+  input [7:0] sel,
+  output [3:0] out
+);
+
+  reg [3:0] sel_reg;
+  reg [1023:0] data_reg;
+
+  always @(posedge clk) begin
+    sel_reg <= sel;
+    data_reg <= in[sel_reg*4+3:sel_reg*4];
+  end
+
+  assign out = data_reg[sel*4+3:sel*4];
+
+endmodule
+```
+
+This multiplexer has 256 inputs, each 4 bits wide, and one output, also 4 bits wide. The inputs are packed into a single 1024-bit input vector, and the output is the value of the input at the index specified by the select signal. For example, if sel is 0, then the output will be the value of the input at index 0, which is in[3:0]. If sel is 1, then the output will be the value of the input at index 1, which is in[7:4], and so on.

@@ -1,0 +1,37 @@
+Here is a Verilog code for a 16-bit D flip-flop with byte-enable:
+
+```module top_module (
+    input clk,
+    input resetn,
+    input [1:0] byteena,
+    input [15:0] d,
+    output [15:0] q
+);
+
+    reg [15:0] d1, d2;
+    reg [15:0] q1, q2;
+
+    always @(posedge clk or posedge resetn) begin
+        if (resetn) begin
+            d1 <= 16'h0;
+            d2 <= 16'h0;
+            q1 <= 16'h0;
+            q2 <= 16'h0;
+        end else begin
+            if (byteena[1]) begin
+                d1 <= d[15:8];
+            end
+            if (byteena[0]) begin
+                d2 <= d[7:0];
+            end
+            q1 <= d1;
+            q2 <= d2;
+        end
+    end
+
+    assign q = (byteena[1] ? q1 : q2);
+
+endmodule
+```
+
+This code uses two D flip-flops to store the data, and a multiplexer to select which data is stored in each flip-flop. The multiplexer is controlled by the byte-enable inputs, which select which byte of data is written to the flip-flops on each clock cycle. The reset signal is used to clear the flip-flops to their initial state.

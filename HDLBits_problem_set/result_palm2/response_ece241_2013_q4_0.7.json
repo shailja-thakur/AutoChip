@@ -1,0 +1,87 @@
+Here is a moore model for the water reservoir controller:
+
+```module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output fr3,
+    output fr2,
+    output fr1,
+    output dfr
+); 
+
+    reg [3:0] state;
+    reg [3:0] prev_state;
+    reg [1:0] dfr_state;
+    reg [1:0] fr_state;
+
+    // FSM states
+    enum {
+        S0, S1, S2, S3
+    } state_type;
+
+    // FSM transitions
+    always @(posedge clk or negedge reset) begin
+        if (reset) begin
+            state <= S0;
+            prev_state <= S0;
+            dfr_state <= 0;
+            fr_state <= 0;
+        end else begin
+            switch (state) begin
+                case (S0) :
+                    if (s[0]) begin
+                        state <= S1;
+                        dfr_state <= 1;
+                        fr_state <= 0;
+                    end else if (s[1]) begin
+                        state <= S2;
+                        dfr_state <= 0;
+                        fr_state <= 1;
+                    end else if (s[2]) begin
+                        state <= S3;
+                        dfr_state <= 0;
+                        fr_state <= 1;
+                    end
+                case (S1) :
+                    if (s[1] && !s[2]) begin
+                        state <= S2;
+                        dfr_state <= 0;
+                        fr_state <= 1;
+                    end else if (!s[1]) begin
+                        state <= S0;
+                        dfr_state <= 0;
+                        fr_state <= 0;
+                    end
+                case (S2) :
+                    if (s[2] && !s[0]) begin
+                        state <= S1;
+                        dfr_state <= 1;
+                        fr_state <= 0;
+                    end else if (!s[2]) begin
+                        state <= S0;
+                        dfr_state <= 0;
+                        fr_state <= 0;
+                    end
+                case (S3) :
+                    if (s[0] && !s[1]) begin
+                        state <= S1;
+                        dfr_state <= 1;
+                        fr_state <= 0;
+                    end else if (!s[0]) begin
+                        state <= S0;
+                        dfr_state <= 0;
+                        fr_state <= 0;
+                    end
+            endcase
+        end
+    end
+
+    // FSM outputs
+    assign fr3 = (state == S3);
+    assign fr2 = (state == S2);
+    assign fr1 = (state == S1);
+    assign dfr = (dfr_state == 1);
+
+endmodule
+```

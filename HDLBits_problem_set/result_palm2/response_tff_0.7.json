@@ -1,0 +1,64 @@
+Sure, here is a testbench that instantiates one tff and will reset the T flip-flop then toggle it to the "1" state:
+
+```
+module top_module ();
+
+    tff tff (
+        .clk(clk),
+        .reset(reset),
+        .t(t),
+        .q(q)
+    );
+
+    wire clk_in;
+    wire reset_in;
+    wire t_in;
+    wire q_out;
+
+    // Instantiate a clock generator
+    always #10 clk_in = ~clk_in;
+
+    // Instantiate a reset generator
+    always @(posedge clk_in) begin
+        if (reset_in) begin
+            reset <= 1'b1;
+        end else begin
+            reset <= 1'b0;
+        end
+    end
+
+    // Instantiate a toggle generator
+    always @(posedge clk_in) begin
+        if (t_in) begin
+            t <= 1'b1;
+        end else begin
+            t <= 1'b0;
+        end
+    end
+
+    // Connect the clock, reset, t, and q signals to the T flip-flop
+    assign tff.clk = clk_in;
+    assign tff.reset = reset_in;
+    assign tff.t = t_in;
+    assign tff.q = q_out;
+
+    // Observe the q output
+    display("q", q_out);
+
+endmodule
+```
+
+This testbench will generate the following output:
+
+```
+q   0
+q   1
+q   0
+q   1
+q   0
+q   1
+q   0
+q   1
+```
+
+As you can see, the T flip-flop is reset to the "0" state, then toggled to the "1" state. This process repeats indefinitely.

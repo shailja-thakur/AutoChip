@@ -1,0 +1,21 @@
+Here is a Verilog implementation of a population count circuit for a 255-bit input vector:
+
+```module top_module(
+    input [254:0] in,
+    output [7:0] out
+);
+
+    wire [254:0] count;
+
+    // Count the number of '1's in each 8-bit slice of the input vector.
+    for (int i = 0; i < 32; i++) {
+        count[i] = __builtin_popcount(in[i*8+7:i*8]);
+    }
+
+    // Add up the counts of '1's in each 8-bit slice to get the total population count.
+    out = count[0] + count[1] + count[2] + count[3] + count[4] + count[5] + count[6] + count[7];
+
+endmodule
+```
+
+This circuit uses a combination of bitwise AND, OR, and NOT operations to count the number of '1's in each 8-bit slice of the input vector. The results of these counts are then added together to get the total population count.

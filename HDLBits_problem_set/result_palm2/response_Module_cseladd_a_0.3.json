@@ -1,0 +1,35 @@
+Sure, here is the code for the carry-select adder:
+
+```
+module add16 ( input[15:0] a, input[15:0] b, input cin, output[15:0] sum, output cout );
+
+    always @(posedge clk) begin
+        if (reset) begin
+            sum <= 0;
+            cout <= 0;
+        end else begin
+            sum <= a + b + cin;
+            cout <= (a[15] & b[15]) | (cin & (a[15] | b[15]));
+        end
+    end
+
+endmodule
+
+module top_module(
+    input [31:0] a,
+    input [31:0] b,
+    output [31:0] sum
+);
+
+    add16 add1(a[15:0], b[15:0], 1'b0, sum[15:0], cout);
+    add16 add2(a[14:0], b[14:0], cout, sum[14:0], cout);
+    add16 add3(a[13:0], b[13:0], cout, sum[13:0], cout);
+
+    assign sum[31:16] = add1.sum;
+    assign sum[15:0] = add2.sum;
+    assign sum[0:14] = add3.sum;
+
+endmodule
+```
+
+This code instantiates three add16 modules, one for each 16-bit half of the input numbers. The carry-out from each add16 module is connected to the carry-in of the next add16 module. The sum of each add16 module is connected to the corresponding 16-bit half of the output sum.

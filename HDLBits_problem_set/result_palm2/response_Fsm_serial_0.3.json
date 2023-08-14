@@ -1,0 +1,63 @@
+Here is a possible implementation of the finite state machine:
+
+```module top_module(
+    input clk,
+    input in,
+    input reset,    // Synchronous reset
+    output done
+); 
+
+    parameter IDLE = 1'b0;
+    parameter START = 1'b1;
+    parameter DATA = 1'b1;
+    parameter STOP = 1'b0;
+
+    reg [1:0] state = IDLE;
+    reg [7:0] data;
+    reg done;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= IDLE;
+            data <= 8'h0;
+            done <= 1'b0;
+        end else begin
+            case (state)
+                IDLE: begin
+                    if (in == START) begin
+                        state <= START;
+                        data <= 8'h0;
+                    end
+                end
+                START: begin
+                    if (in == DATA) begin
+                        data <= data + in;
+                        state <= DATA;
+                    end else if (in == STOP) begin
+                        state <= STOP;
+                        done <= 1'b1;
+                    end
+                end
+                DATA: begin
+                    if (in == DATA) begin
+                        data <= data + in;
+                    end else if (in == STOP) begin
+                        state <= STOP;
+                        done <= 1'b1;
+                    end
+                end
+                STOP: begin
+                    state <= IDLE;
+                end
+            endcase
+        end
+    end
+
+    assign done = state == STOP;
+
+endmodule
+```
+
+This FSM has four states: IDLE, START, DATA, and STOP. In the IDLE state, the FSM waits for the start bit. When the start bit is received, the FSM transitions to the START state. In the START state, the FSM waits for the data bits. When all 8 data bits have been received, the FSM transitions to the DATA state. In the DATA state, the FSM collects the data bits and stores them in the `data` register. When the stop bit is received, the FSM transitions to the STOP state. In the STOP state, the FSM waits for the next start bit. When the next start bit is received, the FSM transitions back to the IDLE state.
+
+The `done` output is asserted when a complete byte has been received.

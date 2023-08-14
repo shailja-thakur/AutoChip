@@ -1,0 +1,32 @@
+Here is a Verilog code for a 8-bit D flip-flop with active high synchronous reset:
+
+```module top_module (
+    input clk,
+    input reset,            // Synchronous reset
+    input [7:0] d,
+    output [7:0] q
+);
+
+    reg [7:0] q;
+    reg [7:0] d_reg;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            q <= 8'h0;
+        end else begin
+            q <= d_reg;
+        end
+    end
+
+    always @(posedge clk) begin
+        if (reset) begin
+            d_reg <= 8'h0;
+        end else begin
+            d_reg <= d;
+        end
+    end
+
+endmodule
+```
+
+This code uses a D flip-flop with a positive edge-triggered clock. The reset signal is active high, and when it is asserted, the output of the flip-flop is cleared to 0. When the reset signal is de-asserted, the output of the flip-flop is updated with the value of the D input on the next positive edge of the clock.

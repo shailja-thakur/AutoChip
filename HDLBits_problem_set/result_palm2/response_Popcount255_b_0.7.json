@@ -1,0 +1,20 @@
+Here is a population count circuit for a 255-bit input vector:
+
+```module top_module( 
+    input [254:0] in,
+    output [7:0] out );
+    
+    // Count the number of 1's in each 8-bit slice of the input vector.
+    always @(posedge clk) begin
+        for (int i = 0; i < 8; i++) begin
+            reg [7:0] count = 0;
+            for (int j = 7; j >= 0; j--) begin
+                count += (in[i*8+j] == 1);
+            end
+            out[i] = count;
+        end
+    end
+endmodule
+```
+
+This circuit uses a for loop to iterate over each 8-bit slice of the input vector. In each iteration, the counter is initialized to 0 and then incremented for each 1-bit in the slice. The final value of the counter is stored in the corresponding output bit.

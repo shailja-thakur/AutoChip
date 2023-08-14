@@ -1,0 +1,50 @@
+Here is a possible implementation of the FSM:
+
+```module top_module (
+    input clk,
+    input reset,      // Synchronous reset
+    input data,
+    output start_shifting);
+
+    reg [1:0] state;
+    reg [1:0] next_state;
+    reg [7:0] data_in;
+    reg start_shifting;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= 0;
+            data_in <= 0;
+            start_shifting <= 0;
+        end else begin
+            data_in <= data;
+            next_state = state;
+            case (state)
+                0: begin
+                    if (data_in == 1101) begin
+                        start_shifting <= 1;
+                        next_state <= 1;
+                    end else begin
+                        next_state <= 0;
+                    end
+                end
+                1: begin
+                    if (data_in == 1) begin
+                        next_state <= 0;
+                    end else begin
+                        next_state <= 1;
+                    end
+                end
+            endcase
+            state <= next_state;
+        end
+    end
+
+    assign start_shifting = state == 1;
+
+endmodule
+```
+
+This FSM has two states: `0` and `1`. In state `0`, the FSM waits for the input data to be `1101`. When it sees this sequence, it sets `start_shifting` to `1` and goes to state `1`. In state `1`, the FSM waits for the next input data to be `1`. If it sees this, it goes back to state `0`. If it sees any other value, it stays in state `1`.
+
+The `start_shifting` output is asserted when the FSM has found the sequence `1101` and is waiting for the next input data. This output can be used to start a new process, such as shifting data into a register.

@@ -1,0 +1,29 @@
+Here is a Verilog code for a dual-edge triggered flip-flop:
+
+```module dual_edge_triggered_flip_flop (
+    input clk,
+    input d,
+    output q
+);
+
+    reg [1:0] state;
+    reg [1:0] din;
+
+    always @(posedge clk or negedge clk) begin
+        if (rising_edge(clk)) begin
+            din <= d;
+        end else begin
+            state <= state + 1;
+            if (state == 2) begin
+                q <= din;
+                state <= 0;
+            end
+        end
+    end
+
+endmodule
+```
+
+This flip-flop uses a D flip-flop and a two-state counter to implement the dual-edge triggering. The D flip-flop is triggered on the positive edge of the clock, and the counter is triggered on the negative edge of the clock. The state of the counter is used to select which input to the D flip-flop is used to update the output. When the counter is in state 0, the output is updated with the value of the D input on the positive edge of the clock. When the counter is in state 1, the output is updated with the value of the D input on the negative edge of the clock.
+
+This flip-flop can be used in a variety of applications where a dual-edge triggered flip-flop is required. For example, it can be used in a datapath to store the value of a signal that is changing frequently. It can also be used in a control circuit to implement a state machine.

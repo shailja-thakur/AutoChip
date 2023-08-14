@@ -1,0 +1,21 @@
+Here is a circuit that will reverse the byte ordering of a 4-byte word:
+
+```
+module top_module( 
+    input [31:0] in,
+    output [31:0] out );
+
+    // Insert your code here
+    // assign out[31:24] = ...;
+
+    assign out[31:24] = in[23:16];
+    assign out[23:16] = in[15:8];
+    assign out[15:8] = in[7:0];
+    assign out[7:0] = in[31:24];
+
+endmodule
+```
+
+This circuit works by using part-select to extract each byte of the input word and then assigning it to the corresponding output bit. For example, the assignment `out[31:24] = in[23:16]` extracts the first byte of the input word, which is stored in bits 23-16, and assigns it to bits 31-24 of the output word. The other assignments work similarly.
+
+This circuit can be implemented in any hardware description language (HDL) such as Verilog or VHDL.

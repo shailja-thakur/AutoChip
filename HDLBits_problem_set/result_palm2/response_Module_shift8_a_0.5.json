@@ -1,0 +1,20 @@
+Sure, here is the code for the top module:
+```
+module top_module ( 
+    input clk, 
+    input [7:0] d, 
+    input [1:0] sel, 
+    output [7:0] q 
+);
+
+    my_dff8 dff1 (clk, d[7:0], q[7:0]);
+    my_dff8 dff2 (clk, q[7:0], q[6:0]);
+    my_dff8 dff3 (clk, q[6:0], q[5:0]);
+
+    mux4way #(8) mux (clk, sel, q[7:0], q[6:0], q[5:0], q[4:0]);
+
+    assign q = mux.y;
+
+endmodule
+```
+This code instantiates three instances of the my_dff8 module, then chains them together to make a 8-bit wide shift register of length 3. In addition, it creates a 4-to-1 multiplexer that chooses what to output depending on sel[1:0]: The value at the input d, after the first, after the second, or after the third D flip-flop. (Essentially, sel selects how many cycles to delay the input, from zero to three clock cycles.)
