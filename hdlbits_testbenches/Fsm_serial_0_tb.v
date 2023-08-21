@@ -35,7 +35,6 @@ module top_module_tb;
         if (!(out_byte === 1'b0 && done === 1'b1)) begin
             $display("Mismatch at index 0: Inputs = [%b, %b, %b], Generated = [%b, %b], Reference = [%b, %b]", 1'b1, 1'b0, 1'b0, out_byte, done, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -48,7 +47,6 @@ module top_module_tb;
         if (!(out_byte === 1'b0 && done === 1'b1)) begin
             $display("Mismatch at index 1: Inputs = [%b, %b, %b], Generated = [%b, %b], Reference = [%b, %b]", 1'b0, 1'b0, 1'b0, out_byte, done, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin

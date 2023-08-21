@@ -24,7 +24,6 @@ module top_module_tb;
         if (!(sum === 32'b00000000000000000000000000000000)) begin
             $display("Mismatch at index 0: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 32'b00000000000000000000000000000000, 32'b00000000000000000000000000000000, sum, 32'b00000000000000000000000000000000);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -37,7 +36,6 @@ module top_module_tb;
         if (!(sum === 32'b00000000000000000000000000000001)) begin
             $display("Mismatch at index 1: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 32'b00000000000000000000000000000000, 32'b00000000000000000000000000000001, sum, 32'b00000000000000000000000000000001);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -50,7 +48,6 @@ module top_module_tb;
         if (!(sum === 32'b00000000000000000000000000000010)) begin
             $display("Mismatch at index 2: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 32'b00000000000000000000000000000000, 32'b00000000000000000000000000000010, sum, 32'b00000000000000000000000000000010);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -63,7 +60,6 @@ module top_module_tb;
         if (!(sum === 32'b00000000000000000000000000000011)) begin
             $display("Mismatch at index 3: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 32'b00000000000000000000000000000001, 32'b00000000000000000000000000000010, sum, 32'b00000000000000000000000000000011);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -76,7 +72,6 @@ module top_module_tb;
         if (!(sum === 32'b00000000000000001111111111111111)) begin
             $display("Mismatch at index 4: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 32'b00000000000000001111111111111111, 32'b00000000000000000000000000000000, sum, 32'b00000000000000001111111111111111);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -89,7 +84,6 @@ module top_module_tb;
         if (!(sum === 32'b00000000000000010000000000000000)) begin
             $display("Mismatch at index 5: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 32'b00000000000000001111111111111111, 32'b00000000000000000000000000000001, sum, 32'b00000000000000010000000000000000);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -102,7 +96,6 @@ module top_module_tb;
         if (!(sum === 32'b00000000000000111100110011000000)) begin
             $display("Mismatch at index 6: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 32'b00000000000000001111111111111111, 32'b00000000000000101100110011000001, sum, 32'b00000000000000111100110011000000);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin

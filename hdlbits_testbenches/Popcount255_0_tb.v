@@ -23,7 +23,6 @@ module top_module_tb;
         if (!(out === 1'b0)) begin
             $display("Mismatch at index 0: Inputs = [%b], Generated = [%b], Reference = [%b]", 1'b0, out, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -36,7 +35,6 @@ module top_module_tb;
         if (!(out === 1'b0)) begin
             $display("Mismatch at index 1: Inputs = [%b], Generated = [%b], Reference = [%b]", 1'b0, out, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -49,7 +47,6 @@ module top_module_tb;
         if (!(out === 1'b1)) begin
             $display("Mismatch at index 2: Inputs = [%b], Generated = [%b], Reference = [%b]", 1'b1, out, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -62,7 +59,6 @@ module top_module_tb;
         if (!(out === 1'b1)) begin
             $display("Mismatch at index 3: Inputs = [%b], Generated = [%b], Reference = [%b]", 1'b1, out, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -75,7 +71,6 @@ module top_module_tb;
         if (!(out === 1'b10)) begin
             $display("Mismatch at index 4: Inputs = [%b], Generated = [%b], Reference = [%b]", 1'b11, out, 1'b10);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -88,7 +83,6 @@ module top_module_tb;
         if (!(out === 1'b10)) begin
             $display("Mismatch at index 5: Inputs = [%b], Generated = [%b], Reference = [%b]", 1'b11, out, 1'b10);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -101,7 +95,6 @@ module top_module_tb;
         if (!(out === 1'b11)) begin
             $display("Mismatch at index 6: Inputs = [%b], Generated = [%b], Reference = [%b]", 1'b111, out, 1'b11);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -114,7 +107,6 @@ module top_module_tb;
         if (!(out === 1'b1000)) begin
             $display("Mismatch at index 7: Inputs = [%b], Generated = [%b], Reference = [%b]", 1'b1010101010101010, out, 1'b1000);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -127,7 +119,6 @@ module top_module_tb;
         if (!(out === 1'b100)) begin
             $display("Mismatch at index 8: Inputs = [%b], Generated = [%b], Reference = [%b]", 1'b111100000000000000000000, out, 1'b100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin

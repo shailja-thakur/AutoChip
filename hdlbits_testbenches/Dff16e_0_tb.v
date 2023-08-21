@@ -35,7 +35,6 @@ module top_module_tb;
         if (!(q === 1'b11010100100100)) begin
             $display("Mismatch at index 0: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b11, 1'b11010100100100, q, 1'b11010100100100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -48,7 +47,6 @@ module top_module_tb;
         if (!(q === 1'b11010100100100)) begin
             $display("Mismatch at index 1: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b0, 1'b101111010000001, q, 1'b11010100100100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -61,7 +59,6 @@ module top_module_tb;
         if (!(q === 1'b11010100100100)) begin
             $display("Mismatch at index 2: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b0, 1'b101111010000001, q, 1'b11010100100100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -74,7 +71,6 @@ module top_module_tb;
         if (!(q === 1'b11010100100100)) begin
             $display("Mismatch at index 3: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b1, 1'b1101011000001001, q, 1'b11010100100100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -87,7 +83,6 @@ module top_module_tb;
         if (!(q === 1'b11010100100100)) begin
             $display("Mismatch at index 4: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b1, 1'b1101011000001001, q, 1'b11010100100100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -100,7 +95,6 @@ module top_module_tb;
         if (!(q === 1'b11010100001001)) begin
             $display("Mismatch at index 5: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b10, 1'b101011001100011, q, 1'b11010100001001);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -113,7 +107,6 @@ module top_module_tb;
         if (!(q === 1'b11010100001001)) begin
             $display("Mismatch at index 6: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b10, 1'b101011001100011, q, 1'b11010100001001);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -126,7 +119,6 @@ module top_module_tb;
         if (!(q === 1'b101011000001001)) begin
             $display("Mismatch at index 7: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b11, 1'b111101100001101, q, 1'b101011000001001);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -139,7 +131,6 @@ module top_module_tb;
         if (!(q === 1'b101011000001001)) begin
             $display("Mismatch at index 8: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b11, 1'b111101100001101, q, 1'b101011000001001);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -152,7 +143,6 @@ module top_module_tb;
         if (!(q === 1'b111101100001101)) begin
             $display("Mismatch at index 9: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b0, 1'b1001100110001101, q, 1'b111101100001101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -165,7 +155,6 @@ module top_module_tb;
         if (!(q === 1'b111101100001101)) begin
             $display("Mismatch at index 10: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b0, 1'b1001100110001101, q, 1'b111101100001101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -178,7 +167,6 @@ module top_module_tb;
         if (!(q === 1'b111101100001101)) begin
             $display("Mismatch at index 11: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b1, 1'b1000010001100101, q, 1'b111101100001101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -191,7 +179,6 @@ module top_module_tb;
         if (!(q === 1'b111101100001101)) begin
             $display("Mismatch at index 12: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b1, 1'b1000010001100101, q, 1'b111101100001101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -204,7 +191,6 @@ module top_module_tb;
         if (!(q === 1'b111101101100101)) begin
             $display("Mismatch at index 13: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b10, 1'b101001000010010, q, 1'b111101101100101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -217,7 +203,6 @@ module top_module_tb;
         if (!(q === 1'b111101101100101)) begin
             $display("Mismatch at index 14: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b10, 1'b101001000010010, q, 1'b111101101100101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -230,7 +215,6 @@ module top_module_tb;
         if (!(q === 1'b101001001100101)) begin
             $display("Mismatch at index 15: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b11, 1'b1110001100000001, q, 1'b101001001100101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -243,7 +227,6 @@ module top_module_tb;
         if (!(q === 1'b101001001100101)) begin
             $display("Mismatch at index 16: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b11, 1'b1110001100000001, q, 1'b101001001100101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -256,7 +239,6 @@ module top_module_tb;
         if (!(q === 1'b1110001100000001)) begin
             $display("Mismatch at index 17: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b0, 1'b1100110100001101, q, 1'b1110001100000001);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -269,7 +251,6 @@ module top_module_tb;
         if (!(q === 1'b1110001100000001)) begin
             $display("Mismatch at index 18: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b0, 1'b1100110100001101, q, 1'b1110001100000001);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin

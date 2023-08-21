@@ -26,7 +26,6 @@ module top_module_tb;
         if (!(cout === 1'b10 && sum === 1'b101)) begin
             $display("Mismatch at index 0: Inputs = [%b, %b, %b], Generated = [%b, %b], Reference = [%b, %b]", 1'b10, 1'b11, 1'b0, cout, sum, 1'b10, 1'b101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -39,7 +38,6 @@ module top_module_tb;
         if (!(cout === 1'b10 && sum === 1'b101)) begin
             $display("Mismatch at index 1: Inputs = [%b, %b, %b], Generated = [%b, %b], Reference = [%b, %b]", 1'b10, 1'b11, 1'b0, cout, sum, 1'b10, 1'b101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -52,7 +50,6 @@ module top_module_tb;
         if (!(cout === 1'b11 && sum === 1'b110)) begin
             $display("Mismatch at index 2: Inputs = [%b, %b, %b], Generated = [%b, %b], Reference = [%b, %b]", 1'b10, 1'b11, 1'b1, cout, sum, 1'b11, 1'b110);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -65,7 +62,6 @@ module top_module_tb;
         if (!(cout === 1'b11 && sum === 1'b110)) begin
             $display("Mismatch at index 3: Inputs = [%b, %b, %b], Generated = [%b, %b], Reference = [%b, %b]", 1'b10, 1'b11, 1'b1, cout, sum, 1'b11, 1'b110);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin

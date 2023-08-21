@@ -25,7 +25,6 @@ module top_module_tb;
         if (!(out_and === 1'b0 && out_or === 1'b0 && out_xor === 1'b0)) begin
             $display("Mismatch at index 0: Inputs = [%b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, out_and, out_or, out_xor, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -38,7 +37,6 @@ module top_module_tb;
         if (!(out_and === 1'b0 && out_or === 1'b0 && out_xor === 1'b0)) begin
             $display("Mismatch at index 1: Inputs = [%b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, out_and, out_or, out_xor, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -51,7 +49,6 @@ module top_module_tb;
         if (!(out_and === 1'b1 && out_or === 1'b1 && out_xor === 1'b0)) begin
             $display("Mismatch at index 2: Inputs = [%b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 100'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111, out_and, out_or, out_xor, 1'b1, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -64,7 +61,6 @@ module top_module_tb;
         if (!(out_and === 1'b0 && out_or === 1'b1 && out_xor === 1'b0)) begin
             $display("Mismatch at index 3: Inputs = [%b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111111111, out_and, out_or, out_xor, 1'b0, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -77,7 +73,6 @@ module top_module_tb;
         if (!(out_and === 1'b0 && out_or === 1'b1 && out_xor === 1'b0)) begin
             $display("Mismatch at index 4: Inputs = [%b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 100'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000000, out_and, out_or, out_xor, 1'b0, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -90,7 +85,6 @@ module top_module_tb;
         if (!(out_and === 1'b0 && out_or === 1'b1 && out_xor === 1'b1)) begin
             $display("Mismatch at index 5: Inputs = [%b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000, out_and, out_or, out_xor, 1'b0, 1'b1, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin

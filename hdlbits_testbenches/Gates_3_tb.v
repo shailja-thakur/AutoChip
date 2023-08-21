@@ -30,7 +30,6 @@ module top_module_tb;
         if (!(out_and === 1'b0 && out_or === 1'b0 && out_xor === 1'b0 && out_nand === 1'b1 && out_nor === 1'b1 && out_xnor === 1'b1 && out_anotb === 1'b0)) begin
             $display("Mismatch at index 0: Inputs = [%b, %b], Generated = [%b, %b, %b, %b, %b, %b, %b], Reference = [%b, %b, %b, %b, %b, %b, %b]", 1'b0, 1'b0, out_and, out_or, out_xor, out_nand, out_nor, out_xnor, out_anotb, 1'b0, 1'b0, 1'b0, 1'b1, 1'b1, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -43,7 +42,6 @@ module top_module_tb;
         if (!(out_and === 1'b0 && out_or === 1'b0 && out_xor === 1'b0 && out_nand === 1'b1 && out_nor === 1'b1 && out_xnor === 1'b1 && out_anotb === 1'b0)) begin
             $display("Mismatch at index 1: Inputs = [%b, %b], Generated = [%b, %b, %b, %b, %b, %b, %b], Reference = [%b, %b, %b, %b, %b, %b, %b]", 1'b0, 1'b0, out_and, out_or, out_xor, out_nand, out_nor, out_xnor, out_anotb, 1'b0, 1'b0, 1'b0, 1'b1, 1'b1, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -56,7 +54,6 @@ module top_module_tb;
         if (!(out_and === 1'b0 && out_or === 1'b0 && out_xor === 1'b0 && out_nand === 1'b1 && out_nor === 1'b1 && out_xnor === 1'b1 && out_anotb === 1'b0)) begin
             $display("Mismatch at index 2: Inputs = [%b, %b], Generated = [%b, %b, %b, %b, %b, %b, %b], Reference = [%b, %b, %b, %b, %b, %b, %b]", 1'b0, 1'b0, out_and, out_or, out_xor, out_nand, out_nor, out_xnor, out_anotb, 1'b0, 1'b0, 1'b0, 1'b1, 1'b1, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -69,7 +66,6 @@ module top_module_tb;
         if (!(out_and === 1'b0 && out_or === 1'b1 && out_xor === 1'b1 && out_nand === 1'b1 && out_nor === 1'b0 && out_xnor === 1'b0 && out_anotb === 1'b0)) begin
             $display("Mismatch at index 3: Inputs = [%b, %b], Generated = [%b, %b, %b, %b, %b, %b, %b], Reference = [%b, %b, %b, %b, %b, %b, %b]", 1'b0, 1'b1, out_and, out_or, out_xor, out_nand, out_nor, out_xnor, out_anotb, 1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -82,7 +78,6 @@ module top_module_tb;
         if (!(out_and === 1'b0 && out_or === 1'b1 && out_xor === 1'b1 && out_nand === 1'b1 && out_nor === 1'b0 && out_xnor === 1'b0 && out_anotb === 1'b0)) begin
             $display("Mismatch at index 4: Inputs = [%b, %b], Generated = [%b, %b, %b, %b, %b, %b, %b], Reference = [%b, %b, %b, %b, %b, %b, %b]", 1'b0, 1'b1, out_and, out_or, out_xor, out_nand, out_nor, out_xnor, out_anotb, 1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -95,7 +90,6 @@ module top_module_tb;
         if (!(out_and === 1'b0 && out_or === 1'b1 && out_xor === 1'b1 && out_nand === 1'b1 && out_nor === 1'b0 && out_xnor === 1'b0 && out_anotb === 1'b1)) begin
             $display("Mismatch at index 5: Inputs = [%b, %b], Generated = [%b, %b, %b, %b, %b, %b, %b], Reference = [%b, %b, %b, %b, %b, %b, %b]", 1'b1, 1'b0, out_and, out_or, out_xor, out_nand, out_nor, out_xnor, out_anotb, 1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -108,7 +102,6 @@ module top_module_tb;
         if (!(out_and === 1'b0 && out_or === 1'b1 && out_xor === 1'b1 && out_nand === 1'b1 && out_nor === 1'b0 && out_xnor === 1'b0 && out_anotb === 1'b1)) begin
             $display("Mismatch at index 6: Inputs = [%b, %b], Generated = [%b, %b, %b, %b, %b, %b, %b], Reference = [%b, %b, %b, %b, %b, %b, %b]", 1'b1, 1'b0, out_and, out_or, out_xor, out_nand, out_nor, out_xnor, out_anotb, 1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -121,7 +114,6 @@ module top_module_tb;
         if (!(out_and === 1'b1 && out_or === 1'b1 && out_xor === 1'b0 && out_nand === 1'b0 && out_nor === 1'b0 && out_xnor === 1'b1 && out_anotb === 1'b0)) begin
             $display("Mismatch at index 7: Inputs = [%b, %b], Generated = [%b, %b, %b, %b, %b, %b, %b], Reference = [%b, %b, %b, %b, %b, %b, %b]", 1'b1, 1'b1, out_and, out_or, out_xor, out_nand, out_nor, out_xnor, out_anotb, 1'b1, 1'b1, 1'b0, 1'b0, 1'b0, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin

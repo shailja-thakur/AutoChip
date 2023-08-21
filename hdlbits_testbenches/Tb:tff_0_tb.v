@@ -25,7 +25,6 @@ module top_module_tb;
         if (!()) begin
             $display("Mismatch at index 0: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -38,7 +37,6 @@ module top_module_tb;
         if (!()) begin
             $display("Mismatch at index 1: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -51,7 +49,6 @@ module top_module_tb;
         if (!()) begin
             $display("Mismatch at index 2: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -64,7 +61,6 @@ module top_module_tb;
         if (!()) begin
             $display("Mismatch at index 3: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -77,7 +73,6 @@ module top_module_tb;
         if (!()) begin
             $display("Mismatch at index 4: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -90,7 +85,6 @@ module top_module_tb;
         if (!()) begin
             $display("Mismatch at index 5: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -103,7 +97,6 @@ module top_module_tb;
         if (!()) begin
             $display("Mismatch at index 6: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -116,7 +109,6 @@ module top_module_tb;
         if (!()) begin
             $display("Mismatch at index 7: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin

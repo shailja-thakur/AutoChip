@@ -25,7 +25,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b1 && q7.in === 1'b0 && q7.s === 1'b110 && q7.out === 1'b0)) begin
             $display("Mismatch at index 0: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b1, 1'b0, 1'b110, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -38,7 +37,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b0 && q7.in === 1'b1 && q7.s === 1'b10 && q7.out === 1'b0)) begin
             $display("Mismatch at index 1: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b0, 1'b1, 1'b10, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -51,7 +49,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b1 && q7.in === 1'b1 && q7.s === 1'b10 && q7.out === 1'b0)) begin
             $display("Mismatch at index 2: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b1, 1'b1, 1'b10, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -64,7 +61,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b0 && q7.in === 1'b0 && q7.s === 1'b111 && q7.out === 1'b0)) begin
             $display("Mismatch at index 3: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b0, 1'b0, 1'b111, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -77,7 +73,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b1 && q7.in === 1'b0 && q7.s === 1'b111 && q7.out === 1'b1)) begin
             $display("Mismatch at index 4: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b1, 1'b0, 1'b111, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -90,7 +85,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b0 && q7.in === 1'b1 && q7.s === 1'b0 && q7.out === 1'b1)) begin
             $display("Mismatch at index 5: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b0, 1'b1, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -103,7 +97,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b1 && q7.in === 1'b1 && q7.s === 1'b0 && q7.out === 1'b1)) begin
             $display("Mismatch at index 6: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b1, 1'b1, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -116,7 +109,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b0 && q7.in === 1'b1 && q7.s === 1'b0 && q7.out === 1'b1)) begin
             $display("Mismatch at index 7: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b0, 1'b1, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -129,7 +121,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b1 && q7.in === 1'b1 && q7.s === 1'b0 && q7.out === 1'b0)) begin
             $display("Mismatch at index 8: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b1, 1'b1, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -142,7 +133,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b0 && q7.in === 1'b1 && q7.s === 1'b0 && q7.out === 1'b0)) begin
             $display("Mismatch at index 9: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b0, 1'b1, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -155,7 +145,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b1 && q7.in === 1'b1 && q7.s === 1'b0 && q7.out === 1'b0)) begin
             $display("Mismatch at index 10: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b1, 1'b1, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -168,7 +157,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b0 && q7.in === 1'b0 && q7.s === 1'b0 && q7.out === 1'b0)) begin
             $display("Mismatch at index 11: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b0, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -181,7 +169,6 @@ module top_module_tb;
         if (!(q7.clk === 1'b1 && q7.in === 1'b0 && q7.s === 1'b0 && q7.out === 1'b0)) begin
             $display("Mismatch at index 12: Inputs = [], Generated = [%b, %b, %b, %b], Reference = [%b, %b, %b, %b]", q7.clk, q7.in, q7.s, q7.out, 1'b1, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin

@@ -26,7 +26,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b0 && out_or_logical === 1'b0 && out_not === 1'b111111)) begin
             $display("Mismatch at index 0: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0000, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b0, 1'b0, 1'b111111);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -39,7 +38,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b111)) begin
             $display("Mismatch at index 1: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0000, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b111);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -52,7 +50,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b111)) begin
             $display("Mismatch at index 2: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0000, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b111);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -65,7 +62,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b110)) begin
             $display("Mismatch at index 3: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0001, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b110);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -78,7 +74,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b110)) begin
             $display("Mismatch at index 4: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0001, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b110);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -91,7 +86,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b101)) begin
             $display("Mismatch at index 5: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0010, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -104,7 +98,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b101)) begin
             $display("Mismatch at index 6: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0010, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -117,7 +110,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b100)) begin
             $display("Mismatch at index 7: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0011, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -130,7 +122,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b100)) begin
             $display("Mismatch at index 8: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0011, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -143,7 +134,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b11)) begin
             $display("Mismatch at index 9: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0100, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b11);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -156,7 +146,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b11)) begin
             $display("Mismatch at index 10: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0100, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b11);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -169,7 +158,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b10)) begin
             $display("Mismatch at index 11: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0101, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b10);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -182,7 +170,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b10)) begin
             $display("Mismatch at index 12: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0101, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b10);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -195,7 +182,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b1)) begin
             $display("Mismatch at index 13: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0110, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -208,7 +194,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b1)) begin
             $display("Mismatch at index 14: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0110, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b1);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -221,7 +206,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b0)) begin
             $display("Mismatch at index 15: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0111, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -234,7 +218,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b0)) begin
             $display("Mismatch at index 16: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0111, 4'b0111, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -247,7 +230,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b0 && out_or_logical === 1'b0 && out_not === 1'b111111)) begin
             $display("Mismatch at index 17: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0000, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b0, 1'b0, 1'b111111);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -260,7 +242,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b0 && out_or_logical === 1'b0 && out_not === 1'b111111)) begin
             $display("Mismatch at index 18: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0000, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b0, 1'b0, 1'b111111);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -273,7 +254,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b1 && out_or_logical === 1'b1 && out_not === 1'b111110)) begin
             $display("Mismatch at index 19: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0001, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b1, 1'b1, 1'b111110);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -286,7 +266,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b1 && out_or_logical === 1'b1 && out_not === 1'b111110)) begin
             $display("Mismatch at index 20: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0001, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b1, 1'b1, 1'b111110);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -299,7 +278,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b10 && out_or_logical === 1'b1 && out_not === 1'b111101)) begin
             $display("Mismatch at index 21: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0010, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b10, 1'b1, 1'b111101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -312,7 +290,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b10 && out_or_logical === 1'b1 && out_not === 1'b111101)) begin
             $display("Mismatch at index 22: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0010, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b10, 1'b1, 1'b111101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -325,7 +302,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b11 && out_or_logical === 1'b1 && out_not === 1'b111100)) begin
             $display("Mismatch at index 23: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0011, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b11, 1'b1, 1'b111100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -338,7 +314,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b11 && out_or_logical === 1'b1 && out_not === 1'b111100)) begin
             $display("Mismatch at index 24: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0011, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b11, 1'b1, 1'b111100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -351,7 +326,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b100 && out_or_logical === 1'b1 && out_not === 1'b111011)) begin
             $display("Mismatch at index 25: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0100, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b100, 1'b1, 1'b111011);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -364,7 +338,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b100 && out_or_logical === 1'b1 && out_not === 1'b111011)) begin
             $display("Mismatch at index 26: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0100, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b100, 1'b1, 1'b111011);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -377,7 +350,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b101 && out_or_logical === 1'b1 && out_not === 1'b111010)) begin
             $display("Mismatch at index 27: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0101, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b101, 1'b1, 1'b111010);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -390,7 +362,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b101 && out_or_logical === 1'b1 && out_not === 1'b111010)) begin
             $display("Mismatch at index 28: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0101, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b101, 1'b1, 1'b111010);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -403,7 +374,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b110 && out_or_logical === 1'b1 && out_not === 1'b111001)) begin
             $display("Mismatch at index 29: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0110, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b110, 1'b1, 1'b111001);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -416,7 +386,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b110 && out_or_logical === 1'b1 && out_not === 1'b111001)) begin
             $display("Mismatch at index 30: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0110, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b110, 1'b1, 1'b111001);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -429,7 +398,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b111000)) begin
             $display("Mismatch at index 31: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0111, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b111000);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -442,7 +410,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b111000)) begin
             $display("Mismatch at index 32: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0111, 4'b0000, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b111000);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -455,7 +422,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b1 && out_or_logical === 1'b1 && out_not === 1'b110111)) begin
             $display("Mismatch at index 33: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0000, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b1, 1'b1, 1'b110111);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -468,7 +434,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b1 && out_or_logical === 1'b1 && out_not === 1'b110111)) begin
             $display("Mismatch at index 34: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0000, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b1, 1'b1, 1'b110111);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -481,7 +446,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b1 && out_or_logical === 1'b1 && out_not === 1'b110110)) begin
             $display("Mismatch at index 35: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0001, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b1, 1'b1, 1'b110110);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -494,7 +458,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b1 && out_or_logical === 1'b1 && out_not === 1'b110110)) begin
             $display("Mismatch at index 36: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0001, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b1, 1'b1, 1'b110110);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -507,7 +470,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b11 && out_or_logical === 1'b1 && out_not === 1'b110101)) begin
             $display("Mismatch at index 37: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0010, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b11, 1'b1, 1'b110101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -520,7 +482,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b11 && out_or_logical === 1'b1 && out_not === 1'b110101)) begin
             $display("Mismatch at index 38: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0010, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b11, 1'b1, 1'b110101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -533,7 +494,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b11 && out_or_logical === 1'b1 && out_not === 1'b110100)) begin
             $display("Mismatch at index 39: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0011, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b11, 1'b1, 1'b110100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -546,7 +506,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b11 && out_or_logical === 1'b1 && out_not === 1'b110100)) begin
             $display("Mismatch at index 40: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0011, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b11, 1'b1, 1'b110100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -559,7 +518,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b101 && out_or_logical === 1'b1 && out_not === 1'b110011)) begin
             $display("Mismatch at index 41: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0100, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b101, 1'b1, 1'b110011);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -572,7 +530,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b101 && out_or_logical === 1'b1 && out_not === 1'b110011)) begin
             $display("Mismatch at index 42: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0100, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b101, 1'b1, 1'b110011);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -585,7 +542,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b101 && out_or_logical === 1'b1 && out_not === 1'b110010)) begin
             $display("Mismatch at index 43: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0101, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b101, 1'b1, 1'b110010);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -598,7 +554,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b101 && out_or_logical === 1'b1 && out_not === 1'b110010)) begin
             $display("Mismatch at index 44: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0101, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b101, 1'b1, 1'b110010);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -611,7 +566,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b110001)) begin
             $display("Mismatch at index 45: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0110, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b110001);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -624,7 +578,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b110001)) begin
             $display("Mismatch at index 46: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0110, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b110001);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -637,7 +590,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b110000)) begin
             $display("Mismatch at index 47: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0111, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b110000);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -650,7 +602,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b111 && out_or_logical === 1'b1 && out_not === 1'b110000)) begin
             $display("Mismatch at index 48: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0111, 4'b0001, out_or_bitwise, out_or_logical, out_not, 1'b111, 1'b1, 1'b110000);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -663,7 +614,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b10 && out_or_logical === 1'b1 && out_not === 1'b101111)) begin
             $display("Mismatch at index 49: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0000, 4'b0010, out_or_bitwise, out_or_logical, out_not, 1'b10, 1'b1, 1'b101111);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -676,7 +626,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b10 && out_or_logical === 1'b1 && out_not === 1'b101111)) begin
             $display("Mismatch at index 50: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0000, 4'b0010, out_or_bitwise, out_or_logical, out_not, 1'b10, 1'b1, 1'b101111);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -689,7 +638,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b11 && out_or_logical === 1'b1 && out_not === 1'b101110)) begin
             $display("Mismatch at index 51: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0001, 4'b0010, out_or_bitwise, out_or_logical, out_not, 1'b11, 1'b1, 1'b101110);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -702,7 +650,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b11 && out_or_logical === 1'b1 && out_not === 1'b101110)) begin
             $display("Mismatch at index 52: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0001, 4'b0010, out_or_bitwise, out_or_logical, out_not, 1'b11, 1'b1, 1'b101110);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -715,7 +662,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b10 && out_or_logical === 1'b1 && out_not === 1'b101101)) begin
             $display("Mismatch at index 53: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0010, 4'b0010, out_or_bitwise, out_or_logical, out_not, 1'b10, 1'b1, 1'b101101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -728,7 +674,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b10 && out_or_logical === 1'b1 && out_not === 1'b101101)) begin
             $display("Mismatch at index 54: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0010, 4'b0010, out_or_bitwise, out_or_logical, out_not, 1'b10, 1'b1, 1'b101101);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -741,7 +686,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b11 && out_or_logical === 1'b1 && out_not === 1'b101100)) begin
             $display("Mismatch at index 55: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0011, 4'b0010, out_or_bitwise, out_or_logical, out_not, 1'b11, 1'b1, 1'b101100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -754,7 +698,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b11 && out_or_logical === 1'b1 && out_not === 1'b101100)) begin
             $display("Mismatch at index 56: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0011, 4'b0010, out_or_bitwise, out_or_logical, out_not, 1'b11, 1'b1, 1'b101100);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -767,7 +710,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b110 && out_or_logical === 1'b1 && out_not === 1'b101011)) begin
             $display("Mismatch at index 57: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0100, 4'b0010, out_or_bitwise, out_or_logical, out_not, 1'b110, 1'b1, 1'b101011);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
@@ -780,7 +722,6 @@ module top_module_tb;
         if (!(out_or_bitwise === 1'b110 && out_or_logical === 1'b1 && out_not === 1'b101011)) begin
             $display("Mismatch at index 58: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 4'b0100, 4'b0010, out_or_bitwise, out_or_logical, out_not, 1'b110, 1'b1, 1'b101011);
             mismatch_count = mismatch_count + 1;
-            $finish;
         end
 
         else begin
