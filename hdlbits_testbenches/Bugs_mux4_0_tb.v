@@ -1,25 +1,31 @@
+`timescale 1 ns/10 ps  // time-unit = 1 ns, precision = 10 ps
+
 module top_module_tb;
 
-    reg [0:0] sel;
-    reg [6:0] a;
-    reg [6:0] b;
-    reg [6:0] c;
-    reg [6:0] d;
+    // duration for each bit = 20 * timescale = 20 * 1 ns  = 20ns
+    localparam period = 20;
 
-    wire [6:0] out;
+    reg [1:0] sel;
+    reg [7:0] a;
+    reg [7:0] b;
+    reg [7:0] c;
+    reg [7:0] d;
 
+    wire [7:0] out;
+
+
+    integer mismatch_count;
 
     top_module UUT (.sel(sel), .a(a), .b(b), .c(c), .d(d), .out(out));
 
     initial begin
-        integer mismatch_count;
         mismatch_count = 0;
 
-        // Tick 0: Inputs = 1'b0, 7'b10101010, 7'b10111011, 7'b11001100, 7'b11011101, Generated = out, Reference = 7'b10101010
-        sel = 1'b0; a = 7'b10101010; b = 7'b10111011; c = 7'b11001100; d = 7'b11011101; // Set input values
+        // Tick 0: Inputs = 4'b0000, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, Generated = out, Reference = 16'b0000000010101010
+        sel = 4'b0000; a = 16'b0000000010101010; b = 16'b0000000010111011; c = 16'b0000000011001100; d = 16'b0000000011011101; // Set input values
         #period;
-        if (!(out === 7'b10101010)) begin
-            $display("Mismatch at index 0: Inputs = ["1'b0" "7'b10101010" "7'b10111011" "7'b11001100" "7'b11011101"], Generated = ['out'], Reference = ["7'b10101010"]");
+        if (!(out === 16'b0000000010101010)) begin
+            $display("Mismatch at index 0: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0000, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, out, 16'b0000000010101010);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -28,11 +34,11 @@ module top_module_tb;
             $display("Test 0 passed!");
         end
 
-        // Tick 1: Inputs = 1'b0, 7'b10101010, 7'b10111011, 7'b11001100, 7'b11011101, Generated = out, Reference = 7'b10101010
-        sel = 1'b0; a = 7'b10101010; b = 7'b10111011; c = 7'b11001100; d = 7'b11011101; // Set input values
+        // Tick 1: Inputs = 4'b0000, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, Generated = out, Reference = 16'b0000000010101010
+        sel = 4'b0000; a = 16'b0000000010101010; b = 16'b0000000010111011; c = 16'b0000000011001100; d = 16'b0000000011011101; // Set input values
         #period;
-        if (!(out === 7'b10101010)) begin
-            $display("Mismatch at index 1: Inputs = ["1'b0" "7'b10101010" "7'b10111011" "7'b11001100" "7'b11011101"], Generated = ['out'], Reference = ["7'b10101010"]");
+        if (!(out === 16'b0000000010101010)) begin
+            $display("Mismatch at index 1: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0000, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, out, 16'b0000000010101010);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -41,11 +47,11 @@ module top_module_tb;
             $display("Test 1 passed!");
         end
 
-        // Tick 2: Inputs = 1'b0, 7'b10101010, 7'b10111011, 7'b11001100, 7'b11011101, Generated = out, Reference = 7'b10101010
-        sel = 1'b0; a = 7'b10101010; b = 7'b10111011; c = 7'b11001100; d = 7'b11011101; // Set input values
+        // Tick 2: Inputs = 4'b0000, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, Generated = out, Reference = 16'b0000000010101010
+        sel = 4'b0000; a = 16'b0000000010101010; b = 16'b0000000010111011; c = 16'b0000000011001100; d = 16'b0000000011011101; // Set input values
         #period;
-        if (!(out === 7'b10101010)) begin
-            $display("Mismatch at index 2: Inputs = ["1'b0" "7'b10101010" "7'b10111011" "7'b11001100" "7'b11011101"], Generated = ['out'], Reference = ["7'b10101010"]");
+        if (!(out === 16'b0000000010101010)) begin
+            $display("Mismatch at index 2: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0000, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, out, 16'b0000000010101010);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -54,11 +60,11 @@ module top_module_tb;
             $display("Test 2 passed!");
         end
 
-        // Tick 3: Inputs = 1'b0, 7'b10101010, 7'b10111011, 7'b11001100, 7'b11011101, Generated = out, Reference = 7'b10101010
-        sel = 1'b0; a = 7'b10101010; b = 7'b10111011; c = 7'b11001100; d = 7'b11011101; // Set input values
+        // Tick 3: Inputs = 4'b0000, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, Generated = out, Reference = 16'b0000000010101010
+        sel = 4'b0000; a = 16'b0000000010101010; b = 16'b0000000010111011; c = 16'b0000000011001100; d = 16'b0000000011011101; // Set input values
         #period;
-        if (!(out === 7'b10101010)) begin
-            $display("Mismatch at index 3: Inputs = ["1'b0" "7'b10101010" "7'b10111011" "7'b11001100" "7'b11011101"], Generated = ['out'], Reference = ["7'b10101010"]");
+        if (!(out === 16'b0000000010101010)) begin
+            $display("Mismatch at index 3: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0000, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, out, 16'b0000000010101010);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -67,11 +73,11 @@ module top_module_tb;
             $display("Test 3 passed!");
         end
 
-        // Tick 4: Inputs = 1'b1, 7'b10101010, 7'b10111011, 7'b11001100, 7'b11011101, Generated = out, Reference = 7'b10111011
-        sel = 1'b1; a = 7'b10101010; b = 7'b10111011; c = 7'b11001100; d = 7'b11011101; // Set input values
+        // Tick 4: Inputs = 4'b0001, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, Generated = out, Reference = 16'b0000000010111011
+        sel = 4'b0001; a = 16'b0000000010101010; b = 16'b0000000010111011; c = 16'b0000000011001100; d = 16'b0000000011011101; // Set input values
         #period;
-        if (!(out === 7'b10111011)) begin
-            $display("Mismatch at index 4: Inputs = ["1'b1" "7'b10101010" "7'b10111011" "7'b11001100" "7'b11011101"], Generated = ['out'], Reference = ["7'b10111011"]");
+        if (!(out === 16'b0000000010111011)) begin
+            $display("Mismatch at index 4: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0001, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, out, 16'b0000000010111011);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -80,11 +86,11 @@ module top_module_tb;
             $display("Test 4 passed!");
         end
 
-        // Tick 5: Inputs = 1'b10, 7'b10101010, 7'b10111011, 7'b11001100, 7'b11011101, Generated = out, Reference = 7'b11001100
-        sel = 1'b10; a = 7'b10101010; b = 7'b10111011; c = 7'b11001100; d = 7'b11011101; // Set input values
+        // Tick 5: Inputs = 4'b0010, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, Generated = out, Reference = 16'b0000000011001100
+        sel = 4'b0010; a = 16'b0000000010101010; b = 16'b0000000010111011; c = 16'b0000000011001100; d = 16'b0000000011011101; // Set input values
         #period;
-        if (!(out === 7'b11001100)) begin
-            $display("Mismatch at index 5: Inputs = ["1'b10" "7'b10101010" "7'b10111011" "7'b11001100" "7'b11011101"], Generated = ['out'], Reference = ["7'b11001100"]");
+        if (!(out === 16'b0000000011001100)) begin
+            $display("Mismatch at index 5: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0010, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, out, 16'b0000000011001100);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -93,11 +99,11 @@ module top_module_tb;
             $display("Test 5 passed!");
         end
 
-        // Tick 6: Inputs = 1'b11, 7'b10101010, 7'b10111011, 7'b11001100, 7'b11011101, Generated = out, Reference = 7'b11011101
-        sel = 1'b11; a = 7'b10101010; b = 7'b10111011; c = 7'b11001100; d = 7'b11011101; // Set input values
+        // Tick 6: Inputs = 4'b0011, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, Generated = out, Reference = 16'b0000000011011101
+        sel = 4'b0011; a = 16'b0000000010101010; b = 16'b0000000010111011; c = 16'b0000000011001100; d = 16'b0000000011011101; // Set input values
         #period;
-        if (!(out === 7'b11011101)) begin
-            $display("Mismatch at index 6: Inputs = ["1'b11" "7'b10101010" "7'b10111011" "7'b11001100" "7'b11011101"], Generated = ['out'], Reference = ["7'b11011101"]");
+        if (!(out === 16'b0000000011011101)) begin
+            $display("Mismatch at index 6: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0011, 16'b0000000010101010, 16'b0000000010111011, 16'b0000000011001100, 16'b0000000011011101, out, 16'b0000000011011101);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -106,11 +112,11 @@ module top_module_tb;
             $display("Test 6 passed!");
         end
 
-        // Tick 7: Inputs = 1'b0, 7'b1111111, 7'b0000000, 7'b1010101, 7'b0101010, Generated = out, Reference = 7'b1111111
-        sel = 1'b0; a = 7'b1111111; b = 7'b0000000; c = 7'b1010101; d = 7'b0101010; // Set input values
+        // Tick 7: Inputs = 4'b0000, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, Generated = out, Reference = 16'b0000000001111111
+        sel = 4'b0000; a = 16'b0000000001111111; b = 16'b0000000000000000; c = 16'b0000000001010101; d = 16'b0000000000101010; // Set input values
         #period;
-        if (!(out === 7'b1111111)) begin
-            $display("Mismatch at index 7: Inputs = ["1'b0" "7'b1111111" "7'b0000000" "7'b1010101" "7'b0101010"], Generated = ['out'], Reference = ["7'b1111111"]");
+        if (!(out === 16'b0000000001111111)) begin
+            $display("Mismatch at index 7: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0000, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, out, 16'b0000000001111111);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -119,11 +125,11 @@ module top_module_tb;
             $display("Test 7 passed!");
         end
 
-        // Tick 8: Inputs = 1'b0, 7'b1111111, 7'b0000000, 7'b1010101, 7'b0101010, Generated = out, Reference = 7'b1111111
-        sel = 1'b0; a = 7'b1111111; b = 7'b0000000; c = 7'b1010101; d = 7'b0101010; // Set input values
+        // Tick 8: Inputs = 4'b0000, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, Generated = out, Reference = 16'b0000000001111111
+        sel = 4'b0000; a = 16'b0000000001111111; b = 16'b0000000000000000; c = 16'b0000000001010101; d = 16'b0000000000101010; // Set input values
         #period;
-        if (!(out === 7'b1111111)) begin
-            $display("Mismatch at index 8: Inputs = ["1'b0" "7'b1111111" "7'b0000000" "7'b1010101" "7'b0101010"], Generated = ['out'], Reference = ["7'b1111111"]");
+        if (!(out === 16'b0000000001111111)) begin
+            $display("Mismatch at index 8: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0000, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, out, 16'b0000000001111111);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -132,11 +138,11 @@ module top_module_tb;
             $display("Test 8 passed!");
         end
 
-        // Tick 9: Inputs = 1'b0, 7'b1111111, 7'b0000000, 7'b1010101, 7'b0101010, Generated = out, Reference = 7'b1111111
-        sel = 1'b0; a = 7'b1111111; b = 7'b0000000; c = 7'b1010101; d = 7'b0101010; // Set input values
+        // Tick 9: Inputs = 4'b0000, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, Generated = out, Reference = 16'b0000000001111111
+        sel = 4'b0000; a = 16'b0000000001111111; b = 16'b0000000000000000; c = 16'b0000000001010101; d = 16'b0000000000101010; // Set input values
         #period;
-        if (!(out === 7'b1111111)) begin
-            $display("Mismatch at index 9: Inputs = ["1'b0" "7'b1111111" "7'b0000000" "7'b1010101" "7'b0101010"], Generated = ['out'], Reference = ["7'b1111111"]");
+        if (!(out === 16'b0000000001111111)) begin
+            $display("Mismatch at index 9: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0000, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, out, 16'b0000000001111111);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -145,11 +151,11 @@ module top_module_tb;
             $display("Test 9 passed!");
         end
 
-        // Tick 10: Inputs = 1'b0, 7'b1111111, 7'b0000000, 7'b1010101, 7'b0101010, Generated = out, Reference = 7'b1111111
-        sel = 1'b0; a = 7'b1111111; b = 7'b0000000; c = 7'b1010101; d = 7'b0101010; // Set input values
+        // Tick 10: Inputs = 4'b0000, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, Generated = out, Reference = 16'b0000000001111111
+        sel = 4'b0000; a = 16'b0000000001111111; b = 16'b0000000000000000; c = 16'b0000000001010101; d = 16'b0000000000101010; // Set input values
         #period;
-        if (!(out === 7'b1111111)) begin
-            $display("Mismatch at index 10: Inputs = ["1'b0" "7'b1111111" "7'b0000000" "7'b1010101" "7'b0101010"], Generated = ['out'], Reference = ["7'b1111111"]");
+        if (!(out === 16'b0000000001111111)) begin
+            $display("Mismatch at index 10: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0000, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, out, 16'b0000000001111111);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -158,11 +164,11 @@ module top_module_tb;
             $display("Test 10 passed!");
         end
 
-        // Tick 11: Inputs = 1'b1, 7'b1111111, 7'b0000000, 7'b1010101, 7'b0101010, Generated = out, Reference = 7'b0000000
-        sel = 1'b1; a = 7'b1111111; b = 7'b0000000; c = 7'b1010101; d = 7'b0101010; // Set input values
+        // Tick 11: Inputs = 4'b0001, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, Generated = out, Reference = 16'b0000000000000000
+        sel = 4'b0001; a = 16'b0000000001111111; b = 16'b0000000000000000; c = 16'b0000000001010101; d = 16'b0000000000101010; // Set input values
         #period;
-        if (!(out === 7'b0000000)) begin
-            $display("Mismatch at index 11: Inputs = ["1'b1" "7'b1111111" "7'b0000000" "7'b1010101" "7'b0101010"], Generated = ['out'], Reference = ["7'b0000000"]");
+        if (!(out === 16'b0000000000000000)) begin
+            $display("Mismatch at index 11: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0001, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, out, 16'b0000000000000000);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -171,11 +177,11 @@ module top_module_tb;
             $display("Test 11 passed!");
         end
 
-        // Tick 12: Inputs = 1'b10, 7'b1111111, 7'b0000000, 7'b1010101, 7'b0101010, Generated = out, Reference = 7'b1010101
-        sel = 1'b10; a = 7'b1111111; b = 7'b0000000; c = 7'b1010101; d = 7'b0101010; // Set input values
+        // Tick 12: Inputs = 4'b0010, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, Generated = out, Reference = 16'b0000000001010101
+        sel = 4'b0010; a = 16'b0000000001111111; b = 16'b0000000000000000; c = 16'b0000000001010101; d = 16'b0000000000101010; // Set input values
         #period;
-        if (!(out === 7'b1010101)) begin
-            $display("Mismatch at index 12: Inputs = ["1'b10" "7'b1111111" "7'b0000000" "7'b1010101" "7'b0101010"], Generated = ['out'], Reference = ["7'b1010101"]");
+        if (!(out === 16'b0000000001010101)) begin
+            $display("Mismatch at index 12: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0010, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, out, 16'b0000000001010101);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -184,11 +190,11 @@ module top_module_tb;
             $display("Test 12 passed!");
         end
 
-        // Tick 13: Inputs = 1'b11, 7'b1111111, 7'b0000000, 7'b1010101, 7'b0101010, Generated = out, Reference = 7'b0101010
-        sel = 1'b11; a = 7'b1111111; b = 7'b0000000; c = 7'b1010101; d = 7'b0101010; // Set input values
+        // Tick 13: Inputs = 4'b0011, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, Generated = out, Reference = 16'b0000000000101010
+        sel = 4'b0011; a = 16'b0000000001111111; b = 16'b0000000000000000; c = 16'b0000000001010101; d = 16'b0000000000101010; // Set input values
         #period;
-        if (!(out === 7'b0101010)) begin
-            $display("Mismatch at index 13: Inputs = ["1'b11" "7'b1111111" "7'b0000000" "7'b1010101" "7'b0101010"], Generated = ['out'], Reference = ["7'b0101010"]");
+        if (!(out === 16'b0000000000101010)) begin
+            $display("Mismatch at index 13: Inputs = [%b, %b, %b, %b, %b], Generated = [%b], Reference = [%b]", 4'b0011, 16'b0000000001111111, 16'b0000000000000000, 16'b0000000001010101, 16'b0000000000101010, out, 16'b0000000000101010);
             mismatch_count = mismatch_count + 1;
             $finish;
         end

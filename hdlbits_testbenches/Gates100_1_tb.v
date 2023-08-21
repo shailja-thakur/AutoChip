@@ -1,23 +1,29 @@
+`timescale 1 ns/10 ps  // time-unit = 1 ns, precision = 10 ps
+
 module top_module_tb;
 
-    reg [98:0] in;
+    // duration for each bit = 20 * timescale = 20 * 1 ns  = 20ns
+    localparam period = 20;
+
+    reg [99:0] in;
 
     wire out_and;
     wire out_or;
     wire out_xor;
 
 
+    integer mismatch_count;
+
     top_module UUT (.in(in), .out_and(out_and), .out_or(out_or), .out_xor(out_xor));
 
     initial begin
-        integer mismatch_count;
         mismatch_count = 0;
 
-        // Tick 0: Inputs = 99'b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, Generated = out_and, out_or, out_xor, Reference = 4'b0000, 4'b0000, 4'b0000
-        in = 99'b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000; // Set input values
+        // Tick 0: Inputs = 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, Generated = out_and, out_or, out_xor, Reference = 1'b0, 1'b0, 1'b0
+        in = 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000; // Set input values
         #period;
-        if (!(out_and === 4'b0000 && out_or === 4'b0000 && out_xor === 4'b0000)) begin
-            $display("Mismatch at index 0: Inputs = ["99'b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"], Generated = ['out_and', 'out_or', 'out_xor'], Reference = ["4'b0000", "4'b0000", "4'b0000"]");
+        if (!(out_and === 1'b0 && out_or === 1'b0 && out_xor === 1'b0)) begin
+            $display("Mismatch at index 0: Inputs = [%b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, out_and, out_or, out_xor, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -26,11 +32,11 @@ module top_module_tb;
             $display("Test 0 passed!");
         end
 
-        // Tick 1: Inputs = 99'b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, Generated = out_and, out_or, out_xor, Reference = 4'b0000, 4'b0000, 4'b0000
-        in = 99'b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000; // Set input values
+        // Tick 1: Inputs = 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, Generated = out_and, out_or, out_xor, Reference = 1'b0, 1'b0, 1'b0
+        in = 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000; // Set input values
         #period;
-        if (!(out_and === 4'b0000 && out_or === 4'b0000 && out_xor === 4'b0000)) begin
-            $display("Mismatch at index 1: Inputs = ["99'b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"], Generated = ['out_and', 'out_or', 'out_xor'], Reference = ["4'b0000", "4'b0000", "4'b0000"]");
+        if (!(out_and === 1'b0 && out_or === 1'b0 && out_xor === 1'b0)) begin
+            $display("Mismatch at index 1: Inputs = [%b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, out_and, out_or, out_xor, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -39,11 +45,11 @@ module top_module_tb;
             $display("Test 1 passed!");
         end
 
-        // Tick 2: Inputs = 99'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111, Generated = out_and, out_or, out_xor, Reference = 4'b0001, 4'b0001, 4'b0000
-        in = 99'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111; // Set input values
+        // Tick 2: Inputs = 100'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111, Generated = out_and, out_or, out_xor, Reference = 1'b1, 1'b1, 1'b0
+        in = 100'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111; // Set input values
         #period;
-        if (!(out_and === 4'b0001 && out_or === 4'b0001 && out_xor === 4'b0000)) begin
-            $display("Mismatch at index 2: Inputs = ["99'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"], Generated = ['out_and', 'out_or', 'out_xor'], Reference = ["4'b0001", "4'b0001", "4'b0000"]");
+        if (!(out_and === 1'b1 && out_or === 1'b1 && out_xor === 1'b0)) begin
+            $display("Mismatch at index 2: Inputs = [%b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 100'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111, out_and, out_or, out_xor, 1'b1, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -52,11 +58,11 @@ module top_module_tb;
             $display("Test 2 passed!");
         end
 
-        // Tick 3: Inputs = 99'b000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111111111, Generated = out_and, out_or, out_xor, Reference = 4'b0000, 4'b0001, 4'b0000
-        in = 99'b000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111111111; // Set input values
+        // Tick 3: Inputs = 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111111111, Generated = out_and, out_or, out_xor, Reference = 1'b0, 1'b1, 1'b0
+        in = 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111111111; // Set input values
         #period;
-        if (!(out_and === 4'b0000 && out_or === 4'b0001 && out_xor === 4'b0000)) begin
-            $display("Mismatch at index 3: Inputs = ["99'b000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111111111"], Generated = ['out_and', 'out_or', 'out_xor'], Reference = ["4'b0000", "4'b0001", "4'b0000"]");
+        if (!(out_and === 1'b0 && out_or === 1'b1 && out_xor === 1'b0)) begin
+            $display("Mismatch at index 3: Inputs = [%b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000111111111111111111, out_and, out_or, out_xor, 1'b0, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -65,11 +71,11 @@ module top_module_tb;
             $display("Test 3 passed!");
         end
 
-        // Tick 4: Inputs = 99'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000000, Generated = out_and, out_or, out_xor, Reference = 4'b0000, 4'b0001, 4'b0000
-        in = 99'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000000; // Set input values
+        // Tick 4: Inputs = 100'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000000, Generated = out_and, out_or, out_xor, Reference = 1'b0, 1'b1, 1'b0
+        in = 100'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000000; // Set input values
         #period;
-        if (!(out_and === 4'b0000 && out_or === 4'b0001 && out_xor === 4'b0000)) begin
-            $display("Mismatch at index 4: Inputs = ["99'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000000"], Generated = ['out_and', 'out_or', 'out_xor'], Reference = ["4'b0000", "4'b0001", "4'b0000"]");
+        if (!(out_and === 1'b0 && out_or === 1'b1 && out_xor === 1'b0)) begin
+            $display("Mismatch at index 4: Inputs = [%b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 100'b1111111111111111111111111111111111111111111111111111111111111111111111111111111111000000000000000000, out_and, out_or, out_xor, 1'b0, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -78,11 +84,11 @@ module top_module_tb;
             $display("Test 4 passed!");
         end
 
-        // Tick 5: Inputs = 99'b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000, Generated = out_and, out_or, out_xor, Reference = 4'b0000, 4'b0001, 4'b0001
-        in = 99'b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000; // Set input values
+        // Tick 5: Inputs = 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000, Generated = out_and, out_or, out_xor, Reference = 1'b0, 1'b1, 1'b1
+        in = 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000; // Set input values
         #period;
-        if (!(out_and === 4'b0000 && out_or === 4'b0001 && out_xor === 4'b0001)) begin
-            $display("Mismatch at index 5: Inputs = ["99'b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000"], Generated = ['out_and', 'out_or', 'out_xor'], Reference = ["4'b0000", "4'b0001", "4'b0001"]");
+        if (!(out_and === 1'b0 && out_or === 1'b1 && out_xor === 1'b1)) begin
+            $display("Mismatch at index 5: Inputs = [%b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 100'b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000, out_and, out_or, out_xor, 1'b0, 1'b1, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end

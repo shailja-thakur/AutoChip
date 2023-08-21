@@ -1,21 +1,27 @@
+`timescale 1 ns/10 ps  // time-unit = 1 ns, precision = 10 ps
+
 module top_module_tb;
+
+    // duration for each bit = 20 * timescale = 20 * 1 ns  = 20ns
+    localparam period = 20;
 
 
     wire andgate.in;
     wire andgate.out;
 
 
+    integer mismatch_count;
+
     top_module UUT (.andgate.in(andgate.in), .andgate.out(andgate.out));
 
     initial begin
-        integer mismatch_count;
         mismatch_count = 0;
 
-        // Tick 0: Inputs = , Generated = andgate.in, andgate.out, Reference = 4'b0000, 4'b0000
-        ; // Set input values
+        // Tick 0: Inputs = , Generated = andgate.in, andgate.out, Reference = 1'b0, 1'b0
+        // No input assignments for this tick
         #period;
-        if (!(andgate.in === 4'b0000 && andgate.out === 4'b0000)) begin
-            $display("Mismatch at index 0: Inputs = [], Generated = ['andgate.in', 'andgate.out'], Reference = ["4'b0000", "4'b0000"]");
+        if (!(andgate.in === 1'b0 && andgate.out === 1'b0)) begin
+            $display("Mismatch at index 0: Inputs = [], Generated = [%b, %b], Reference = [%b, %b]", andgate.in, andgate.out, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -24,11 +30,11 @@ module top_module_tb;
             $display("Test 0 passed!");
         end
 
-        // Tick 1: Inputs = , Generated = andgate.in, andgate.out, Reference = 4'b0001, 4'b0000
-        ; // Set input values
+        // Tick 1: Inputs = , Generated = andgate.in, andgate.out, Reference = 1'b1, 1'b0
+        // No input assignments for this tick
         #period;
-        if (!(andgate.in === 4'b0001 && andgate.out === 4'b0000)) begin
-            $display("Mismatch at index 1: Inputs = [], Generated = ['andgate.in', 'andgate.out'], Reference = ["4'b0001", "4'b0000"]");
+        if (!(andgate.in === 1'b1 && andgate.out === 1'b0)) begin
+            $display("Mismatch at index 1: Inputs = [], Generated = [%b, %b], Reference = [%b, %b]", andgate.in, andgate.out, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -37,11 +43,11 @@ module top_module_tb;
             $display("Test 1 passed!");
         end
 
-        // Tick 2: Inputs = , Generated = andgate.in, andgate.out, Reference = 4'b0010, 4'b0000
-        ; // Set input values
+        // Tick 2: Inputs = , Generated = andgate.in, andgate.out, Reference = 1'b10, 1'b0
+        // No input assignments for this tick
         #period;
-        if (!(andgate.in === 4'b0010 && andgate.out === 4'b0000)) begin
-            $display("Mismatch at index 2: Inputs = [], Generated = ['andgate.in', 'andgate.out'], Reference = ["4'b0010", "4'b0000"]");
+        if (!(andgate.in === 1'b10 && andgate.out === 1'b0)) begin
+            $display("Mismatch at index 2: Inputs = [], Generated = [%b, %b], Reference = [%b, %b]", andgate.in, andgate.out, 1'b10, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -50,11 +56,11 @@ module top_module_tb;
             $display("Test 2 passed!");
         end
 
-        // Tick 3: Inputs = , Generated = andgate.in, andgate.out, Reference = 4'b0011, 4'b0001
-        ; // Set input values
+        // Tick 3: Inputs = , Generated = andgate.in, andgate.out, Reference = 1'b11, 1'b1
+        // No input assignments for this tick
         #period;
-        if (!(andgate.in === 4'b0011 && andgate.out === 4'b0001)) begin
-            $display("Mismatch at index 3: Inputs = [], Generated = ['andgate.in', 'andgate.out'], Reference = ["4'b0011", "4'b0001"]");
+        if (!(andgate.in === 1'b11 && andgate.out === 1'b1)) begin
+            $display("Mismatch at index 3: Inputs = [], Generated = [%b, %b], Reference = [%b, %b]", andgate.in, andgate.out, 1'b11, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end

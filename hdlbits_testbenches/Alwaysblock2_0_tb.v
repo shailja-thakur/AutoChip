@@ -1,4 +1,9 @@
+`timescale 1 ns/10 ps  // time-unit = 1 ns, precision = 10 ps
+
 module top_module_tb;
+
+    // duration for each bit = 20 * timescale = 20 * 1 ns  = 20ns
+    localparam period = 20;
 
     reg clk;
     reg a;
@@ -8,6 +13,8 @@ module top_module_tb;
     wire out_always_comb;
     wire out_always_ff;
 
+
+    integer mismatch_count;
 
     top_module UUT (.clk(clk), .a(a), .b(b), .out_assign(out_assign), .out_always_comb(out_always_comb), .out_always_ff(out_always_ff));
 
@@ -21,14 +28,13 @@ module top_module_tb;
     end
 
     initial begin
-        integer mismatch_count;
         mismatch_count = 0;
 
-        // Tick 0: Inputs = Low, 4'b0000, 4'b0000, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0000, 4'b0000, 8'bx
-        a = 4'b0000; b = 4'b0000; // Set input values
+        // Tick 0: Inputs = 1'b1, 1'b0, 1'b0, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b0, 1'b0, 1'b0
+        a = 1'b0; b = 1'b0; // Set input values
         #period;
-        if (!(out_assign === 4'b0000 && out_always_comb === 4'b0000 && out_always_ff === 8'bx)) begin
-            $display("Mismatch at index 0: Inputs = ['Low' "4'b0000" "4'b0000"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0000", "4'b0000", "8'bx"]");
+        if (!(out_assign === 1'b0 && out_always_comb === 1'b0 && out_always_ff === 1'b0)) begin
+            $display("Mismatch at index 0: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b0, 1'b0, out_assign, out_always_comb, out_always_ff, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -37,11 +43,11 @@ module top_module_tb;
             $display("Test 0 passed!");
         end
 
-        // Tick 1: Inputs = High, 4'b0000, 4'b0000, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0000, 4'b0000, 4'b0000
-        a = 4'b0000; b = 4'b0000; // Set input values
+        // Tick 1: Inputs = 1'b0, 1'b0, 1'b0, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b0, 1'b0, 1'b0
+        a = 1'b0; b = 1'b0; // Set input values
         #period;
-        if (!(out_assign === 4'b0000 && out_always_comb === 4'b0000 && out_always_ff === 4'b0000)) begin
-            $display("Mismatch at index 1: Inputs = ['High' "4'b0000" "4'b0000"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0000", "4'b0000", "4'b0000"]");
+        if (!(out_assign === 1'b0 && out_always_comb === 1'b0 && out_always_ff === 1'b0)) begin
+            $display("Mismatch at index 1: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b0, 1'b0, out_assign, out_always_comb, out_always_ff, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -50,11 +56,11 @@ module top_module_tb;
             $display("Test 1 passed!");
         end
 
-        // Tick 2: Inputs = Low, 4'b0000, 4'b0000, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0000, 4'b0000, 4'b0000
-        a = 4'b0000; b = 4'b0000; // Set input values
+        // Tick 2: Inputs = 1'b1, 1'b0, 1'b1, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b1, 1'b1, 1'b0
+        a = 1'b0; b = 1'b1; // Set input values
         #period;
-        if (!(out_assign === 4'b0000 && out_always_comb === 4'b0000 && out_always_ff === 4'b0000)) begin
-            $display("Mismatch at index 2: Inputs = ['Low' "4'b0000" "4'b0000"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0000", "4'b0000", "4'b0000"]");
+        if (!(out_assign === 1'b1 && out_always_comb === 1'b1 && out_always_ff === 1'b0)) begin
+            $display("Mismatch at index 2: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b0, 1'b1, out_assign, out_always_comb, out_always_ff, 1'b1, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -63,11 +69,11 @@ module top_module_tb;
             $display("Test 2 passed!");
         end
 
-        // Tick 3: Inputs = High, 4'b0000, 4'b0001, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0001, 4'b0001, 4'b0000
-        a = 4'b0000; b = 4'b0001; // Set input values
+        // Tick 3: Inputs = 1'b0, 1'b0, 1'b1, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b1, 1'b1, 1'b0
+        a = 1'b0; b = 1'b1; // Set input values
         #period;
-        if (!(out_assign === 4'b0001 && out_always_comb === 4'b0001 && out_always_ff === 4'b0000)) begin
-            $display("Mismatch at index 3: Inputs = ['High' "4'b0000" "4'b0001"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0001", "4'b0001", "4'b0000"]");
+        if (!(out_assign === 1'b1 && out_always_comb === 1'b1 && out_always_ff === 1'b0)) begin
+            $display("Mismatch at index 3: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b0, 1'b1, out_assign, out_always_comb, out_always_ff, 1'b1, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -76,11 +82,11 @@ module top_module_tb;
             $display("Test 3 passed!");
         end
 
-        // Tick 4: Inputs = Low, 4'b0000, 4'b0001, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0001, 4'b0001, 4'b0000
-        a = 4'b0000; b = 4'b0001; // Set input values
+        // Tick 4: Inputs = 1'b1, 1'b1, 1'b0, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b1, 1'b1, 1'b1
+        a = 1'b1; b = 1'b0; // Set input values
         #period;
-        if (!(out_assign === 4'b0001 && out_always_comb === 4'b0001 && out_always_ff === 4'b0000)) begin
-            $display("Mismatch at index 4: Inputs = ['Low' "4'b0000" "4'b0001"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0001", "4'b0001", "4'b0000"]");
+        if (!(out_assign === 1'b1 && out_always_comb === 1'b1 && out_always_ff === 1'b1)) begin
+            $display("Mismatch at index 4: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b1, 1'b0, out_assign, out_always_comb, out_always_ff, 1'b1, 1'b1, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -89,11 +95,11 @@ module top_module_tb;
             $display("Test 4 passed!");
         end
 
-        // Tick 5: Inputs = High, 4'b0001, 4'b0000, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0001, 4'b0001, 4'b0001
-        a = 4'b0001; b = 4'b0000; // Set input values
+        // Tick 5: Inputs = 1'b0, 1'b1, 1'b0, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b1, 1'b1, 1'b1
+        a = 1'b1; b = 1'b0; // Set input values
         #period;
-        if (!(out_assign === 4'b0001 && out_always_comb === 4'b0001 && out_always_ff === 4'b0001)) begin
-            $display("Mismatch at index 5: Inputs = ['High' "4'b0001" "4'b0000"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0001", "4'b0001", "4'b0001"]");
+        if (!(out_assign === 1'b1 && out_always_comb === 1'b1 && out_always_ff === 1'b1)) begin
+            $display("Mismatch at index 5: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b1, 1'b0, out_assign, out_always_comb, out_always_ff, 1'b1, 1'b1, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -102,11 +108,11 @@ module top_module_tb;
             $display("Test 5 passed!");
         end
 
-        // Tick 6: Inputs = Low, 4'b0001, 4'b0000, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0001, 4'b0001, 4'b0001
-        a = 4'b0001; b = 4'b0000; // Set input values
+        // Tick 6: Inputs = 1'b1, 1'b1, 1'b1, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b0, 1'b0, 1'b1
+        a = 1'b1; b = 1'b1; // Set input values
         #period;
-        if (!(out_assign === 4'b0001 && out_always_comb === 4'b0001 && out_always_ff === 4'b0001)) begin
-            $display("Mismatch at index 6: Inputs = ['Low' "4'b0001" "4'b0000"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0001", "4'b0001", "4'b0001"]");
+        if (!(out_assign === 1'b0 && out_always_comb === 1'b0 && out_always_ff === 1'b1)) begin
+            $display("Mismatch at index 6: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b1, 1'b1, out_assign, out_always_comb, out_always_ff, 1'b0, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -115,11 +121,11 @@ module top_module_tb;
             $display("Test 6 passed!");
         end
 
-        // Tick 7: Inputs = High, 4'b0001, 4'b0001, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0000, 4'b0000, 4'b0001
-        a = 4'b0001; b = 4'b0001; // Set input values
+        // Tick 7: Inputs = 1'b0, 1'b1, 1'b1, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b0, 1'b0, 1'b1
+        a = 1'b1; b = 1'b1; // Set input values
         #period;
-        if (!(out_assign === 4'b0000 && out_always_comb === 4'b0000 && out_always_ff === 4'b0001)) begin
-            $display("Mismatch at index 7: Inputs = ['High' "4'b0001" "4'b0001"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0000", "4'b0000", "4'b0001"]");
+        if (!(out_assign === 1'b0 && out_always_comb === 1'b0 && out_always_ff === 1'b1)) begin
+            $display("Mismatch at index 7: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b1, 1'b1, out_assign, out_always_comb, out_always_ff, 1'b0, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -128,11 +134,11 @@ module top_module_tb;
             $display("Test 7 passed!");
         end
 
-        // Tick 8: Inputs = Low, 4'b0001, 4'b0001, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0000, 4'b0000, 4'b0001
-        a = 4'b0001; b = 4'b0001; // Set input values
+        // Tick 8: Inputs = 1'b1, 1'b0, 1'b0, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b0, 1'b0, 1'b0
+        a = 1'b0; b = 1'b0; // Set input values
         #period;
-        if (!(out_assign === 4'b0000 && out_always_comb === 4'b0000 && out_always_ff === 4'b0001)) begin
-            $display("Mismatch at index 8: Inputs = ['Low' "4'b0001" "4'b0001"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0000", "4'b0000", "4'b0001"]");
+        if (!(out_assign === 1'b0 && out_always_comb === 1'b0 && out_always_ff === 1'b0)) begin
+            $display("Mismatch at index 8: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b0, 1'b0, out_assign, out_always_comb, out_always_ff, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -141,11 +147,11 @@ module top_module_tb;
             $display("Test 8 passed!");
         end
 
-        // Tick 9: Inputs = High, 4'b0000, 4'b0000, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0000, 4'b0000, 4'b0000
-        a = 4'b0000; b = 4'b0000; // Set input values
+        // Tick 9: Inputs = 1'b0, 1'b0, 1'b0, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b0, 1'b0, 1'b0
+        a = 1'b0; b = 1'b0; // Set input values
         #period;
-        if (!(out_assign === 4'b0000 && out_always_comb === 4'b0000 && out_always_ff === 4'b0000)) begin
-            $display("Mismatch at index 9: Inputs = ['High' "4'b0000" "4'b0000"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0000", "4'b0000", "4'b0000"]");
+        if (!(out_assign === 1'b0 && out_always_comb === 1'b0 && out_always_ff === 1'b0)) begin
+            $display("Mismatch at index 9: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b0, 1'b0, out_assign, out_always_comb, out_always_ff, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -154,11 +160,11 @@ module top_module_tb;
             $display("Test 9 passed!");
         end
 
-        // Tick 10: Inputs = Low, 4'b0000, 4'b0000, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0000, 4'b0000, 4'b0000
-        a = 4'b0000; b = 4'b0000; // Set input values
+        // Tick 10: Inputs = 1'b1, 1'b0, 1'b1, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b1, 1'b1, 1'b0
+        a = 1'b0; b = 1'b1; // Set input values
         #period;
-        if (!(out_assign === 4'b0000 && out_always_comb === 4'b0000 && out_always_ff === 4'b0000)) begin
-            $display("Mismatch at index 10: Inputs = ['Low' "4'b0000" "4'b0000"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0000", "4'b0000", "4'b0000"]");
+        if (!(out_assign === 1'b1 && out_always_comb === 1'b1 && out_always_ff === 1'b0)) begin
+            $display("Mismatch at index 10: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b0, 1'b1, out_assign, out_always_comb, out_always_ff, 1'b1, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -167,11 +173,11 @@ module top_module_tb;
             $display("Test 10 passed!");
         end
 
-        // Tick 11: Inputs = High, 4'b0000, 4'b0001, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0001, 4'b0001, 4'b0000
-        a = 4'b0000; b = 4'b0001; // Set input values
+        // Tick 11: Inputs = 1'b0, 1'b0, 1'b1, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b1, 1'b1, 1'b0
+        a = 1'b0; b = 1'b1; // Set input values
         #period;
-        if (!(out_assign === 4'b0001 && out_always_comb === 4'b0001 && out_always_ff === 4'b0000)) begin
-            $display("Mismatch at index 11: Inputs = ['High' "4'b0000" "4'b0001"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0001", "4'b0001", "4'b0000"]");
+        if (!(out_assign === 1'b1 && out_always_comb === 1'b1 && out_always_ff === 1'b0)) begin
+            $display("Mismatch at index 11: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b0, 1'b1, out_assign, out_always_comb, out_always_ff, 1'b1, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -180,11 +186,11 @@ module top_module_tb;
             $display("Test 11 passed!");
         end
 
-        // Tick 12: Inputs = Low, 4'b0000, 4'b0001, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0001, 4'b0001, 4'b0000
-        a = 4'b0000; b = 4'b0001; // Set input values
+        // Tick 12: Inputs = 1'b1, 1'b1, 1'b0, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b1, 1'b1, 1'b1
+        a = 1'b1; b = 1'b0; // Set input values
         #period;
-        if (!(out_assign === 4'b0001 && out_always_comb === 4'b0001 && out_always_ff === 4'b0000)) begin
-            $display("Mismatch at index 12: Inputs = ['Low' "4'b0000" "4'b0001"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0001", "4'b0001", "4'b0000"]");
+        if (!(out_assign === 1'b1 && out_always_comb === 1'b1 && out_always_ff === 1'b1)) begin
+            $display("Mismatch at index 12: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b1, 1'b0, out_assign, out_always_comb, out_always_ff, 1'b1, 1'b1, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -193,11 +199,11 @@ module top_module_tb;
             $display("Test 12 passed!");
         end
 
-        // Tick 13: Inputs = High, 4'b0001, 4'b0000, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0001, 4'b0001, 4'b0001
-        a = 4'b0001; b = 4'b0000; // Set input values
+        // Tick 13: Inputs = 1'b0, 1'b1, 1'b0, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b1, 1'b1, 1'b1
+        a = 1'b1; b = 1'b0; // Set input values
         #period;
-        if (!(out_assign === 4'b0001 && out_always_comb === 4'b0001 && out_always_ff === 4'b0001)) begin
-            $display("Mismatch at index 13: Inputs = ['High' "4'b0001" "4'b0000"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0001", "4'b0001", "4'b0001"]");
+        if (!(out_assign === 1'b1 && out_always_comb === 1'b1 && out_always_ff === 1'b1)) begin
+            $display("Mismatch at index 13: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b1, 1'b0, out_assign, out_always_comb, out_always_ff, 1'b1, 1'b1, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -206,11 +212,11 @@ module top_module_tb;
             $display("Test 13 passed!");
         end
 
-        // Tick 14: Inputs = Low, 4'b0001, 4'b0000, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0001, 4'b0001, 4'b0001
-        a = 4'b0001; b = 4'b0000; // Set input values
+        // Tick 14: Inputs = 1'b1, 1'b1, 1'b1, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b0, 1'b0, 1'b1
+        a = 1'b1; b = 1'b1; // Set input values
         #period;
-        if (!(out_assign === 4'b0001 && out_always_comb === 4'b0001 && out_always_ff === 4'b0001)) begin
-            $display("Mismatch at index 14: Inputs = ['Low' "4'b0001" "4'b0000"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0001", "4'b0001", "4'b0001"]");
+        if (!(out_assign === 1'b0 && out_always_comb === 1'b0 && out_always_ff === 1'b1)) begin
+            $display("Mismatch at index 14: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b1, 1'b1, out_assign, out_always_comb, out_always_ff, 1'b0, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -219,11 +225,11 @@ module top_module_tb;
             $display("Test 14 passed!");
         end
 
-        // Tick 15: Inputs = High, 4'b0001, 4'b0001, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0000, 4'b0000, 4'b0001
-        a = 4'b0001; b = 4'b0001; // Set input values
+        // Tick 15: Inputs = 1'b0, 1'b1, 1'b1, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b0, 1'b0, 1'b1
+        a = 1'b1; b = 1'b1; // Set input values
         #period;
-        if (!(out_assign === 4'b0000 && out_always_comb === 4'b0000 && out_always_ff === 4'b0001)) begin
-            $display("Mismatch at index 15: Inputs = ['High' "4'b0001" "4'b0001"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0000", "4'b0000", "4'b0001"]");
+        if (!(out_assign === 1'b0 && out_always_comb === 1'b0 && out_always_ff === 1'b1)) begin
+            $display("Mismatch at index 15: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b1, 1'b1, out_assign, out_always_comb, out_always_ff, 1'b0, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -232,11 +238,11 @@ module top_module_tb;
             $display("Test 15 passed!");
         end
 
-        // Tick 16: Inputs = Low, 4'b0001, 4'b0001, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0000, 4'b0000, 4'b0001
-        a = 4'b0001; b = 4'b0001; // Set input values
+        // Tick 16: Inputs = 1'b1, 1'b0, 1'b0, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b0, 1'b0, 1'b0
+        a = 1'b0; b = 1'b0; // Set input values
         #period;
-        if (!(out_assign === 4'b0000 && out_always_comb === 4'b0000 && out_always_ff === 4'b0001)) begin
-            $display("Mismatch at index 16: Inputs = ['Low' "4'b0001" "4'b0001"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0000", "4'b0000", "4'b0001"]");
+        if (!(out_assign === 1'b0 && out_always_comb === 1'b0 && out_always_ff === 1'b0)) begin
+            $display("Mismatch at index 16: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b0, 1'b0, out_assign, out_always_comb, out_always_ff, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -245,11 +251,11 @@ module top_module_tb;
             $display("Test 16 passed!");
         end
 
-        // Tick 17: Inputs = High, 4'b0000, 4'b0000, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0000, 4'b0000, 4'b0000
-        a = 4'b0000; b = 4'b0000; // Set input values
+        // Tick 17: Inputs = 1'b0, 1'b0, 1'b0, Generated = out_assign, out_always_comb, out_always_ff, Reference = 1'b0, 1'b0, 1'b0
+        a = 1'b0; b = 1'b0; // Set input values
         #period;
-        if (!(out_assign === 4'b0000 && out_always_comb === 4'b0000 && out_always_ff === 4'b0000)) begin
-            $display("Mismatch at index 17: Inputs = ['High' "4'b0000" "4'b0000"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0000", "4'b0000", "4'b0000"]");
+        if (!(out_assign === 1'b0 && out_always_comb === 1'b0 && out_always_ff === 1'b0)) begin
+            $display("Mismatch at index 17: Inputs = [%b, %b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b0, 1'b0, out_assign, out_always_comb, out_always_ff, 1'b0, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -258,23 +264,10 @@ module top_module_tb;
             $display("Test 17 passed!");
         end
 
-        // Tick 18: Inputs = Low, 4'b0000, 4'b0000, Generated = out_assign, out_always_comb, out_always_ff, Reference = 4'b0000, 4'b0000, 4'b0000
-        a = 4'b0000; b = 4'b0000; // Set input values
-        #period;
-        if (!(out_assign === 4'b0000 && out_always_comb === 4'b0000 && out_always_ff === 4'b0000)) begin
-            $display("Mismatch at index 18: Inputs = ['Low' "4'b0000" "4'b0000"], Generated = ['out_assign', 'out_always_comb', 'out_always_ff'], Reference = ["4'b0000", "4'b0000", "4'b0000"]");
-            mismatch_count = mismatch_count + 1;
-            $finish;
-        end
-
-        else begin
-            $display("Test 18 passed!");
-        end
-
         if (mismatch_count == 0)
             $display("All tests passed!");
         else
-            $display("%0d mismatches out of %0d total tests.", mismatch_count, 19);
+            $display("%0d mismatches out of %0d total tests.", mismatch_count, 18);
         $finish;
     end
 

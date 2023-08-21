@@ -1,24 +1,30 @@
+`timescale 1 ns/10 ps  // time-unit = 1 ns, precision = 10 ps
+
 module top_module_tb;
 
-    reg [1:0] a;
-    reg b;
+    // duration for each bit = 20 * timescale = 20 * 1 ns  = 20ns
+    localparam period = 20;
+
+    reg [2:0] a;
+    reg [2:0] b;
     reg cin;
 
-    wire [1:0] cout;
-    wire [1:0] sum;
+    wire [2:0] cout;
+    wire [2:0] sum;
 
+
+    integer mismatch_count;
 
     top_module UUT (.a(a), .b(b), .cin(cin), .cout(cout), .sum(sum));
 
     initial begin
-        integer mismatch_count;
         mismatch_count = 0;
 
-        // Tick 0: Inputs = 2'b10, 4'b0011, 4'b0000, Generated = cout, sum, Reference = 2'b10, 2'b101
-        a = 2'b10; b = 4'b0011; cin = 4'b0000; // Set input values
+        // Tick 0: Inputs = 1'b10, 1'b11, 1'b0, Generated = cout, sum, Reference = 1'b10, 1'b101
+        a = 1'b10; b = 1'b11; cin = 1'b0; // Set input values
         #period;
-        if (!(cout === 2'b10 && sum === 2'b101)) begin
-            $display("Mismatch at index 0: Inputs = ["2'b10" "4'b0011" "4'b0000"], Generated = ['cout', 'sum'], Reference = ["2'b10", "2'b101"]");
+        if (!(cout === 1'b10 && sum === 1'b101)) begin
+            $display("Mismatch at index 0: Inputs = [%b, %b, %b], Generated = [%b, %b], Reference = [%b, %b]", 1'b10, 1'b11, 1'b0, cout, sum, 1'b10, 1'b101);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -27,11 +33,11 @@ module top_module_tb;
             $display("Test 0 passed!");
         end
 
-        // Tick 1: Inputs = 2'b10, 4'b0011, 4'b0000, Generated = cout, sum, Reference = 2'b10, 2'b101
-        a = 2'b10; b = 4'b0011; cin = 4'b0000; // Set input values
+        // Tick 1: Inputs = 1'b10, 1'b11, 1'b0, Generated = cout, sum, Reference = 1'b10, 1'b101
+        a = 1'b10; b = 1'b11; cin = 1'b0; // Set input values
         #period;
-        if (!(cout === 2'b10 && sum === 2'b101)) begin
-            $display("Mismatch at index 1: Inputs = ["2'b10" "4'b0011" "4'b0000"], Generated = ['cout', 'sum'], Reference = ["2'b10", "2'b101"]");
+        if (!(cout === 1'b10 && sum === 1'b101)) begin
+            $display("Mismatch at index 1: Inputs = [%b, %b, %b], Generated = [%b, %b], Reference = [%b, %b]", 1'b10, 1'b11, 1'b0, cout, sum, 1'b10, 1'b101);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -40,11 +46,11 @@ module top_module_tb;
             $display("Test 1 passed!");
         end
 
-        // Tick 2: Inputs = 2'b10, 4'b0011, 4'b0001, Generated = cout, sum, Reference = 2'b11, 2'b110
-        a = 2'b10; b = 4'b0011; cin = 4'b0001; // Set input values
+        // Tick 2: Inputs = 1'b10, 1'b11, 1'b1, Generated = cout, sum, Reference = 1'b11, 1'b110
+        a = 1'b10; b = 1'b11; cin = 1'b1; // Set input values
         #period;
-        if (!(cout === 2'b11 && sum === 2'b110)) begin
-            $display("Mismatch at index 2: Inputs = ["2'b10" "4'b0011" "4'b0001"], Generated = ['cout', 'sum'], Reference = ["2'b11", "2'b110"]");
+        if (!(cout === 1'b11 && sum === 1'b110)) begin
+            $display("Mismatch at index 2: Inputs = [%b, %b, %b], Generated = [%b, %b], Reference = [%b, %b]", 1'b10, 1'b11, 1'b1, cout, sum, 1'b11, 1'b110);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -53,11 +59,11 @@ module top_module_tb;
             $display("Test 2 passed!");
         end
 
-        // Tick 3: Inputs = 2'b10, 4'b0011, 4'b0001, Generated = cout, sum, Reference = 2'b11, 2'b110
-        a = 2'b10; b = 4'b0011; cin = 4'b0001; // Set input values
+        // Tick 3: Inputs = 1'b10, 1'b11, 1'b1, Generated = cout, sum, Reference = 1'b11, 1'b110
+        a = 1'b10; b = 1'b11; cin = 1'b1; // Set input values
         #period;
-        if (!(cout === 2'b11 && sum === 2'b110)) begin
-            $display("Mismatch at index 3: Inputs = ["2'b10" "4'b0011" "4'b0001"], Generated = ['cout', 'sum'], Reference = ["2'b11", "2'b110"]");
+        if (!(cout === 1'b11 && sum === 1'b110)) begin
+            $display("Mismatch at index 3: Inputs = [%b, %b, %b], Generated = [%b, %b], Reference = [%b, %b]", 1'b10, 1'b11, 1'b1, cout, sum, 1'b11, 1'b110);
             mismatch_count = mismatch_count + 1;
             $finish;
         end

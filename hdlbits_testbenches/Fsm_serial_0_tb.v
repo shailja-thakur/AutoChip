@@ -13,6 +13,8 @@ module top_module_tb;
     wire done;
 
 
+    integer mismatch_count;
+
     top_module UUT (.clk(clk), .in(in), .reset(reset), .out_byte(out_byte), .done(done));
 
     initial // clk generation
@@ -25,14 +27,13 @@ module top_module_tb;
     end
 
     initial begin
-        integer mismatch_count;
         mismatch_count = 0;
 
-        // Tick 0: Inputs = High, 4'b0000, 4'b0000, Generated = out_byte, done, Reference = 4'b0000, 4'b0001
-        in = 4'b0000; reset = 4'b0000; // Set input values
+        // Tick 0: Inputs = 1'b1, 1'b0, 1'b0, Generated = out_byte, done, Reference = 1'b0, 1'b1
+        in = 1'b0; reset = 1'b0; // Set input values
         #period;
-        if (!(out_byte === 4'b0000 && done === 4'b0001)) begin
-            $display("Mismatch at index 0: Inputs = ['High' "4'b0000" "4'b0000"], Generated = ['out_byte', 'done'], Reference = ["4'b0000", "4'b0001"]");
+        if (!(out_byte === 1'b0 && done === 1'b1)) begin
+            $display("Mismatch at index 0: Inputs = [%b, %b, %b], Generated = [%b, %b], Reference = [%b, %b]", 1'b1, 1'b0, 1'b0, out_byte, done, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -41,11 +42,11 @@ module top_module_tb;
             $display("Test 0 passed!");
         end
 
-        // Tick 1: Inputs = Low, 4'b0000, 4'b0000, Generated = out_byte, done, Reference = 4'b0000, 4'b0001
-        in = 4'b0000; reset = 4'b0000; // Set input values
+        // Tick 1: Inputs = 1'b0, 1'b0, 1'b0, Generated = out_byte, done, Reference = 1'b0, 1'b1
+        in = 1'b0; reset = 1'b0; // Set input values
         #period;
-        if (!(out_byte === 4'b0000 && done === 4'b0001)) begin
-            $display("Mismatch at index 1: Inputs = ['Low' "4'b0000" "4'b0000"], Generated = ['out_byte', 'done'], Reference = ["4'b0000", "4'b0001"]");
+        if (!(out_byte === 1'b0 && done === 1'b1)) begin
+            $display("Mismatch at index 1: Inputs = [%b, %b, %b], Generated = [%b, %b], Reference = [%b, %b]", 1'b0, 1'b0, 1'b0, out_byte, done, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end

@@ -1,10 +1,17 @@
+`timescale 1 ns/10 ps  // time-unit = 1 ns, precision = 10 ps
+
 module top_module_tb;
 
+    // duration for each bit = 20 * timescale = 20 * 1 ns  = 20ns
+    localparam period = 20;
+
     reg clk;
-    reg [6:0] in;
+    reg [7:0] in;
 
     wire anyedge;
 
+
+    integer mismatch_count;
 
     top_module UUT (.clk(clk), .in(in), .anyedge(anyedge));
 
@@ -18,14 +25,13 @@ module top_module_tb;
     end
 
     initial begin
-        integer mismatch_count;
         mismatch_count = 0;
 
-        // Tick 0: Inputs = Low, 7'b0000000, Generated = anyedge, Reference = 8'bx
-        in = 7'b0000000; // Set input values
+        // Tick 0: Inputs = 1'b1, 8'b00000000, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 8'bx)) begin
-            $display("Mismatch at index 0: Inputs = ['Low' "7'b0000000"], Generated = ['anyedge'], Reference = ["8'bx"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 0: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000000, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -34,11 +40,11 @@ module top_module_tb;
             $display("Test 0 passed!");
         end
 
-        // Tick 1: Inputs = High, 7'b0000000, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000000; // Set input values
+        // Tick 1: Inputs = 1'b0, 8'b00000000, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 1: Inputs = ['High' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 1: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 8'b00000000, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -47,11 +53,11 @@ module top_module_tb;
             $display("Test 1 passed!");
         end
 
-        // Tick 2: Inputs = Low, 7'b0000000, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000000; // Set input values
+        // Tick 2: Inputs = 1'b1, 8'b00000001, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000001; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 2: Inputs = ['Low' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 2: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000001, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -60,11 +66,11 @@ module top_module_tb;
             $display("Test 2 passed!");
         end
 
-        // Tick 3: Inputs = High, 7'b0000001, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000001; // Set input values
+        // Tick 3: Inputs = 1'b0, 8'b00000001, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000001; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 3: Inputs = ['High' "7'b0000001"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 3: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 8'b00000001, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -73,11 +79,11 @@ module top_module_tb;
             $display("Test 3 passed!");
         end
 
-        // Tick 4: Inputs = Low, 7'b0000001, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000001; // Set input values
+        // Tick 4: Inputs = 1'b1, 8'b00000001, Generated = anyedge, Reference = 1'b1
+        in = 8'b00000001; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 4: Inputs = ['Low' "7'b0000001"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b1)) begin
+            $display("Mismatch at index 4: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000001, anyedge, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -86,11 +92,11 @@ module top_module_tb;
             $display("Test 4 passed!");
         end
 
-        // Tick 5: Inputs = High, 7'b0000001, Generated = anyedge, Reference = 4'b0001
-        in = 7'b0000001; // Set input values
+        // Tick 5: Inputs = 1'b0, 8'b00000001, Generated = anyedge, Reference = 1'b1
+        in = 8'b00000001; // Set input values
         #period;
-        if (!(anyedge === 4'b0001)) begin
-            $display("Mismatch at index 5: Inputs = ['High' "7'b0000001"], Generated = ['anyedge'], Reference = ["4'b0001"]");
+        if (!(anyedge === 1'b1)) begin
+            $display("Mismatch at index 5: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 8'b00000001, anyedge, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -99,11 +105,11 @@ module top_module_tb;
             $display("Test 5 passed!");
         end
 
-        // Tick 6: Inputs = Low, 7'b0000001, Generated = anyedge, Reference = 4'b0001
-        in = 7'b0000001; // Set input values
+        // Tick 6: Inputs = 1'b1, 8'b00000001, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000001; // Set input values
         #period;
-        if (!(anyedge === 4'b0001)) begin
-            $display("Mismatch at index 6: Inputs = ['Low' "7'b0000001"], Generated = ['anyedge'], Reference = ["4'b0001"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 6: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000001, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -112,11 +118,11 @@ module top_module_tb;
             $display("Test 6 passed!");
         end
 
-        // Tick 7: Inputs = High, 7'b0000001, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000001; // Set input values
+        // Tick 7: Inputs = 1'b0, 8'b00000001, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000001; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 7: Inputs = ['High' "7'b0000001"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 7: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 8'b00000001, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -125,11 +131,11 @@ module top_module_tb;
             $display("Test 7 passed!");
         end
 
-        // Tick 8: Inputs = Low, 7'b0000001, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000001; // Set input values
+        // Tick 8: Inputs = 1'b1, 8'b00000001, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000001; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 8: Inputs = ['Low' "7'b0000001"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 8: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000001, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -138,11 +144,11 @@ module top_module_tb;
             $display("Test 8 passed!");
         end
 
-        // Tick 9: Inputs = High, 7'b0000001, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000001; // Set input values
+        // Tick 9: Inputs = 1'b0, 8'b00000001, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000001; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 9: Inputs = ['High' "7'b0000001"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 9: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 8'b00000001, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -151,11 +157,11 @@ module top_module_tb;
             $display("Test 9 passed!");
         end
 
-        // Tick 10: Inputs = Low, 7'b0000001, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000001; // Set input values
+        // Tick 10: Inputs = 1'b1, 8'b00000000, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 10: Inputs = ['Low' "7'b0000001"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 10: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000000, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -164,11 +170,11 @@ module top_module_tb;
             $display("Test 10 passed!");
         end
 
-        // Tick 11: Inputs = High, 7'b0000000, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000000; // Set input values
+        // Tick 11: Inputs = 1'b0, 8'b00000000, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 11: Inputs = ['High' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 11: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 8'b00000000, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -177,11 +183,11 @@ module top_module_tb;
             $display("Test 11 passed!");
         end
 
-        // Tick 12: Inputs = Low, 7'b0000000, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000000; // Set input values
+        // Tick 12: Inputs = 1'b1, 8'b00000000, Generated = anyedge, Reference = 1'b1
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 12: Inputs = ['Low' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b1)) begin
+            $display("Mismatch at index 12: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000000, anyedge, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -190,11 +196,11 @@ module top_module_tb;
             $display("Test 12 passed!");
         end
 
-        // Tick 13: Inputs = High, 7'b0000000, Generated = anyedge, Reference = 4'b0001
-        in = 7'b0000000; // Set input values
+        // Tick 13: Inputs = 1'b0, 8'b00000000, Generated = anyedge, Reference = 1'b1
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 4'b0001)) begin
-            $display("Mismatch at index 13: Inputs = ['High' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0001"]");
+        if (!(anyedge === 1'b1)) begin
+            $display("Mismatch at index 13: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 8'b00000000, anyedge, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -203,11 +209,11 @@ module top_module_tb;
             $display("Test 13 passed!");
         end
 
-        // Tick 14: Inputs = Low, 7'b0000000, Generated = anyedge, Reference = 4'b0001
-        in = 7'b0000000; // Set input values
+        // Tick 14: Inputs = 1'b1, 8'b00000000, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 4'b0001)) begin
-            $display("Mismatch at index 14: Inputs = ['Low' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0001"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 14: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000000, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -216,11 +222,11 @@ module top_module_tb;
             $display("Test 14 passed!");
         end
 
-        // Tick 15: Inputs = High, 7'b0000000, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000000; // Set input values
+        // Tick 15: Inputs = 1'b0, 8'b00000000, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 15: Inputs = ['High' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 15: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 8'b00000000, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -229,11 +235,11 @@ module top_module_tb;
             $display("Test 15 passed!");
         end
 
-        // Tick 16: Inputs = Low, 7'b0000000, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000000; // Set input values
+        // Tick 16: Inputs = 1'b1, 8'b00000000, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 16: Inputs = ['Low' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 16: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000000, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -242,11 +248,11 @@ module top_module_tb;
             $display("Test 16 passed!");
         end
 
-        // Tick 17: Inputs = High, 7'b0000000, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000000; // Set input values
+        // Tick 17: Inputs = 1'b0, 8'b00000110, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000110; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 17: Inputs = ['High' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 17: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 8'b00000110, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -255,11 +261,11 @@ module top_module_tb;
             $display("Test 17 passed!");
         end
 
-        // Tick 18: Inputs = Low, 7'b0000110, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000110; // Set input values
+        // Tick 18: Inputs = 1'b1, 8'b00000110, Generated = anyedge, Reference = 1'b110
+        in = 8'b00000110; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 18: Inputs = ['Low' "7'b0000110"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b110)) begin
+            $display("Mismatch at index 18: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000110, anyedge, 1'b110);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -268,11 +274,11 @@ module top_module_tb;
             $display("Test 18 passed!");
         end
 
-        // Tick 19: Inputs = High, 7'b0000110, Generated = anyedge, Reference = 4'b0110
-        in = 7'b0000110; // Set input values
+        // Tick 19: Inputs = 1'b0, 8'b00000110, Generated = anyedge, Reference = 1'b110
+        in = 8'b00000110; // Set input values
         #period;
-        if (!(anyedge === 4'b0110)) begin
-            $display("Mismatch at index 19: Inputs = ['High' "7'b0000110"], Generated = ['anyedge'], Reference = ["4'b0110"]");
+        if (!(anyedge === 1'b110)) begin
+            $display("Mismatch at index 19: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 8'b00000110, anyedge, 1'b110);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -281,11 +287,11 @@ module top_module_tb;
             $display("Test 19 passed!");
         end
 
-        // Tick 20: Inputs = Low, 7'b0000110, Generated = anyedge, Reference = 4'b0110
-        in = 7'b0000110; // Set input values
+        // Tick 20: Inputs = 1'b1, 8'b00000110, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000110; // Set input values
         #period;
-        if (!(anyedge === 4'b0110)) begin
-            $display("Mismatch at index 20: Inputs = ['Low' "7'b0000110"], Generated = ['anyedge'], Reference = ["4'b0110"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 20: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000110, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -294,11 +300,11 @@ module top_module_tb;
             $display("Test 20 passed!");
         end
 
-        // Tick 21: Inputs = High, 7'b0000110, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000110; // Set input values
+        // Tick 21: Inputs = 1'b0, 8'b00000000, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 21: Inputs = ['High' "7'b0000110"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 21: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 8'b00000000, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -307,11 +313,11 @@ module top_module_tb;
             $display("Test 21 passed!");
         end
 
-        // Tick 22: Inputs = Low, 7'b0000000, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000000; // Set input values
+        // Tick 22: Inputs = 1'b1, 8'b00000000, Generated = anyedge, Reference = 1'b110
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 22: Inputs = ['Low' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0000"]");
+        if (!(anyedge === 1'b110)) begin
+            $display("Mismatch at index 22: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000000, anyedge, 1'b110);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -320,11 +326,11 @@ module top_module_tb;
             $display("Test 22 passed!");
         end
 
-        // Tick 23: Inputs = High, 7'b0000000, Generated = anyedge, Reference = 4'b0110
-        in = 7'b0000000; // Set input values
+        // Tick 23: Inputs = 1'b0, 8'b00000000, Generated = anyedge, Reference = 1'b110
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 4'b0110)) begin
-            $display("Mismatch at index 23: Inputs = ['High' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0110"]");
+        if (!(anyedge === 1'b110)) begin
+            $display("Mismatch at index 23: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 8'b00000000, anyedge, 1'b110);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -333,11 +339,11 @@ module top_module_tb;
             $display("Test 23 passed!");
         end
 
-        // Tick 24: Inputs = Low, 7'b0000000, Generated = anyedge, Reference = 4'b0110
-        in = 7'b0000000; // Set input values
+        // Tick 24: Inputs = 1'b1, 8'b00000000, Generated = anyedge, Reference = 1'b0
+        in = 8'b00000000; // Set input values
         #period;
-        if (!(anyedge === 4'b0110)) begin
-            $display("Mismatch at index 24: Inputs = ['Low' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0110"]");
+        if (!(anyedge === 1'b0)) begin
+            $display("Mismatch at index 24: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 8'b00000000, anyedge, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -346,23 +352,10 @@ module top_module_tb;
             $display("Test 24 passed!");
         end
 
-        // Tick 25: Inputs = High, 7'b0000000, Generated = anyedge, Reference = 4'b0000
-        in = 7'b0000000; // Set input values
-        #period;
-        if (!(anyedge === 4'b0000)) begin
-            $display("Mismatch at index 25: Inputs = ['High' "7'b0000000"], Generated = ['anyedge'], Reference = ["4'b0000"]");
-            mismatch_count = mismatch_count + 1;
-            $finish;
-        end
-
-        else begin
-            $display("Test 25 passed!");
-        end
-
         if (mismatch_count == 0)
             $display("All tests passed!");
         else
-            $display("%0d mismatches out of %0d total tests.", mismatch_count, 26);
+            $display("%0d mismatches out of %0d total tests.", mismatch_count, 25);
         $finish;
     end
 

@@ -11,17 +11,18 @@ module top_module_tb;
     wire sum;
 
 
+    integer mismatch_count;
+
     top_module UUT (.a(a), .b(b), .sum(sum));
 
     initial begin
-        integer mismatch_count;
         mismatch_count = 0;
 
-        // Tick 0: Inputs = 16'b0000000000000000, 20'b00000000000000000000, Generated = sum, Reference = 20'b00000000000000000000
-        a = 16'b0000000000000000; b = 20'b00000000000000000000; // Set input values
+        // Tick 0: Inputs = 1'b0, 1'b0, Generated = sum, Reference = 1'b0
+        a = 1'b0; b = 1'b0; // Set input values
         #period;
-        if (!(sum === 20'b00000000000000000000)) begin
-            $display("Mismatch at index 0: Inputs = ["16'b0000000000000000" "20'b00000000000000000000"], Generated = ['sum'], Reference = ["20'b00000000000000000000"]");
+        if (!(sum === 1'b0)) begin
+            $display("Mismatch at index 0: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b0, sum, 1'b0);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -30,11 +31,11 @@ module top_module_tb;
             $display("Test 0 passed!");
         end
 
-        // Tick 1: Inputs = 16'b0000000000000000, 20'b00000000000000000001, Generated = sum, Reference = 20'b00000000000000000001
-        a = 16'b0000000000000000; b = 20'b00000000000000000001; // Set input values
+        // Tick 1: Inputs = 1'b0, 1'b1, Generated = sum, Reference = 1'b1
+        a = 1'b0; b = 1'b1; // Set input values
         #period;
-        if (!(sum === 20'b00000000000000000001)) begin
-            $display("Mismatch at index 1: Inputs = ["16'b0000000000000000" "20'b00000000000000000001"], Generated = ['sum'], Reference = ["20'b00000000000000000001"]");
+        if (!(sum === 1'b1)) begin
+            $display("Mismatch at index 1: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, sum, 1'b1);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -43,11 +44,11 @@ module top_module_tb;
             $display("Test 1 passed!");
         end
 
-        // Tick 2: Inputs = 16'b0000000000000000, 20'b00000000000000000010, Generated = sum, Reference = 20'b00000000000000000010
-        a = 16'b0000000000000000; b = 20'b00000000000000000010; // Set input values
+        // Tick 2: Inputs = 1'b0, 1'b10, Generated = sum, Reference = 1'b10
+        a = 1'b0; b = 1'b10; // Set input values
         #period;
-        if (!(sum === 20'b00000000000000000010)) begin
-            $display("Mismatch at index 2: Inputs = ["16'b0000000000000000" "20'b00000000000000000010"], Generated = ['sum'], Reference = ["20'b00000000000000000010"]");
+        if (!(sum === 1'b10)) begin
+            $display("Mismatch at index 2: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b10, sum, 1'b10);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -56,11 +57,11 @@ module top_module_tb;
             $display("Test 2 passed!");
         end
 
-        // Tick 3: Inputs = 16'b0000000000000001, 20'b00000000000000000010, Generated = sum, Reference = 20'b00000000000000000011
-        a = 16'b0000000000000001; b = 20'b00000000000000000010; // Set input values
+        // Tick 3: Inputs = 1'b1, 1'b10, Generated = sum, Reference = 1'b11
+        a = 1'b1; b = 1'b10; // Set input values
         #period;
-        if (!(sum === 20'b00000000000000000011)) begin
-            $display("Mismatch at index 3: Inputs = ["16'b0000000000000001" "20'b00000000000000000010"], Generated = ['sum'], Reference = ["20'b00000000000000000011"]");
+        if (!(sum === 1'b11)) begin
+            $display("Mismatch at index 3: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b10, sum, 1'b11);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -69,11 +70,11 @@ module top_module_tb;
             $display("Test 3 passed!");
         end
 
-        // Tick 4: Inputs = 16'b1111111111111111, 20'b00000000000000000000, Generated = sum, Reference = 20'b00001111111111111111
-        a = 16'b1111111111111111; b = 20'b00000000000000000000; // Set input values
+        // Tick 4: Inputs = 1'b1111111111111111, 1'b0, Generated = sum, Reference = 1'b1111111111111111
+        a = 1'b1111111111111111; b = 1'b0; // Set input values
         #period;
-        if (!(sum === 20'b00001111111111111111)) begin
-            $display("Mismatch at index 4: Inputs = ["16'b1111111111111111" "20'b00000000000000000000"], Generated = ['sum'], Reference = ["20'b00001111111111111111"]");
+        if (!(sum === 1'b1111111111111111)) begin
+            $display("Mismatch at index 4: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1111111111111111, 1'b0, sum, 1'b1111111111111111);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -82,11 +83,11 @@ module top_module_tb;
             $display("Test 4 passed!");
         end
 
-        // Tick 5: Inputs = 16'b1111111111111111, 20'b00000000000000000001, Generated = sum, Reference = 20'b00010000000000000000
-        a = 16'b1111111111111111; b = 20'b00000000000000000001; // Set input values
+        // Tick 5: Inputs = 1'b1111111111111111, 1'b1, Generated = sum, Reference = 1'b10000000000000000
+        a = 1'b1111111111111111; b = 1'b1; // Set input values
         #period;
-        if (!(sum === 20'b00010000000000000000)) begin
-            $display("Mismatch at index 5: Inputs = ["16'b1111111111111111" "20'b00000000000000000001"], Generated = ['sum'], Reference = ["20'b00010000000000000000"]");
+        if (!(sum === 1'b10000000000000000)) begin
+            $display("Mismatch at index 5: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1111111111111111, 1'b1, sum, 1'b10000000000000000);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
@@ -95,11 +96,11 @@ module top_module_tb;
             $display("Test 5 passed!");
         end
 
-        // Tick 6: Inputs = 16'b1111111111111111, 20'b00101100110011000001, Generated = sum, Reference = 20'b00111100110011000000
-        a = 16'b1111111111111111; b = 20'b00101100110011000001; // Set input values
+        // Tick 6: Inputs = 1'b1111111111111111, 1'b101100110011000001, Generated = sum, Reference = 1'b111100110011000000
+        a = 1'b1111111111111111; b = 1'b101100110011000001; // Set input values
         #period;
-        if (!(sum === 20'b00111100110011000000)) begin
-            $display("Mismatch at index 6: Inputs = ["16'b1111111111111111" "20'b00101100110011000001"], Generated = ['sum'], Reference = ["20'b00111100110011000000"]");
+        if (!(sum === 1'b111100110011000000)) begin
+            $display("Mismatch at index 6: Inputs = [%b, %b], Generated = [%b], Reference = [%b]", 1'b1111111111111111, 1'b101100110011000001, sum, 1'b111100110011000000);
             mismatch_count = mismatch_count + 1;
             $finish;
         end
