@@ -128,35 +128,17 @@ module top_module_tb;
             $display("Test 8 passed!");
         end
 
-        // Tick 9: Inputs = 1'b0, 1'b1, 1'b0, 1'b1, Generated = out, Reference = 1'b0
+        // Tick 9: Inputs = 1'b0, 1'b1, 1'b0, 1'b0, Generated = out, Reference = 1'bx
+        a = 1'b0; b = 1'b1; c = 1'b0; d = 1'b0; // Set input values
+        #period;
+        // Tick 10: Inputs = 1'b0, 1'b1, 1'b0, 1'b0, Generated = out, Reference = 1'bx
+        a = 1'b0; b = 1'b1; c = 1'b0; d = 1'b0; // Set input values
+        #period;
+        // Tick 11: Inputs = 1'b0, 1'b1, 1'b0, 1'b1, Generated = out, Reference = 1'b0
         a = 1'b0; b = 1'b1; c = 1'b0; d = 1'b1; // Set input values
         #period;
         if (!(out === 1'b0)) begin
-            $display("Mismatch at index 9: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b0, 1'b1, out, 1'b0);
-            mismatch_count = mismatch_count + 1;
-        end
-
-        else begin
-            $display("Test 9 passed!");
-        end
-
-        // Tick 10: Inputs = 1'b0, 1'b1, 1'b0, 1'b1, Generated = out, Reference = 1'b0
-        a = 1'b0; b = 1'b1; c = 1'b0; d = 1'b1; // Set input values
-        #period;
-        if (!(out === 1'b0)) begin
-            $display("Mismatch at index 10: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b0, 1'b1, out, 1'b0);
-            mismatch_count = mismatch_count + 1;
-        end
-
-        else begin
-            $display("Test 10 passed!");
-        end
-
-        // Tick 11: Inputs = 1'b0, 1'b1, 1'b1, 1'b0, Generated = out, Reference = 1'b0
-        a = 1'b0; b = 1'b1; c = 1'b1; d = 1'b0; // Set input values
-        #period;
-        if (!(out === 1'b0)) begin
-            $display("Mismatch at index 11: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b1, 1'b0, out, 1'b0);
+            $display("Mismatch at index 11: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b0, 1'b1, out, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -164,11 +146,11 @@ module top_module_tb;
             $display("Test 11 passed!");
         end
 
-        // Tick 12: Inputs = 1'b0, 1'b1, 1'b1, 1'b0, Generated = out, Reference = 1'b0
-        a = 1'b0; b = 1'b1; c = 1'b1; d = 1'b0; // Set input values
+        // Tick 12: Inputs = 1'b0, 1'b1, 1'b0, 1'b1, Generated = out, Reference = 1'b0
+        a = 1'b0; b = 1'b1; c = 1'b0; d = 1'b1; // Set input values
         #period;
         if (!(out === 1'b0)) begin
-            $display("Mismatch at index 12: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b1, 1'b0, out, 1'b0);
+            $display("Mismatch at index 12: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b0, 1'b1, out, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -176,11 +158,11 @@ module top_module_tb;
             $display("Test 12 passed!");
         end
 
-        // Tick 13: Inputs = 1'b0, 1'b1, 1'b1, 1'b1, Generated = out, Reference = 1'b0
-        a = 1'b0; b = 1'b1; c = 1'b1; d = 1'b1; // Set input values
+        // Tick 13: Inputs = 1'b0, 1'b1, 1'b1, 1'b0, Generated = out, Reference = 1'b0
+        a = 1'b0; b = 1'b1; c = 1'b1; d = 1'b0; // Set input values
         #period;
         if (!(out === 1'b0)) begin
-            $display("Mismatch at index 13: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b1, 1'b1, out, 1'b0);
+            $display("Mismatch at index 13: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b1, 1'b0, out, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -188,11 +170,11 @@ module top_module_tb;
             $display("Test 13 passed!");
         end
 
-        // Tick 14: Inputs = 1'b0, 1'b1, 1'b1, 1'b1, Generated = out, Reference = 1'b0
-        a = 1'b0; b = 1'b1; c = 1'b1; d = 1'b1; // Set input values
+        // Tick 14: Inputs = 1'b0, 1'b1, 1'b1, 1'b0, Generated = out, Reference = 1'b0
+        a = 1'b0; b = 1'b1; c = 1'b1; d = 1'b0; // Set input values
         #period;
         if (!(out === 1'b0)) begin
-            $display("Mismatch at index 14: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b1, 1'b1, out, 1'b0);
+            $display("Mismatch at index 14: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b1, 1'b0, out, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -200,11 +182,11 @@ module top_module_tb;
             $display("Test 14 passed!");
         end
 
-        // Tick 15: Inputs = 1'b1, 1'b0, 1'b0, 1'b0, Generated = out, Reference = 1'b1
-        a = 1'b1; b = 1'b0; c = 1'b0; d = 1'b0; // Set input values
+        // Tick 15: Inputs = 1'b0, 1'b1, 1'b1, 1'b1, Generated = out, Reference = 1'b0
+        a = 1'b0; b = 1'b1; c = 1'b1; d = 1'b1; // Set input values
         #period;
-        if (!(out === 1'b1)) begin
-            $display("Mismatch at index 15: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b0, 1'b0, 1'b0, out, 1'b1);
+        if (!(out === 1'b0)) begin
+            $display("Mismatch at index 15: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b1, 1'b1, out, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -212,11 +194,11 @@ module top_module_tb;
             $display("Test 15 passed!");
         end
 
-        // Tick 16: Inputs = 1'b1, 1'b0, 1'b0, 1'b0, Generated = out, Reference = 1'b1
-        a = 1'b1; b = 1'b0; c = 1'b0; d = 1'b0; // Set input values
+        // Tick 16: Inputs = 1'b0, 1'b1, 1'b1, 1'b1, Generated = out, Reference = 1'b0
+        a = 1'b0; b = 1'b1; c = 1'b1; d = 1'b1; // Set input values
         #period;
-        if (!(out === 1'b1)) begin
-            $display("Mismatch at index 16: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b0, 1'b0, 1'b0, out, 1'b1);
+        if (!(out === 1'b0)) begin
+            $display("Mismatch at index 16: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b1, 1'b1, out, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -224,11 +206,11 @@ module top_module_tb;
             $display("Test 16 passed!");
         end
 
-        // Tick 17: Inputs = 1'b1, 1'b0, 1'b1, 1'b0, Generated = out, Reference = 1'b1
-        a = 1'b1; b = 1'b0; c = 1'b1; d = 1'b0; // Set input values
+        // Tick 17: Inputs = 1'b1, 1'b0, 1'b0, 1'b0, Generated = out, Reference = 1'b1
+        a = 1'b1; b = 1'b0; c = 1'b0; d = 1'b0; // Set input values
         #period;
         if (!(out === 1'b1)) begin
-            $display("Mismatch at index 17: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b0, 1'b1, 1'b0, out, 1'b1);
+            $display("Mismatch at index 17: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b0, 1'b0, 1'b0, out, 1'b1);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -236,11 +218,11 @@ module top_module_tb;
             $display("Test 17 passed!");
         end
 
-        // Tick 18: Inputs = 1'b1, 1'b0, 1'b1, 1'b0, Generated = out, Reference = 1'b1
-        a = 1'b1; b = 1'b0; c = 1'b1; d = 1'b0; // Set input values
+        // Tick 18: Inputs = 1'b1, 1'b0, 1'b0, 1'b0, Generated = out, Reference = 1'b1
+        a = 1'b1; b = 1'b0; c = 1'b0; d = 1'b0; // Set input values
         #period;
         if (!(out === 1'b1)) begin
-            $display("Mismatch at index 18: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b0, 1'b1, 1'b0, out, 1'b1);
+            $display("Mismatch at index 18: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b0, 1'b0, 1'b0, out, 1'b1);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -248,35 +230,17 @@ module top_module_tb;
             $display("Test 18 passed!");
         end
 
-        // Tick 19: Inputs = 1'b1, 1'b0, 1'b1, 1'b1, Generated = out, Reference = 1'b1
-        a = 1'b1; b = 1'b0; c = 1'b1; d = 1'b1; // Set input values
+        // Tick 19: Inputs = 1'b1, 1'b0, 1'b0, 1'b1, Generated = out, Reference = 1'bx
+        a = 1'b1; b = 1'b0; c = 1'b0; d = 1'b1; // Set input values
+        #period;
+        // Tick 20: Inputs = 1'b1, 1'b0, 1'b0, 1'b1, Generated = out, Reference = 1'bx
+        a = 1'b1; b = 1'b0; c = 1'b0; d = 1'b1; // Set input values
+        #period;
+        // Tick 21: Inputs = 1'b1, 1'b0, 1'b1, 1'b0, Generated = out, Reference = 1'b1
+        a = 1'b1; b = 1'b0; c = 1'b1; d = 1'b0; // Set input values
         #period;
         if (!(out === 1'b1)) begin
-            $display("Mismatch at index 19: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b0, 1'b1, 1'b1, out, 1'b1);
-            mismatch_count = mismatch_count + 1;
-        end
-
-        else begin
-            $display("Test 19 passed!");
-        end
-
-        // Tick 20: Inputs = 1'b1, 1'b0, 1'b1, 1'b1, Generated = out, Reference = 1'b1
-        a = 1'b1; b = 1'b0; c = 1'b1; d = 1'b1; // Set input values
-        #period;
-        if (!(out === 1'b1)) begin
-            $display("Mismatch at index 20: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b0, 1'b1, 1'b1, out, 1'b1);
-            mismatch_count = mismatch_count + 1;
-        end
-
-        else begin
-            $display("Test 20 passed!");
-        end
-
-        // Tick 21: Inputs = 1'b1, 1'b1, 1'b0, 1'b0, Generated = out, Reference = 1'b1
-        a = 1'b1; b = 1'b1; c = 1'b0; d = 1'b0; // Set input values
-        #period;
-        if (!(out === 1'b1)) begin
-            $display("Mismatch at index 21: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b0, 1'b0, out, 1'b1);
+            $display("Mismatch at index 21: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b0, 1'b1, 1'b0, out, 1'b1);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -284,11 +248,11 @@ module top_module_tb;
             $display("Test 21 passed!");
         end
 
-        // Tick 22: Inputs = 1'b1, 1'b1, 1'b0, 1'b0, Generated = out, Reference = 1'b1
-        a = 1'b1; b = 1'b1; c = 1'b0; d = 1'b0; // Set input values
+        // Tick 22: Inputs = 1'b1, 1'b0, 1'b1, 1'b0, Generated = out, Reference = 1'b1
+        a = 1'b1; b = 1'b0; c = 1'b1; d = 1'b0; // Set input values
         #period;
         if (!(out === 1'b1)) begin
-            $display("Mismatch at index 22: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b0, 1'b0, out, 1'b1);
+            $display("Mismatch at index 22: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b0, 1'b1, 1'b0, out, 1'b1);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -296,11 +260,11 @@ module top_module_tb;
             $display("Test 22 passed!");
         end
 
-        // Tick 23: Inputs = 1'b1, 1'b1, 1'b1, 1'b0, Generated = out, Reference = 1'b1
-        a = 1'b1; b = 1'b1; c = 1'b1; d = 1'b0; // Set input values
+        // Tick 23: Inputs = 1'b1, 1'b0, 1'b1, 1'b1, Generated = out, Reference = 1'b1
+        a = 1'b1; b = 1'b0; c = 1'b1; d = 1'b1; // Set input values
         #period;
         if (!(out === 1'b1)) begin
-            $display("Mismatch at index 23: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b1, 1'b0, out, 1'b1);
+            $display("Mismatch at index 23: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b0, 1'b1, 1'b1, out, 1'b1);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -308,11 +272,11 @@ module top_module_tb;
             $display("Test 23 passed!");
         end
 
-        // Tick 24: Inputs = 1'b1, 1'b1, 1'b1, 1'b0, Generated = out, Reference = 1'b1
-        a = 1'b1; b = 1'b1; c = 1'b1; d = 1'b0; // Set input values
+        // Tick 24: Inputs = 1'b1, 1'b0, 1'b1, 1'b1, Generated = out, Reference = 1'b1
+        a = 1'b1; b = 1'b0; c = 1'b1; d = 1'b1; // Set input values
         #period;
         if (!(out === 1'b1)) begin
-            $display("Mismatch at index 24: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b1, 1'b0, out, 1'b1);
+            $display("Mismatch at index 24: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b0, 1'b1, 1'b1, out, 1'b1);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -320,11 +284,11 @@ module top_module_tb;
             $display("Test 24 passed!");
         end
 
-        // Tick 25: Inputs = 1'b1, 1'b1, 1'b1, 1'b1, Generated = out, Reference = 1'b1
-        a = 1'b1; b = 1'b1; c = 1'b1; d = 1'b1; // Set input values
+        // Tick 25: Inputs = 1'b1, 1'b1, 1'b0, 1'b0, Generated = out, Reference = 1'b1
+        a = 1'b1; b = 1'b1; c = 1'b0; d = 1'b0; // Set input values
         #period;
         if (!(out === 1'b1)) begin
-            $display("Mismatch at index 25: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b1, 1'b1, out, 1'b1);
+            $display("Mismatch at index 25: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b0, 1'b0, out, 1'b1);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -332,10 +296,64 @@ module top_module_tb;
             $display("Test 25 passed!");
         end
 
+        // Tick 26: Inputs = 1'b1, 1'b1, 1'b0, 1'b0, Generated = out, Reference = 1'b1
+        a = 1'b1; b = 1'b1; c = 1'b0; d = 1'b0; // Set input values
+        #period;
+        if (!(out === 1'b1)) begin
+            $display("Mismatch at index 26: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b0, 1'b0, out, 1'b1);
+            mismatch_count = mismatch_count + 1;
+        end
+
+        else begin
+            $display("Test 26 passed!");
+        end
+
+        // Tick 27: Inputs = 1'b1, 1'b1, 1'b0, 1'b1, Generated = out, Reference = 1'bx
+        a = 1'b1; b = 1'b1; c = 1'b0; d = 1'b1; // Set input values
+        #period;
+        // Tick 28: Inputs = 1'b1, 1'b1, 1'b0, 1'b1, Generated = out, Reference = 1'bx
+        a = 1'b1; b = 1'b1; c = 1'b0; d = 1'b1; // Set input values
+        #period;
+        // Tick 29: Inputs = 1'b1, 1'b1, 1'b1, 1'b0, Generated = out, Reference = 1'b1
+        a = 1'b1; b = 1'b1; c = 1'b1; d = 1'b0; // Set input values
+        #period;
+        if (!(out === 1'b1)) begin
+            $display("Mismatch at index 29: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b1, 1'b0, out, 1'b1);
+            mismatch_count = mismatch_count + 1;
+        end
+
+        else begin
+            $display("Test 29 passed!");
+        end
+
+        // Tick 30: Inputs = 1'b1, 1'b1, 1'b1, 1'b0, Generated = out, Reference = 1'b1
+        a = 1'b1; b = 1'b1; c = 1'b1; d = 1'b0; // Set input values
+        #period;
+        if (!(out === 1'b1)) begin
+            $display("Mismatch at index 30: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b1, 1'b0, out, 1'b1);
+            mismatch_count = mismatch_count + 1;
+        end
+
+        else begin
+            $display("Test 30 passed!");
+        end
+
+        // Tick 31: Inputs = 1'b1, 1'b1, 1'b1, 1'b1, Generated = out, Reference = 1'b1
+        a = 1'b1; b = 1'b1; c = 1'b1; d = 1'b1; // Set input values
+        #period;
+        if (!(out === 1'b1)) begin
+            $display("Mismatch at index 31: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b1, 1'b1, out, 1'b1);
+            mismatch_count = mismatch_count + 1;
+        end
+
+        else begin
+            $display("Test 31 passed!");
+        end
+
         if (mismatch_count == 0)
             $display("All tests passed!");
         else
-            $display("%0d mismatches out of %0d total tests.", mismatch_count, 26);
+            $display("%0d mismatches out of %0d total tests.", mismatch_count, 32);
         $finish;
     end
 

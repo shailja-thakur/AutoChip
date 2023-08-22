@@ -20,11 +20,11 @@ module top_module_tb;
     initial begin
         mismatch_count = 0;
 
-        // Tick 0: Inputs = x, 1'b0, Generated = next_state, out1, out2, Reference = 1'b0, 1'b0, 1'b0
-        in = 1'bx; state = 1'b0; // Set input values
+        // Tick 0: Inputs = 1'bx, 10'b0000000000, Generated = next_state, out1, out2, Reference = 10'b0000000000, 1'b0, 1'b0
+        in = 1'bx; state = 10'b0000000000; // Set input values
         #period;
-        if (!(next_state === 1'b0 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 0: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", x, 1'b0, next_state, out1, out2, 1'b0, 1'b0, 1'b0);
+        if (!(next_state === 10'b0000000000 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 0: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'bx, 10'b0000000000, next_state, out1, out2, 10'b0000000000, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -32,11 +32,11 @@ module top_module_tb;
             $display("Test 0 passed!");
         end
 
-        // Tick 1: Inputs = 1'b0, 1'b1, Generated = next_state, out1, out2, Reference = 1'b1, 1'b0, 1'b0
-        in = 1'b0; state = 1'b1; // Set input values
+        // Tick 1: Inputs = 1'b0, 10'b0000000001, Generated = next_state, out1, out2, Reference = 10'b0000000001, 1'b0, 1'b0
+        in = 1'b0; state = 10'b0000000001; // Set input values
         #period;
-        if (!(next_state === 1'b1 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 1: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b1, next_state, out1, out2, 1'b1, 1'b0, 1'b0);
+        if (!(next_state === 10'b0000000001 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 1: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 10'b0000000001, next_state, out1, out2, 10'b0000000001, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -44,11 +44,11 @@ module top_module_tb;
             $display("Test 1 passed!");
         end
 
-        // Tick 2: Inputs = 1'b0, 1'b10, Generated = next_state, out1, out2, Reference = 1'b1, 1'b0, 1'b0
-        in = 1'b0; state = 1'b10; // Set input values
+        // Tick 2: Inputs = 1'b0, 10'b0000000010, Generated = next_state, out1, out2, Reference = 10'b0000000001, 1'b0, 1'b0
+        in = 1'b0; state = 10'b0000000010; // Set input values
         #period;
-        if (!(next_state === 1'b1 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 2: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b10, next_state, out1, out2, 1'b1, 1'b0, 1'b0);
+        if (!(next_state === 10'b0000000001 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 2: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 10'b0000000010, next_state, out1, out2, 10'b0000000001, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -56,11 +56,11 @@ module top_module_tb;
             $display("Test 2 passed!");
         end
 
-        // Tick 3: Inputs = 1'b0, 1'b100, Generated = next_state, out1, out2, Reference = 1'b1, 1'b0, 1'b0
-        in = 1'b0; state = 1'b100; // Set input values
+        // Tick 3: Inputs = 1'b0, 10'b0000000100, Generated = next_state, out1, out2, Reference = 10'b0000000001, 1'b0, 1'b0
+        in = 1'b0; state = 10'b0000000100; // Set input values
         #period;
-        if (!(next_state === 1'b1 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 3: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b100, next_state, out1, out2, 1'b1, 1'b0, 1'b0);
+        if (!(next_state === 10'b0000000001 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 3: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 10'b0000000100, next_state, out1, out2, 10'b0000000001, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -68,11 +68,11 @@ module top_module_tb;
             $display("Test 3 passed!");
         end
 
-        // Tick 4: Inputs = 1'b0, 1'b1000, Generated = next_state, out1, out2, Reference = 1'b1, 1'b0, 1'b0
-        in = 1'b0; state = 1'b1000; // Set input values
+        // Tick 4: Inputs = 1'b0, 10'b0000001000, Generated = next_state, out1, out2, Reference = 10'b0000000001, 1'b0, 1'b0
+        in = 1'b0; state = 10'b0000001000; // Set input values
         #period;
-        if (!(next_state === 1'b1 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 4: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b1000, next_state, out1, out2, 1'b1, 1'b0, 1'b0);
+        if (!(next_state === 10'b0000000001 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 4: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 10'b0000001000, next_state, out1, out2, 10'b0000000001, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -80,11 +80,11 @@ module top_module_tb;
             $display("Test 4 passed!");
         end
 
-        // Tick 5: Inputs = 1'b0, 1'b10000, Generated = next_state, out1, out2, Reference = 1'b1, 1'b0, 1'b0
-        in = 1'b0; state = 1'b10000; // Set input values
+        // Tick 5: Inputs = 1'b0, 10'b0000010000, Generated = next_state, out1, out2, Reference = 10'b0000000001, 1'b0, 1'b0
+        in = 1'b0; state = 10'b0000010000; // Set input values
         #period;
-        if (!(next_state === 1'b1 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 5: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b10000, next_state, out1, out2, 1'b1, 1'b0, 1'b0);
+        if (!(next_state === 10'b0000000001 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 5: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 10'b0000010000, next_state, out1, out2, 10'b0000000001, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -92,11 +92,11 @@ module top_module_tb;
             $display("Test 5 passed!");
         end
 
-        // Tick 6: Inputs = 1'b0, 1'b100000, Generated = next_state, out1, out2, Reference = 1'b100000000, 1'b0, 1'b0
-        in = 1'b0; state = 1'b100000; // Set input values
+        // Tick 6: Inputs = 1'b0, 10'b0000100000, Generated = next_state, out1, out2, Reference = 10'b0100000000, 1'b0, 1'b0
+        in = 1'b0; state = 10'b0000100000; // Set input values
         #period;
-        if (!(next_state === 1'b100000000 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 6: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b100000, next_state, out1, out2, 1'b100000000, 1'b0, 1'b0);
+        if (!(next_state === 10'b0100000000 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 6: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 10'b0000100000, next_state, out1, out2, 10'b0100000000, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -104,11 +104,11 @@ module top_module_tb;
             $display("Test 6 passed!");
         end
 
-        // Tick 7: Inputs = 1'b0, 1'b1000000, Generated = next_state, out1, out2, Reference = 1'b1000000000, 1'b0, 1'b0
-        in = 1'b0; state = 1'b1000000; // Set input values
+        // Tick 7: Inputs = 1'b0, 10'b0001000000, Generated = next_state, out1, out2, Reference = 10'b1000000000, 1'b0, 1'b0
+        in = 1'b0; state = 10'b0001000000; // Set input values
         #period;
-        if (!(next_state === 1'b1000000000 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 7: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b1000000, next_state, out1, out2, 1'b1000000000, 1'b0, 1'b0);
+        if (!(next_state === 10'b1000000000 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 7: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 10'b0001000000, next_state, out1, out2, 10'b1000000000, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -116,11 +116,11 @@ module top_module_tb;
             $display("Test 7 passed!");
         end
 
-        // Tick 8: Inputs = 1'b0, 1'b10000000, Generated = next_state, out1, out2, Reference = 1'b1, 1'b0, 1'b1
-        in = 1'b0; state = 1'b10000000; // Set input values
+        // Tick 8: Inputs = 1'b0, 10'b0010000000, Generated = next_state, out1, out2, Reference = 10'b0000000001, 1'b0, 1'b1
+        in = 1'b0; state = 10'b0010000000; // Set input values
         #period;
-        if (!(next_state === 1'b1 && out1 === 1'b0 && out2 === 1'b1)) begin
-            $display("Mismatch at index 8: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b10000000, next_state, out1, out2, 1'b1, 1'b0, 1'b1);
+        if (!(next_state === 10'b0000000001 && out1 === 1'b0 && out2 === 1'b1)) begin
+            $display("Mismatch at index 8: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 10'b0010000000, next_state, out1, out2, 10'b0000000001, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -128,11 +128,11 @@ module top_module_tb;
             $display("Test 8 passed!");
         end
 
-        // Tick 9: Inputs = 1'b0, 1'b100000000, Generated = next_state, out1, out2, Reference = 1'b1, 1'b1, 1'b0
-        in = 1'b0; state = 1'b100000000; // Set input values
+        // Tick 9: Inputs = 1'b0, 10'b0100000000, Generated = next_state, out1, out2, Reference = 10'b0000000001, 1'b1, 1'b0
+        in = 1'b0; state = 10'b0100000000; // Set input values
         #period;
-        if (!(next_state === 1'b1 && out1 === 1'b1 && out2 === 1'b0)) begin
-            $display("Mismatch at index 9: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b100000000, next_state, out1, out2, 1'b1, 1'b1, 1'b0);
+        if (!(next_state === 10'b0000000001 && out1 === 1'b1 && out2 === 1'b0)) begin
+            $display("Mismatch at index 9: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 10'b0100000000, next_state, out1, out2, 10'b0000000001, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -140,11 +140,11 @@ module top_module_tb;
             $display("Test 9 passed!");
         end
 
-        // Tick 10: Inputs = 1'b0, 1'b1000000000, Generated = next_state, out1, out2, Reference = 1'b1, 1'b1, 1'b1
-        in = 1'b0; state = 1'b1000000000; // Set input values
+        // Tick 10: Inputs = 1'b0, 10'b1000000000, Generated = next_state, out1, out2, Reference = 10'b0000000001, 1'b1, 1'b1
+        in = 1'b0; state = 10'b1000000000; // Set input values
         #period;
-        if (!(next_state === 1'b1 && out1 === 1'b1 && out2 === 1'b1)) begin
-            $display("Mismatch at index 10: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 1'b1000000000, next_state, out1, out2, 1'b1, 1'b1, 1'b1);
+        if (!(next_state === 10'b0000000001 && out1 === 1'b1 && out2 === 1'b1)) begin
+            $display("Mismatch at index 10: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b0, 10'b1000000000, next_state, out1, out2, 10'b0000000001, 1'b1, 1'b1);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -152,11 +152,11 @@ module top_module_tb;
             $display("Test 10 passed!");
         end
 
-        // Tick 11: Inputs = 1'b1, 1'b1, Generated = next_state, out1, out2, Reference = 1'b10, 1'b0, 1'b0
-        in = 1'b1; state = 1'b1; // Set input values
+        // Tick 11: Inputs = 1'b1, 10'b0000000001, Generated = next_state, out1, out2, Reference = 10'b0000000010, 1'b0, 1'b0
+        in = 1'b1; state = 10'b0000000001; // Set input values
         #period;
-        if (!(next_state === 1'b10 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 11: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b1, next_state, out1, out2, 1'b10, 1'b0, 1'b0);
+        if (!(next_state === 10'b0000000010 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 11: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 10'b0000000001, next_state, out1, out2, 10'b0000000010, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -164,11 +164,11 @@ module top_module_tb;
             $display("Test 11 passed!");
         end
 
-        // Tick 12: Inputs = 1'b1, 1'b10, Generated = next_state, out1, out2, Reference = 1'b100, 1'b0, 1'b0
-        in = 1'b1; state = 1'b10; // Set input values
+        // Tick 12: Inputs = 1'b1, 10'b0000000010, Generated = next_state, out1, out2, Reference = 10'b0000000100, 1'b0, 1'b0
+        in = 1'b1; state = 10'b0000000010; // Set input values
         #period;
-        if (!(next_state === 1'b100 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 12: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b10, next_state, out1, out2, 1'b100, 1'b0, 1'b0);
+        if (!(next_state === 10'b0000000100 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 12: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 10'b0000000010, next_state, out1, out2, 10'b0000000100, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -176,11 +176,11 @@ module top_module_tb;
             $display("Test 12 passed!");
         end
 
-        // Tick 13: Inputs = 1'b1, 1'b100, Generated = next_state, out1, out2, Reference = 1'b1000, 1'b0, 1'b0
-        in = 1'b1; state = 1'b100; // Set input values
+        // Tick 13: Inputs = 1'b1, 10'b0000000100, Generated = next_state, out1, out2, Reference = 10'b0000001000, 1'b0, 1'b0
+        in = 1'b1; state = 10'b0000000100; // Set input values
         #period;
-        if (!(next_state === 1'b1000 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 13: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b100, next_state, out1, out2, 1'b1000, 1'b0, 1'b0);
+        if (!(next_state === 10'b0000001000 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 13: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 10'b0000000100, next_state, out1, out2, 10'b0000001000, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -188,11 +188,11 @@ module top_module_tb;
             $display("Test 13 passed!");
         end
 
-        // Tick 14: Inputs = 1'b1, 1'b1000, Generated = next_state, out1, out2, Reference = 1'b10000, 1'b0, 1'b0
-        in = 1'b1; state = 1'b1000; // Set input values
+        // Tick 14: Inputs = 1'b1, 10'b0000001000, Generated = next_state, out1, out2, Reference = 10'b0000010000, 1'b0, 1'b0
+        in = 1'b1; state = 10'b0000001000; // Set input values
         #period;
-        if (!(next_state === 1'b10000 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 14: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b1000, next_state, out1, out2, 1'b10000, 1'b0, 1'b0);
+        if (!(next_state === 10'b0000010000 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 14: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 10'b0000001000, next_state, out1, out2, 10'b0000010000, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -200,11 +200,11 @@ module top_module_tb;
             $display("Test 14 passed!");
         end
 
-        // Tick 15: Inputs = 1'b1, 1'b10000, Generated = next_state, out1, out2, Reference = 1'b100000, 1'b0, 1'b0
-        in = 1'b1; state = 1'b10000; // Set input values
+        // Tick 15: Inputs = 1'b1, 10'b0000010000, Generated = next_state, out1, out2, Reference = 10'b0000100000, 1'b0, 1'b0
+        in = 1'b1; state = 10'b0000010000; // Set input values
         #period;
-        if (!(next_state === 1'b100000 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 15: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b10000, next_state, out1, out2, 1'b100000, 1'b0, 1'b0);
+        if (!(next_state === 10'b0000100000 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 15: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 10'b0000010000, next_state, out1, out2, 10'b0000100000, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -212,11 +212,11 @@ module top_module_tb;
             $display("Test 15 passed!");
         end
 
-        // Tick 16: Inputs = 1'b1, 1'b100000, Generated = next_state, out1, out2, Reference = 1'b1000000, 1'b0, 1'b0
-        in = 1'b1; state = 1'b100000; // Set input values
+        // Tick 16: Inputs = 1'b1, 10'b0000100000, Generated = next_state, out1, out2, Reference = 10'b0001000000, 1'b0, 1'b0
+        in = 1'b1; state = 10'b0000100000; // Set input values
         #period;
-        if (!(next_state === 1'b1000000 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 16: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b100000, next_state, out1, out2, 1'b1000000, 1'b0, 1'b0);
+        if (!(next_state === 10'b0001000000 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 16: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 10'b0000100000, next_state, out1, out2, 10'b0001000000, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -224,11 +224,11 @@ module top_module_tb;
             $display("Test 16 passed!");
         end
 
-        // Tick 17: Inputs = 1'b1, 1'b1000000, Generated = next_state, out1, out2, Reference = 1'b10000000, 1'b0, 1'b0
-        in = 1'b1; state = 1'b1000000; // Set input values
+        // Tick 17: Inputs = 1'b1, 10'b0001000000, Generated = next_state, out1, out2, Reference = 10'b0010000000, 1'b0, 1'b0
+        in = 1'b1; state = 10'b0001000000; // Set input values
         #period;
-        if (!(next_state === 1'b10000000 && out1 === 1'b0 && out2 === 1'b0)) begin
-            $display("Mismatch at index 17: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b1000000, next_state, out1, out2, 1'b10000000, 1'b0, 1'b0);
+        if (!(next_state === 10'b0010000000 && out1 === 1'b0 && out2 === 1'b0)) begin
+            $display("Mismatch at index 17: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 10'b0001000000, next_state, out1, out2, 10'b0010000000, 1'b0, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -236,11 +236,11 @@ module top_module_tb;
             $display("Test 17 passed!");
         end
 
-        // Tick 18: Inputs = 1'b1, 1'b10000000, Generated = next_state, out1, out2, Reference = 1'b10000000, 1'b0, 1'b1
-        in = 1'b1; state = 1'b10000000; // Set input values
+        // Tick 18: Inputs = 1'b1, 10'b0010000000, Generated = next_state, out1, out2, Reference = 10'b0010000000, 1'b0, 1'b1
+        in = 1'b1; state = 10'b0010000000; // Set input values
         #period;
-        if (!(next_state === 1'b10000000 && out1 === 1'b0 && out2 === 1'b1)) begin
-            $display("Mismatch at index 18: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b10000000, next_state, out1, out2, 1'b10000000, 1'b0, 1'b1);
+        if (!(next_state === 10'b0010000000 && out1 === 1'b0 && out2 === 1'b1)) begin
+            $display("Mismatch at index 18: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 10'b0010000000, next_state, out1, out2, 10'b0010000000, 1'b0, 1'b1);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -248,11 +248,11 @@ module top_module_tb;
             $display("Test 18 passed!");
         end
 
-        // Tick 19: Inputs = 1'b1, 1'b100000000, Generated = next_state, out1, out2, Reference = 1'b10, 1'b1, 1'b0
-        in = 1'b1; state = 1'b100000000; // Set input values
+        // Tick 19: Inputs = 1'b1, 10'b0100000000, Generated = next_state, out1, out2, Reference = 10'b0000000010, 1'b1, 1'b0
+        in = 1'b1; state = 10'b0100000000; // Set input values
         #period;
-        if (!(next_state === 1'b10 && out1 === 1'b1 && out2 === 1'b0)) begin
-            $display("Mismatch at index 19: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b100000000, next_state, out1, out2, 1'b10, 1'b1, 1'b0);
+        if (!(next_state === 10'b0000000010 && out1 === 1'b1 && out2 === 1'b0)) begin
+            $display("Mismatch at index 19: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 10'b0100000000, next_state, out1, out2, 10'b0000000010, 1'b1, 1'b0);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -260,11 +260,11 @@ module top_module_tb;
             $display("Test 19 passed!");
         end
 
-        // Tick 20: Inputs = 1'b1, 1'b1000000000, Generated = next_state, out1, out2, Reference = 1'b10, 1'b1, 1'b1
-        in = 1'b1; state = 1'b1000000000; // Set input values
+        // Tick 20: Inputs = 1'b1, 10'b1000000000, Generated = next_state, out1, out2, Reference = 10'b0000000010, 1'b1, 1'b1
+        in = 1'b1; state = 10'b1000000000; // Set input values
         #period;
-        if (!(next_state === 1'b10 && out1 === 1'b1 && out2 === 1'b1)) begin
-            $display("Mismatch at index 20: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b1000000000, next_state, out1, out2, 1'b10, 1'b1, 1'b1);
+        if (!(next_state === 10'b0000000010 && out1 === 1'b1 && out2 === 1'b1)) begin
+            $display("Mismatch at index 20: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 10'b1000000000, next_state, out1, out2, 10'b0000000010, 1'b1, 1'b1);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -272,11 +272,11 @@ module top_module_tb;
             $display("Test 20 passed!");
         end
 
-        // Tick 21: Inputs = 1'b1, 1'b1000000000, Generated = next_state, out1, out2, Reference = 1'b10, 1'b1, 1'b1
-        in = 1'b1; state = 1'b1000000000; // Set input values
+        // Tick 21: Inputs = 1'b1, 10'b1000000000, Generated = next_state, out1, out2, Reference = 10'b0000000010, 1'b1, 1'b1
+        in = 1'b1; state = 10'b1000000000; // Set input values
         #period;
-        if (!(next_state === 1'b10 && out1 === 1'b1 && out2 === 1'b1)) begin
-            $display("Mismatch at index 21: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 1'b1000000000, next_state, out1, out2, 1'b10, 1'b1, 1'b1);
+        if (!(next_state === 10'b0000000010 && out1 === 1'b1 && out2 === 1'b1)) begin
+            $display("Mismatch at index 21: Inputs = [%b, %b], Generated = [%b, %b, %b], Reference = [%b, %b, %b]", 1'b1, 10'b1000000000, next_state, out1, out2, 10'b0000000010, 1'b1, 1'b1);
             mismatch_count = mismatch_count + 1;
         end
 

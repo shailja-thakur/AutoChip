@@ -29,11 +29,11 @@ module top_module_tb;
     initial begin
         mismatch_count = 0;
 
-        // Tick 0: Inputs = 1'b0, 1'b1, 1'b11, 1'b11010100100100, Generated = q, Reference = 1'b11010100100100
-        resetn = 1'b1; byteena = 1'b11; d = 1'b11010100100100; // Set input values
+        // Tick 0: Inputs = 1'b0, 1'b1, 2'b11, 16'b0011010100100100, Generated = q, Reference = 16'b0011010100100100
+        resetn = 1'b1; byteena = 2'b11; d = 16'b0011010100100100; // Set input values
         #period;
-        if (!(q === 1'b11010100100100)) begin
-            $display("Mismatch at index 0: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b11, 1'b11010100100100, q, 1'b11010100100100);
+        if (!(q === 16'b0011010100100100)) begin
+            $display("Mismatch at index 0: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 2'b11, 16'b0011010100100100, q, 16'b0011010100100100);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -41,11 +41,11 @@ module top_module_tb;
             $display("Test 0 passed!");
         end
 
-        // Tick 1: Inputs = 1'b1, 1'b1, 1'b0, 1'b101111010000001, Generated = q, Reference = 1'b11010100100100
-        resetn = 1'b1; byteena = 1'b0; d = 1'b101111010000001; // Set input values
+        // Tick 1: Inputs = 1'b1, 1'b1, 2'b00, 16'b0101111010000001, Generated = q, Reference = 16'b0011010100100100
+        resetn = 1'b1; byteena = 2'b00; d = 16'b0101111010000001; // Set input values
         #period;
-        if (!(q === 1'b11010100100100)) begin
-            $display("Mismatch at index 1: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b0, 1'b101111010000001, q, 1'b11010100100100);
+        if (!(q === 16'b0011010100100100)) begin
+            $display("Mismatch at index 1: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 2'b00, 16'b0101111010000001, q, 16'b0011010100100100);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -53,11 +53,11 @@ module top_module_tb;
             $display("Test 1 passed!");
         end
 
-        // Tick 2: Inputs = 1'b0, 1'b1, 1'b0, 1'b101111010000001, Generated = q, Reference = 1'b11010100100100
-        resetn = 1'b1; byteena = 1'b0; d = 1'b101111010000001; // Set input values
+        // Tick 2: Inputs = 1'b0, 1'b1, 2'b00, 16'b0101111010000001, Generated = q, Reference = 16'b0011010100100100
+        resetn = 1'b1; byteena = 2'b00; d = 16'b0101111010000001; // Set input values
         #period;
-        if (!(q === 1'b11010100100100)) begin
-            $display("Mismatch at index 2: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b0, 1'b101111010000001, q, 1'b11010100100100);
+        if (!(q === 16'b0011010100100100)) begin
+            $display("Mismatch at index 2: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 2'b00, 16'b0101111010000001, q, 16'b0011010100100100);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -65,11 +65,11 @@ module top_module_tb;
             $display("Test 2 passed!");
         end
 
-        // Tick 3: Inputs = 1'b1, 1'b1, 1'b1, 1'b1101011000001001, Generated = q, Reference = 1'b11010100100100
-        resetn = 1'b1; byteena = 1'b1; d = 1'b1101011000001001; // Set input values
+        // Tick 3: Inputs = 1'b1, 1'b1, 2'b01, 16'b1101011000001001, Generated = q, Reference = 16'b0011010100100100
+        resetn = 1'b1; byteena = 2'b01; d = 16'b1101011000001001; // Set input values
         #period;
-        if (!(q === 1'b11010100100100)) begin
-            $display("Mismatch at index 3: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b1, 1'b1101011000001001, q, 1'b11010100100100);
+        if (!(q === 16'b0011010100100100)) begin
+            $display("Mismatch at index 3: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 2'b01, 16'b1101011000001001, q, 16'b0011010100100100);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -77,11 +77,11 @@ module top_module_tb;
             $display("Test 3 passed!");
         end
 
-        // Tick 4: Inputs = 1'b0, 1'b1, 1'b1, 1'b1101011000001001, Generated = q, Reference = 1'b11010100100100
-        resetn = 1'b1; byteena = 1'b1; d = 1'b1101011000001001; // Set input values
+        // Tick 4: Inputs = 1'b0, 1'b1, 2'b01, 16'b1101011000001001, Generated = q, Reference = 16'b0011010100100100
+        resetn = 1'b1; byteena = 2'b01; d = 16'b1101011000001001; // Set input values
         #period;
-        if (!(q === 1'b11010100100100)) begin
-            $display("Mismatch at index 4: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b1, 1'b1101011000001001, q, 1'b11010100100100);
+        if (!(q === 16'b0011010100100100)) begin
+            $display("Mismatch at index 4: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 2'b01, 16'b1101011000001001, q, 16'b0011010100100100);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -89,11 +89,11 @@ module top_module_tb;
             $display("Test 4 passed!");
         end
 
-        // Tick 5: Inputs = 1'b1, 1'b1, 1'b10, 1'b101011001100011, Generated = q, Reference = 1'b11010100001001
-        resetn = 1'b1; byteena = 1'b10; d = 1'b101011001100011; // Set input values
+        // Tick 5: Inputs = 1'b1, 1'b1, 2'b10, 16'b0101011001100011, Generated = q, Reference = 16'b0011010100001001
+        resetn = 1'b1; byteena = 2'b10; d = 16'b0101011001100011; // Set input values
         #period;
-        if (!(q === 1'b11010100001001)) begin
-            $display("Mismatch at index 5: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b10, 1'b101011001100011, q, 1'b11010100001001);
+        if (!(q === 16'b0011010100001001)) begin
+            $display("Mismatch at index 5: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 2'b10, 16'b0101011001100011, q, 16'b0011010100001001);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -101,11 +101,11 @@ module top_module_tb;
             $display("Test 5 passed!");
         end
 
-        // Tick 6: Inputs = 1'b0, 1'b1, 1'b10, 1'b101011001100011, Generated = q, Reference = 1'b11010100001001
-        resetn = 1'b1; byteena = 1'b10; d = 1'b101011001100011; // Set input values
+        // Tick 6: Inputs = 1'b0, 1'b1, 2'b10, 16'b0101011001100011, Generated = q, Reference = 16'b0011010100001001
+        resetn = 1'b1; byteena = 2'b10; d = 16'b0101011001100011; // Set input values
         #period;
-        if (!(q === 1'b11010100001001)) begin
-            $display("Mismatch at index 6: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b10, 1'b101011001100011, q, 1'b11010100001001);
+        if (!(q === 16'b0011010100001001)) begin
+            $display("Mismatch at index 6: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 2'b10, 16'b0101011001100011, q, 16'b0011010100001001);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -113,11 +113,11 @@ module top_module_tb;
             $display("Test 6 passed!");
         end
 
-        // Tick 7: Inputs = 1'b1, 1'b1, 1'b11, 1'b111101100001101, Generated = q, Reference = 1'b101011000001001
-        resetn = 1'b1; byteena = 1'b11; d = 1'b111101100001101; // Set input values
+        // Tick 7: Inputs = 1'b1, 1'b1, 2'b11, 16'b0111101100001101, Generated = q, Reference = 16'b0101011000001001
+        resetn = 1'b1; byteena = 2'b11; d = 16'b0111101100001101; // Set input values
         #period;
-        if (!(q === 1'b101011000001001)) begin
-            $display("Mismatch at index 7: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b11, 1'b111101100001101, q, 1'b101011000001001);
+        if (!(q === 16'b0101011000001001)) begin
+            $display("Mismatch at index 7: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 2'b11, 16'b0111101100001101, q, 16'b0101011000001001);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -125,11 +125,11 @@ module top_module_tb;
             $display("Test 7 passed!");
         end
 
-        // Tick 8: Inputs = 1'b0, 1'b1, 1'b11, 1'b111101100001101, Generated = q, Reference = 1'b101011000001001
-        resetn = 1'b1; byteena = 1'b11; d = 1'b111101100001101; // Set input values
+        // Tick 8: Inputs = 1'b0, 1'b1, 2'b11, 16'b0111101100001101, Generated = q, Reference = 16'b0101011000001001
+        resetn = 1'b1; byteena = 2'b11; d = 16'b0111101100001101; // Set input values
         #period;
-        if (!(q === 1'b101011000001001)) begin
-            $display("Mismatch at index 8: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b11, 1'b111101100001101, q, 1'b101011000001001);
+        if (!(q === 16'b0101011000001001)) begin
+            $display("Mismatch at index 8: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 2'b11, 16'b0111101100001101, q, 16'b0101011000001001);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -137,11 +137,11 @@ module top_module_tb;
             $display("Test 8 passed!");
         end
 
-        // Tick 9: Inputs = 1'b1, 1'b1, 1'b0, 1'b1001100110001101, Generated = q, Reference = 1'b111101100001101
-        resetn = 1'b1; byteena = 1'b0; d = 1'b1001100110001101; // Set input values
+        // Tick 9: Inputs = 1'b1, 1'b1, 2'b00, 16'b1001100110001101, Generated = q, Reference = 16'b0111101100001101
+        resetn = 1'b1; byteena = 2'b00; d = 16'b1001100110001101; // Set input values
         #period;
-        if (!(q === 1'b111101100001101)) begin
-            $display("Mismatch at index 9: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b0, 1'b1001100110001101, q, 1'b111101100001101);
+        if (!(q === 16'b0111101100001101)) begin
+            $display("Mismatch at index 9: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 2'b00, 16'b1001100110001101, q, 16'b0111101100001101);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -149,11 +149,11 @@ module top_module_tb;
             $display("Test 9 passed!");
         end
 
-        // Tick 10: Inputs = 1'b0, 1'b1, 1'b0, 1'b1001100110001101, Generated = q, Reference = 1'b111101100001101
-        resetn = 1'b1; byteena = 1'b0; d = 1'b1001100110001101; // Set input values
+        // Tick 10: Inputs = 1'b0, 1'b1, 2'b00, 16'b1001100110001101, Generated = q, Reference = 16'b0111101100001101
+        resetn = 1'b1; byteena = 2'b00; d = 16'b1001100110001101; // Set input values
         #period;
-        if (!(q === 1'b111101100001101)) begin
-            $display("Mismatch at index 10: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b0, 1'b1001100110001101, q, 1'b111101100001101);
+        if (!(q === 16'b0111101100001101)) begin
+            $display("Mismatch at index 10: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 2'b00, 16'b1001100110001101, q, 16'b0111101100001101);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -161,11 +161,11 @@ module top_module_tb;
             $display("Test 10 passed!");
         end
 
-        // Tick 11: Inputs = 1'b1, 1'b1, 1'b1, 1'b1000010001100101, Generated = q, Reference = 1'b111101100001101
-        resetn = 1'b1; byteena = 1'b1; d = 1'b1000010001100101; // Set input values
+        // Tick 11: Inputs = 1'b1, 1'b1, 2'b01, 16'b1000010001100101, Generated = q, Reference = 16'b0111101100001101
+        resetn = 1'b1; byteena = 2'b01; d = 16'b1000010001100101; // Set input values
         #period;
-        if (!(q === 1'b111101100001101)) begin
-            $display("Mismatch at index 11: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b1, 1'b1000010001100101, q, 1'b111101100001101);
+        if (!(q === 16'b0111101100001101)) begin
+            $display("Mismatch at index 11: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 2'b01, 16'b1000010001100101, q, 16'b0111101100001101);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -173,11 +173,11 @@ module top_module_tb;
             $display("Test 11 passed!");
         end
 
-        // Tick 12: Inputs = 1'b0, 1'b1, 1'b1, 1'b1000010001100101, Generated = q, Reference = 1'b111101100001101
-        resetn = 1'b1; byteena = 1'b1; d = 1'b1000010001100101; // Set input values
+        // Tick 12: Inputs = 1'b0, 1'b1, 2'b01, 16'b1000010001100101, Generated = q, Reference = 16'b0111101100001101
+        resetn = 1'b1; byteena = 2'b01; d = 16'b1000010001100101; // Set input values
         #period;
-        if (!(q === 1'b111101100001101)) begin
-            $display("Mismatch at index 12: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b1, 1'b1000010001100101, q, 1'b111101100001101);
+        if (!(q === 16'b0111101100001101)) begin
+            $display("Mismatch at index 12: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 2'b01, 16'b1000010001100101, q, 16'b0111101100001101);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -185,11 +185,11 @@ module top_module_tb;
             $display("Test 12 passed!");
         end
 
-        // Tick 13: Inputs = 1'b1, 1'b1, 1'b10, 1'b101001000010010, Generated = q, Reference = 1'b111101101100101
-        resetn = 1'b1; byteena = 1'b10; d = 1'b101001000010010; // Set input values
+        // Tick 13: Inputs = 1'b1, 1'b1, 2'b10, 16'b0101001000010010, Generated = q, Reference = 16'b0111101101100101
+        resetn = 1'b1; byteena = 2'b10; d = 16'b0101001000010010; // Set input values
         #period;
-        if (!(q === 1'b111101101100101)) begin
-            $display("Mismatch at index 13: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b10, 1'b101001000010010, q, 1'b111101101100101);
+        if (!(q === 16'b0111101101100101)) begin
+            $display("Mismatch at index 13: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 2'b10, 16'b0101001000010010, q, 16'b0111101101100101);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -197,11 +197,11 @@ module top_module_tb;
             $display("Test 13 passed!");
         end
 
-        // Tick 14: Inputs = 1'b0, 1'b1, 1'b10, 1'b101001000010010, Generated = q, Reference = 1'b111101101100101
-        resetn = 1'b1; byteena = 1'b10; d = 1'b101001000010010; // Set input values
+        // Tick 14: Inputs = 1'b0, 1'b1, 2'b10, 16'b0101001000010010, Generated = q, Reference = 16'b0111101101100101
+        resetn = 1'b1; byteena = 2'b10; d = 16'b0101001000010010; // Set input values
         #period;
-        if (!(q === 1'b111101101100101)) begin
-            $display("Mismatch at index 14: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b10, 1'b101001000010010, q, 1'b111101101100101);
+        if (!(q === 16'b0111101101100101)) begin
+            $display("Mismatch at index 14: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 2'b10, 16'b0101001000010010, q, 16'b0111101101100101);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -209,11 +209,11 @@ module top_module_tb;
             $display("Test 14 passed!");
         end
 
-        // Tick 15: Inputs = 1'b1, 1'b1, 1'b11, 1'b1110001100000001, Generated = q, Reference = 1'b101001001100101
-        resetn = 1'b1; byteena = 1'b11; d = 1'b1110001100000001; // Set input values
+        // Tick 15: Inputs = 1'b1, 1'b1, 2'b11, 16'b1110001100000001, Generated = q, Reference = 16'b0101001001100101
+        resetn = 1'b1; byteena = 2'b11; d = 16'b1110001100000001; // Set input values
         #period;
-        if (!(q === 1'b101001001100101)) begin
-            $display("Mismatch at index 15: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b11, 1'b1110001100000001, q, 1'b101001001100101);
+        if (!(q === 16'b0101001001100101)) begin
+            $display("Mismatch at index 15: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 2'b11, 16'b1110001100000001, q, 16'b0101001001100101);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -221,11 +221,11 @@ module top_module_tb;
             $display("Test 15 passed!");
         end
 
-        // Tick 16: Inputs = 1'b0, 1'b1, 1'b11, 1'b1110001100000001, Generated = q, Reference = 1'b101001001100101
-        resetn = 1'b1; byteena = 1'b11; d = 1'b1110001100000001; // Set input values
+        // Tick 16: Inputs = 1'b0, 1'b1, 2'b11, 16'b1110001100000001, Generated = q, Reference = 16'b0101001001100101
+        resetn = 1'b1; byteena = 2'b11; d = 16'b1110001100000001; // Set input values
         #period;
-        if (!(q === 1'b101001001100101)) begin
-            $display("Mismatch at index 16: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b11, 1'b1110001100000001, q, 1'b101001001100101);
+        if (!(q === 16'b0101001001100101)) begin
+            $display("Mismatch at index 16: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 2'b11, 16'b1110001100000001, q, 16'b0101001001100101);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -233,11 +233,11 @@ module top_module_tb;
             $display("Test 16 passed!");
         end
 
-        // Tick 17: Inputs = 1'b1, 1'b1, 1'b0, 1'b1100110100001101, Generated = q, Reference = 1'b1110001100000001
-        resetn = 1'b1; byteena = 1'b0; d = 1'b1100110100001101; // Set input values
+        // Tick 17: Inputs = 1'b1, 1'b1, 2'b00, 16'b1100110100001101, Generated = q, Reference = 16'b1110001100000001
+        resetn = 1'b1; byteena = 2'b00; d = 16'b1100110100001101; // Set input values
         #period;
-        if (!(q === 1'b1110001100000001)) begin
-            $display("Mismatch at index 17: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 1'b0, 1'b1100110100001101, q, 1'b1110001100000001);
+        if (!(q === 16'b1110001100000001)) begin
+            $display("Mismatch at index 17: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b1, 1'b1, 2'b00, 16'b1100110100001101, q, 16'b1110001100000001);
             mismatch_count = mismatch_count + 1;
         end
 
@@ -245,11 +245,11 @@ module top_module_tb;
             $display("Test 17 passed!");
         end
 
-        // Tick 18: Inputs = 1'b0, 1'b1, 1'b0, 1'b1100110100001101, Generated = q, Reference = 1'b1110001100000001
-        resetn = 1'b1; byteena = 1'b0; d = 1'b1100110100001101; // Set input values
+        // Tick 18: Inputs = 1'b0, 1'b1, 2'b00, 16'b1100110100001101, Generated = q, Reference = 16'b1110001100000001
+        resetn = 1'b1; byteena = 2'b00; d = 16'b1100110100001101; // Set input values
         #period;
-        if (!(q === 1'b1110001100000001)) begin
-            $display("Mismatch at index 18: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 1'b0, 1'b1100110100001101, q, 1'b1110001100000001);
+        if (!(q === 16'b1110001100000001)) begin
+            $display("Mismatch at index 18: Inputs = [%b, %b, %b, %b], Generated = [%b], Reference = [%b]", 1'b0, 1'b1, 2'b00, 16'b1100110100001101, q, 16'b1110001100000001);
             mismatch_count = mismatch_count + 1;
         end
 
