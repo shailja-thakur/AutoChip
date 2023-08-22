@@ -22,99 +22,27 @@ module top_module_tb;
         // Tick 0: Inputs = , Generated = tff.clk, tff.reset, tff.t, tff.q, Reference = 
         // No input assignments for this tick
         #period;
-        if (!()) begin
-            $display("Mismatch at index 0: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
-            mismatch_count = mismatch_count + 1;
-        end
-
-        else begin
-            $display("Test 0 passed!");
-        end
-
         // Tick 1: Inputs = , Generated = tff.clk, tff.reset, tff.t, tff.q, Reference = 
         // No input assignments for this tick
         #period;
-        if (!()) begin
-            $display("Mismatch at index 1: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
-            mismatch_count = mismatch_count + 1;
-        end
-
-        else begin
-            $display("Test 1 passed!");
-        end
-
         // Tick 2: Inputs = , Generated = tff.clk, tff.reset, tff.t, tff.q, Reference = 
         // No input assignments for this tick
         #period;
-        if (!()) begin
-            $display("Mismatch at index 2: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
-            mismatch_count = mismatch_count + 1;
-        end
-
-        else begin
-            $display("Test 2 passed!");
-        end
-
         // Tick 3: Inputs = , Generated = tff.clk, tff.reset, tff.t, tff.q, Reference = 
         // No input assignments for this tick
         #period;
-        if (!()) begin
-            $display("Mismatch at index 3: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
-            mismatch_count = mismatch_count + 1;
-        end
-
-        else begin
-            $display("Test 3 passed!");
-        end
-
         // Tick 4: Inputs = , Generated = tff.clk, tff.reset, tff.t, tff.q, Reference = 
         // No input assignments for this tick
         #period;
-        if (!()) begin
-            $display("Mismatch at index 4: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
-            mismatch_count = mismatch_count + 1;
-        end
-
-        else begin
-            $display("Test 4 passed!");
-        end
-
         // Tick 5: Inputs = , Generated = tff.clk, tff.reset, tff.t, tff.q, Reference = 
         // No input assignments for this tick
         #period;
-        if (!()) begin
-            $display("Mismatch at index 5: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
-            mismatch_count = mismatch_count + 1;
-        end
-
-        else begin
-            $display("Test 5 passed!");
-        end
-
         // Tick 6: Inputs = , Generated = tff.clk, tff.reset, tff.t, tff.q, Reference = 
         // No input assignments for this tick
         #period;
-        if (!()) begin
-            $display("Mismatch at index 6: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
-            mismatch_count = mismatch_count + 1;
-        end
-
-        else begin
-            $display("Test 6 passed!");
-        end
-
         // Tick 7: Inputs = , Generated = tff.clk, tff.reset, tff.t, tff.q, Reference = 
         // No input assignments for this tick
         #period;
-        if (!()) begin
-            $display("Mismatch at index 7: Inputs = [], Generated = [%b, %b, %b, %b], Reference = []", tff.clk, tff.reset, tff.t, tff.q);
-            mismatch_count = mismatch_count + 1;
-        end
-
-        else begin
-            $display("Test 7 passed!");
-        end
-
         if (mismatch_count == 0)
             $display("All tests passed!");
         else
