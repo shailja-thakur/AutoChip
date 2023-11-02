@@ -1,1 +1,1 @@
-# ChipChat
+# AutoChip
