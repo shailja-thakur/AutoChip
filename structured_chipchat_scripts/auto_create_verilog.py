@@ -4,6 +4,7 @@ import languagemodels as lm
 import conversation as cv
 
 import sys
+import os
 import getopt
 
 import re
@@ -91,10 +92,15 @@ def generate_verilog(conv, model_type):
         model = lm.Claude()
     elif model_type == "ChatGPT3p5":
         model = lm.ChatGPT3p5()
+    elif model_type == "PaLM":
+        model = lm.PaLM()
 
     return(model.generate(conv))
 
-def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, log=None):
+def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, outdir="", log=None):
+
+    if outdir != "":
+        outdir = outdir + "/"
 
     conv = cv.Conversation(log_file=log)
 
@@ -117,7 +123,7 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, l
 
     iterations = 0
 
-    filename = module+".v"
+    filename = os.path.join(outdir,module+".v")
 
     status = ""
     while not (success or timeout):
@@ -126,7 +132,7 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, l
         conv.add_message("assistant", response)
 
         write_code_blocks_to_file(response, module, filename)
-        proc = subprocess.run(["iverilog", "-o", module, filename, testbench],capture_output=True,text=True)
+        proc = subprocess.run(["iverilog", "-o", os.path.join(outdir,module), filename, testbench],capture_output=True,text=True)
 
         success = False
         if proc.returncode != 0:
@@ -139,7 +145,7 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, l
             print(status)
             message = "The testbench compiled with warnings. Please fix the module. The output of iverilog is as follows:\n"+proc.stderr
         else:
-            proc = subprocess.run(["vvp", module],capture_output=True,text=True)
+            proc = subprocess.run(["vvp", os.path.join(outdir,module)],capture_output=True,text=True)
             result = proc.stdout.strip().split('\n')[-2].split()
             if result[-1] != 'passed!':
                 status = "Error running testbench"
@@ -152,7 +158,7 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, l
                 success = True
 
 ################################
-        with open("log_iter_"+str(iterations)+".txt", 'w') as file:
+        with open(os.path.join(outdir,"log_iter_"+str(iterations)+".txt"), 'w') as file:
             file.write('\n'.join(str(i) for i in conv.get_messages()))
             file.write('\n\n Iteration status: ' + status + '\n')
 
@@ -164,6 +170,7 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, l
 
             #with open(testbench, 'r') as file: testbench_text = file.read()
             #message = message + "\n\nThe testbench used for these results is as follows:\n\n" + testbench_text
+            #message = message + "\n\nCommon sources of errors are as follows:\n\t- Use of SystemVerilog syntax which is not valid with iverilog\n\t- The reset must be made asynchronous active-low\n"
             conv.add_message("user", message)
 
         if iterations >= max_iterations:
@@ -172,10 +179,10 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, l
         iterations += 1
 
 def main():
-    usage = "Usage: auto_create_verilog.py [--help] --prompt=<prompt> --name=<module name> --testbench=<testbench file> --iter=<iterations> --model=<llm model> --log=<log file>\n\n\t-h|--help: Prints this usage message\n\n\t-p|--prompt: The initial design prompt for the Verilog module\n\n\t-n|--name: The module name, must match the testbench expected module name\n\n\t-t|--testbench: The testbench file to be run\n\n\t-i|--iter: [Optional] Number of iterations before the tool quits (defaults to 10)\n\n\t-m|--model: The LLM to use for this generation. Must be one of the following\n\t\t- ChatGPT3p5\n\t\t- ChatGPT4\n\t\t- Claude\n\n\t-l|--log: [Optional] Log the output of the model to the given file"
+    usage = "Usage: auto_create_verilog.py [--help] --prompt=<prompt> --name=<module name> --testbench=<testbench file> --iter=<iterations> --model=<llm model> --log=<log file>\n\n\t-h|--help: Prints this usage message\n\n\t-p|--prompt: The initial design prompt for the Verilog module\n\n\t-n|--name: The module name, must match the testbench expected module name\n\n\t-t|--testbench: The testbench file to be run\n\n\t-i|--iter: [Optional] Number of iterations before the tool quits (defaults to 10)\n\n\t-m|--model: The LLM to use for this generation. Must be one of the following\n\t\t- ChatGPT3p5\n\t\t- ChatGPT4\n\t\t- Claude\n\n\t-o|--outdir: [Optional] Directory to output all files to\n\n\t-l|--log: [Optional] Log the output of the model to the given file"
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hp:n:t:i:m:l", ["help", "prompt=", "name=", "testbench=", "iter=", "model=", "log="])
+        opts, args = getopt.getopt(sys.argv[1:], "hp:n:t:i:m:o:l", ["help", "prompt=", "name=", "testbench=", "iter=", "model=", "outdir=", "log="])
     except getopt.GetoptError as err:
         print(err)
         print(usage)
@@ -199,6 +206,8 @@ def main():
             max_iterations = int(arg)
         elif opt in ("-m", "--model"):
             model = arg
+        elif opt in ("-o", "--outdir"):
+            outdir = arg
         elif opt in ("-l", "--log"):
             log = arg
 
@@ -232,7 +241,16 @@ def main():
         print(usage)
         sys.exit(2)
 
-    verilog_loop(prompt, module, testbench, max_iterations, model, log)
+    try:
+        outdir
+    except NameError:
+        outdir = ""
+
+    if outdir != "":
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+
+    verilog_loop(prompt, module, testbench, max_iterations, model, outdir, log)
 
 if __name__ == "__main__":
     main()
