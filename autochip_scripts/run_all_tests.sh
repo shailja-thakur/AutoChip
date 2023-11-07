@@ -1,12 +1,12 @@
 #!/bin/bash
 
-prompt_dir=`pwd`/prompt_feedback_testing
+prompt_dir=`pwd`/prompts
 testbench_dir=`pwd`/hdlbits_testbenches
 output_dir=`pwd`/outputs
 
-autogen_script=`pwd`/structured_chipchat_scripts/auto_create_verilog.py
+autogen_script=`pwd`/auto_create_verilog.py
 
-source `pwd`/structured_chipchat_scripts/venv/bin/activate
+source `pwd`/venv/bin/activate
 
 tests_per_prompt=5
 
