@@ -39,7 +39,7 @@ To use the tool, follow the steps below:
 
 2. Run the tool with the necessary arguments:
 ```sh
-./auto_create_verilog.py [--help] --prompt=<prompt> --name=<module name> --testbench=<testbench file> --iter=<iterations> --model=<llm model> --log=<log file>
+./auto_create_verilog.py [--help] --prompt=<prompt> --name=<module name> --testbench=<testbench file> --iter=<iterations> --model=<llm model> --model_id=<model id> --log=<log file>
 ```
 ### Arguments
  - `-h|--help`: Prints this usage message
@@ -52,6 +52,8 @@ To use the tool, follow the steps below:
     - ChatGPT4
     - Claude
     - PaLM
+    - CodeLLama
+ - `-id|--model_id`: The specific version of codellama model (huggingface repository to codellama)
  - `-o|--outdir`: [Optional] Directory to output files to
  - `-l|--log`: [Optional] File to log the outputs of the model
 
