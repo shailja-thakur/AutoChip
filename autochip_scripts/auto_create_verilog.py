@@ -85,7 +85,7 @@ def parse_iverilog_output(output):
 
     return results
 
-def generate_verilog(conv, model_type):
+def generate_verilog(conv, model_type, model_id=""):
     if model_type == "ChatGPT4":
         model = lm.ChatGPT4()
     elif model_type == "Claude":
@@ -94,6 +94,8 @@ def generate_verilog(conv, model_type):
         model = lm.ChatGPT3p5()
     elif model_type == "PaLM":
         model = lm.PaLM()
+    elif model_type == "CodeLLama":
+        model = lm.CodeLlama(model_id)
 
     return(model.generate(conv))
 
@@ -179,10 +181,10 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, o
         iterations += 1
 
 def main():
-    usage = "Usage: auto_create_verilog.py [--help] --prompt=<prompt> --name=<module name> --testbench=<testbench file> --iter=<iterations> --model=<llm model> --log=<log file>\n\n\t-h|--help: Prints this usage message\n\n\t-p|--prompt: The initial design prompt for the Verilog module\n\n\t-n|--name: The module name, must match the testbench expected module name\n\n\t-t|--testbench: The testbench file to be run\n\n\t-i|--iter: [Optional] Number of iterations before the tool quits (defaults to 10)\n\n\t-m|--model: The LLM to use for this generation. Must be one of the following\n\t\t- ChatGPT3p5\n\t\t- ChatGPT4\n\t\t- Claude\n\n\t-o|--outdir: [Optional] Directory to output all files to\n\n\t-l|--log: [Optional] Log the output of the model to the given file"
+    usage = "Usage: auto_create_verilog.py [--help] --prompt=<prompt> --name=<module name> --testbench=<testbench file> --iter=<iterations> --model=<llm model> --model_id=<model id> --log=<log file>\n\n\t-h|--help: Prints this usage message\n\n\t-p|--prompt: The initial design prompt for the Verilog module\n\n\t-n|--name: The module name, must match the testbench expected module name\n\n\t-t|--testbench: The testbench file to be run\n\n\t-i|--iter: [Optional] Number of iterations before the tool quits (defaults to 10)\n\n\t-m|--model: The LLM to use for this generation. Must be one of the following\n\t\t- ChatGPT3p5\n\t\t- ChatGPT4\n\t\t- Claude\n\n\t-l|--log: [Optional] Log the output of the model to the given file"
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hp:n:t:i:m:o:l", ["help", "prompt=", "name=", "testbench=", "iter=", "model=", "outdir=", "log="])
+        opts, args = getopt.getopt(sys.argv[1:], "hp:n:t:i:m:l", ["help", "prompt=", "name=", "testbench=", "iter=", "model=", "model_id=","log="])
     except getopt.GetoptError as err:
         print(err)
         print(usage)

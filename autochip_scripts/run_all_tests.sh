@@ -1,6 +1,6 @@
 #!/bin/bash
 
-prompt_dir=`pwd`/prompts
+prompt_dir=`pwd`/hdlbits_prompts
 testbench_dir=`pwd`/hdlbits_testbenches
 output_dir=`pwd`/outputs
 
@@ -31,7 +31,6 @@ for prompt in "${prompts[@]}"; do
 		mkdir -p $output_dir/$prompt/test_${i}
 		cd $output_dir/$prompt/test_${i}
 
-		python3 $autogen_script --prompt="$(cat $prompt_dir/${prompt}.v)" --testbench=$testbench --name=top_module --iter=10 --model=ChatGPT3p5 --log=${prompt}_log.txt
-		cd -
+		python3 $autogen_script --prompt="$(cat $prompt_dir/${prompt}.v)" --testbench=$testbench --name=top_module --iter=10 --model=ChatGPT3p5 --log=${prompt}_log.txt		cd -
 	done
 done
