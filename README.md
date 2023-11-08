@@ -53,7 +53,7 @@ To use the tool, follow the steps below:
     - Claude
     - PaLM
     - CodeLLama
- - `-id|--model_id`: The specific version of codellama model (huggingface repository to codellama)
+ - `-id|--model_id`: [Optional] for model other than CodeLLama, for codellama, model id is the huggingface repository to codellama
  - `-o|--outdir`: [Optional] Directory to output files to
  - `-l|--log`: [Optional] File to log the outputs of the model
 
