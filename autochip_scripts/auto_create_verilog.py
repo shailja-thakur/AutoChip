@@ -1,4 +1,4 @@
-#!./venv/bin/python3
+#!../venv/bin/python3
 import subprocess
 import languagemodels as lm
 import conversation as cv
@@ -92,6 +92,8 @@ def generate_verilog(conv, model_type, model_id=""):
         model = lm.Claude()
     elif model_type == "ChatGPT3p5":
         model = lm.ChatGPT3p5()
+    elif model_type == "Gemini":
+        model = lm.Gemini()
     elif model_type == "PaLM":
         model = lm.PaLM()
     elif model_type == "CodeLLama":

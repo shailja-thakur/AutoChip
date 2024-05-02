@@ -1,18 +1,22 @@
+import os
 from abc import ABC, abstractmethod
 
+## OPENAI
 import openai
 
+## ANTHROPIC
 from anthropic import Anthropic
 from anthropic import AsyncAnthropic, HUMAN_PROMPT, AI_PROMPT
 
-import google.generativeai as palm
+## GEMINI
+import google.generativeai as genai
 
-import os
-from conversation import Conversation
-
+## VERIGEN
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 import torch
 
+## GENERAL AUTOCHIP
+from conversation import Conversation
 
 # Abstract Large Language Model
 # Defines an interface for using different LLMs so we can easily swap them out
@@ -34,16 +38,17 @@ class ChatGPT3p5(AbstractLLM):
     def __init__(self):
         super().__init__()
         openai.api_key=os.environ['OPENAI_API_KEY']
+        self.client = openai.OpenAI()
 
     def generate(self, conversation: Conversation):
-        messages = [{'role' : msg['role'], 'content' : msg['content']} for msg in conversation.get_messages()]
+        messages = [{"role" : msg["role"], "content" : msg["content"]} for msg in conversation.get_messages()]
 
-        response = openai.ChatCompletion.create(
+        response = self.client.chat.completions.create(
             model="gpt-3.5-turbo-16k",
             messages = messages,
         )
 
-        return response['choices'][0]['message']['content']
+        return response.choices[0].message.content
 
 class ChatGPT4(AbstractLLM):
     """ChatGPT Large Language Model."""
@@ -51,17 +56,19 @@ class ChatGPT4(AbstractLLM):
     def __init__(self):
         super().__init__()
         openai.api_key=os.environ['OPENAI_API_KEY']
+        self.client = openai.OpenAI()
 
     def generate(self, conversation: Conversation):
-        messages = [{'role' : msg['role'], 'content' : msg['content']} for msg in conversation.get_messages()]
+        messages = [{"role" : msg["role"], "content" : msg["content"]} for msg in conversation.get_messages()]
 
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
+        response = self.client.chat.completions.create(
+            model="gpt-4-turbo",
             messages = messages,
         )
 
-        return response['choices'][0]['message']['content']
+        return response.choices[0].message.content
 
+## TODO: Upgrade to/split off Claude3
 class Claude(AbstractLLM):
     """Claude Large Language Model."""
 
@@ -87,35 +94,40 @@ class Claude(AbstractLLM):
             prompt=prompt,
         )
 
-        #print(prompt)
-        #print(completion.completion)
         return completion.completion
 
-class PaLM(AbstractLLM):
-    """PaLM Large Language Model."""
+class Gemini(AbstractLLM):
+    """Gemini Large Language Model."""
 
     def __init__(self):
         super().__init__()
-        palm.configure(api_key=os.environ['PALM_API_KEY'])
+        genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+        self.model = genai.GenerativeModel('gemini-pro')
 
     def generate(self, conversation: Conversation):
+        conv_messages = conversation.get_messages()
 
-        context = None
-        messages = []
-        reply = ''
+        messages = [{"role" : msg["role"], "parts" : [msg["content"]]} for msg in conv_messages]
 
-        for message in conversation.get_messages():
-            if message['role'] == 'system':
-                context = message['content']
-            else:
-                if message['role'] == 'user':
-                    messages.append({'author': '0', 'content': message['content']})
-                elif message['role'] == 'assistant':
-                    messages.append({'author': '1', 'content': message['content']})
+        # Gemini functions don't allow two consecutive user messages, and has no system message, so we need to merge a system message with a user message if one is available. This *should* only happen with the initial prompt.
+        for i in range(len(messages)):
+            if i >= len(messages) - 1:
+                break
+            elif messages[i]["role"] == "system":
+                if messages[i+1]["role"] == "user":
+                    messages[i+1]["parts"].insert(0, messages[i]["parts"][0])
+                    del messages[i]
+                else:
+                    messages[i]["role"] = "user"
+            elif messages[i]["role"] == "assistant":
+                messages[i]["role"] = "model"
 
-        response = palm.chat(context=context, messages=messages)
-        #print(response)
-        return response.last
+        if messages[-1]["role"] == "system":
+            messages[-1]["role"] = "user"
+
+
+        response = self.model.generate_content(messages)
+        return response.candidates[0].content.parts[0].text
 
 
 class CodeLlama(AbstractLLM):
@@ -206,7 +218,7 @@ class CodeLlama(AbstractLLM):
         output = output[0].to("cpu")
         # Decode the output to get the generated text
         decoded_output = self.tokenizer.decode(output)
-        
+
         # Extract only the generated response
         response = decoded_output.split("[/INST]")[-1].strip()
 
