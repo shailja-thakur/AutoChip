@@ -1,5 +1,12 @@
 # AutoChip
+
 AutoChip is designed to generate functional Verilog modules from an initial design prompt and testbench using a selected large language model. Errors from compilation and simulation are fed back into the LLM for repair.
+
+## NOTES:
+**AutoChip is currently undergoing significant refactoring efforts to fix existing issues and significantly expand the tool's capabilities.
+Most existing issues will be resolved in the refactor branch, though it should not be considered stable until it is merged into main.**
+
+**PaLM support is being modified and should currently be considered deprecated. Bard has been deprecated by Google and has been replaced with Gemini, so the current setup for that language model is no longer valid.**
 
 ## Setup:
 
@@ -30,7 +37,6 @@ pip3 install -r requirements.txt
 API Keys (Must be set for the models being used):
  - OpenAI API Key: `OPENAI_API_KEY`
  - Anthropic API Key: `ANTHROPIC_API_KEY`
- - PaLM API Key: `PALM_API_KEY`
 
 ## Usage
 To use the tool, follow the steps below:
@@ -51,7 +57,6 @@ To use the tool, follow the steps below:
     - ChatGPT3p5
     - ChatGPT4
     - Claude
-    - PaLM
     - CodeLLama
  - `-id|--model_id`: [Optional] for model other than CodeLLama, for codellama, model id is the huggingface repository to codellama
  - `-o|--outdir`: [Optional] Directory to output files to

@@ -5,7 +5,7 @@ import openai
 from anthropic import Anthropic
 from anthropic import AsyncAnthropic, HUMAN_PROMPT, AI_PROMPT
 
-import google.generativeai as palm
+#import google.generativeai as palm
 
 import os
 from conversation import Conversation
@@ -91,31 +91,32 @@ class Claude(AbstractLLM):
         #print(completion.completion)
         return completion.completion
 
-class PaLM(AbstractLLM):
-    """PaLM Large Language Model."""
-
-    def __init__(self):
-        super().__init__()
-        palm.configure(api_key=os.environ['PALM_API_KEY'])
-
-    def generate(self, conversation: Conversation):
-
-        context = None
-        messages = []
-        reply = ''
-
-        for message in conversation.get_messages():
-            if message['role'] == 'system':
-                context = message['content']
-            else:
-                if message['role'] == 'user':
-                    messages.append({'author': '0', 'content': message['content']})
-                elif message['role'] == 'assistant':
-                    messages.append({'author': '1', 'content': message['content']})
-
-        response = palm.chat(context=context, messages=messages)
-        #print(response)
-        return response.last
+## PaLM IS NOW DEPRECATED, WILL BE REPLACED WITH GEMINI
+## class PaLM(AbstractLLM):
+##     """PaLM Large Language Model."""
+##
+##     def __init__(self):
+##         super().__init__()
+##         palm.configure(api_key=os.environ['PALM_API_KEY'])
+##
+##     def generate(self, conversation: Conversation):
+##
+##         context = None
+##         messages = []
+##         reply = ''
+##
+##         for message in conversation.get_messages():
+##             if message['role'] == 'system':
+##                 context = message['content']
+##             else:
+##                 if message['role'] == 'user':
+##                     messages.append({'author': '0', 'content': message['content']})
+##                 elif message['role'] == 'assistant':
+##                     messages.append({'author': '1', 'content': message['content']})
+##
+##         response = palm.chat(context=context, messages=messages)
+##         #print(response)
+##         return response.last
 
 
 class CodeLlama(AbstractLLM):
@@ -206,7 +207,7 @@ class CodeLlama(AbstractLLM):
         output = output[0].to("cpu")
         # Decode the output to get the generated text
         decoded_output = self.tokenizer.decode(output)
-        
+
         # Extract only the generated response
         response = decoded_output.split("[/INST]")[-1].strip()
 
