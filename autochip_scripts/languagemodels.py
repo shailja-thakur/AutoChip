@@ -15,8 +15,17 @@ import google.generativeai as genai
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 import torch
 
+## MISTRAL
+from mistralai.client import MistralClient
+from mistralai.models.chat_completion import ChatMessage
+
+## HUMAN INPUT
+import subprocess
+import tempfile
+
 ## GENERAL AUTOCHIP
 from conversation import Conversation
+
 
 # Abstract Large Language Model
 # Defines an interface for using different LLMs so we can easily swap them out
@@ -228,3 +237,44 @@ class CodeLlama(AbstractLLM):
         print('\n'.join(find_verilog_modules(response)))
         print('RESPONSE END')
         return response
+
+class Mistral(AbstractLLM):
+    """Mistral Large Language Model."""
+
+    def __init__(self):
+        super().__init__()
+        self.client = MistralClient(api_key=os.environ['MISTRAL_API_KEY'])
+
+    def generate(self, conversation: Conversation):
+        messages = []
+        for msg in conversation.get_messages():
+            messages.append(ChatMessage(
+                role=msg["role"],
+                content=msg["content"],
+            ))
+
+        response = self.client.chat(
+            model="open-mixtral-8x22b",
+            messages=messages,
+        )
+
+        return response.choices[0].message.content
+
+class HumanInput(AbstractLLM):
+    """Human Input Large Language Model."""
+
+    def __init__(self):
+        super().__init__()
+
+    def get_text_from_editor(self, initial_text="", editor=None):
+        editor = editor or os.getenv('EDITOR') or 'nano' # Use configured editor, or an environment variable, or nano as a fallback
+        with tempfile.NamedTemporaryFile(suffix=".v") as tf:
+            tf.write(initial_text.encode())
+            tf.flush()
+            subprocess.run([editor, tf.name])
+            tf.seek(0)
+            return tf.read().decode()
+
+    def generate(self, conversation: Conversation):
+        print(conversation.get_messages())
+        return self.get_text_from_editor(initial_text=conversation.get_messages()[-1]['content'])
