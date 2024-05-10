@@ -101,26 +101,24 @@ def parse_iverilog_output(output):
 
 def generate_verilog(conv, model_type, model_id=""):
     ## TODO: Change to switch case
-    if model_type == "ChatGPT4":
-        model = lm.ChatGPT4()
+    if model_type == "ChatGPT":
+        model = lm.ChatGPT(model_id)
     elif model_type == "Claude":
-        model = lm.Claude()
-    elif model_type == "ChatGPT3p5":
-        model = lm.ChatGPT3p5()
+        model = lm.Claude(model_id)
     elif model_type == "Gemini":
-        model = lm.Gemini()
+        model = lm.Gemini(model_id)
     elif model_type == "Human":
         model = lm.HumanInput()
     elif model_type == "Mistral":
-        model = lm.Mistral()
+        model = lm.Mistral(model_id)
     elif model_type == "CodeLLama":
         model = lm.CodeLlama(model_id)
     else:
         raise ValueError("Invalid model type")
 
-    return(model.generate(conv))
+    return(model.generate(conversation=conv))
 
-def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, outdir="", log=None):
+def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, model_id="", outdir="", log=None):
 
     if outdir != "":
         outdir = outdir + "/"
@@ -152,7 +150,7 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, o
     while not (success or timeout):
         start_time = time()
         # Generate a response
-        response = generate_verilog(conv, model_type)
+        response = generate_verilog(conv, model_type, model_id)
         end_time = time()
 
         llm_response_time = end_time - start_time
@@ -219,7 +217,7 @@ def main():
     usage = "Usage: auto_create_verilog.py [--help] --prompt=<prompt> --name=<module name> --testbench=<testbench file> --iter=<iterations> --model=<llm model> --model_id=<model id> --log=<log file>\n\n\t-h|--help: Prints this usage message\n\n\t-p|--prompt: The initial design prompt for the Verilog module\n\n\t-n|--name: The module name, must match the testbench expected module name\n\n\t-t|--testbench: The testbench file to be run\n\n\t-i|--iter: [Optional] Number of iterations before the tool quits (defaults to 10)\n\n\t-m|--model: The LLM to use for this generation. Must be one of the following\n\t\t- ChatGPT3p5\n\t\t- ChatGPT4\n\t\t- Claude\n\n\t- CodeLLama\n\n\t-l|--log: [Optional] Log the output of the model to the given file"
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hp:n:t:i:m:o:l:", ["help", "prompt=", "name=", "testbench=", "iter=", "model=", "outdir=","log="])
+        opts, args = getopt.getopt(sys.argv[1:], "hp:n:t:i:m:o:l:", ["help", "prompt=", "name=", "testbench=", "iter=", "model=", "model-id=", "outdir=","log="])
     except getopt.GetoptError as err:
         print(err)
         print(usage)
@@ -243,6 +241,8 @@ def main():
             max_iterations = int(arg)
         elif opt in ("-m", "--model"):
             model = arg
+        elif opt in ("--model-id"):
+            model_id = arg
         elif opt in ("-o", "--outdir"):
             outdir = arg
         elif opt in ("-l", "--log"):
@@ -287,7 +287,7 @@ def main():
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
-    verilog_loop(prompt, module, testbench, max_iterations, model, outdir, log)
+    verilog_loop(prompt, module, testbench, max_iterations, model, model_id, outdir, log)
 
 if __name__ == "__main__":
     main()

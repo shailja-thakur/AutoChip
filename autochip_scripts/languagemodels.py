@@ -41,37 +41,21 @@ class AbstractLLM(ABC):
         pass
 
 
-class ChatGPT3p5(AbstractLLM):
+class ChatGPT(AbstractLLM):
     """ChatGPT Large Language Model."""
 
-    def __init__(self):
+    def __init__(self, model_id="gpt-3.5-turbo-16k"):
         super().__init__()
         openai.api_key=os.environ['OPENAI_API_KEY']
         self.client = openai.OpenAI()
+        self.model_id = model_id
 
-    def generate(self, conversation: Conversation):
+    def generate(self, num_choices=1, conversation: Conversation):
         messages = [{"role" : msg["role"], "content" : msg["content"]} for msg in conversation.get_messages()]
 
         response = self.client.chat.completions.create(
-            model="gpt-3.5-turbo-16k",
-            messages = messages,
-        )
-
-        return response.choices[0].message.content
-
-class ChatGPT4(AbstractLLM):
-    """ChatGPT Large Language Model."""
-
-    def __init__(self):
-        super().__init__()
-        openai.api_key=os.environ['OPENAI_API_KEY']
-        self.client = openai.OpenAI()
-
-    def generate(self, conversation: Conversation):
-        messages = [{"role" : msg["role"], "content" : msg["content"]} for msg in conversation.get_messages()]
-
-        response = self.client.chat.completions.create(
-            model="gpt-4-turbo",
+            model=self.model_id,
+            n=num_choices,
             messages = messages,
         )
 
@@ -81,13 +65,14 @@ class ChatGPT4(AbstractLLM):
 class Claude(AbstractLLM):
     """Claude Large Language Model."""
 
-    def __init__(self):
+    def __init__(self, model_id="claude-2"):
         super().__init__()
         self.anthropic = Anthropic(
             api_key=os.environ['ANTHROPIC_API_KEY'],
         )
+        self.model_id = model_id
 
-    def generate(self, conversation: Conversation):
+    def generate(self, num_choices=1, conversation: Conversation):
         prompt = ""
         for message in conversation.get_messages():
             if message['role'] == 'system' or message['role'] == 'user':
@@ -98,7 +83,7 @@ class Claude(AbstractLLM):
 
 
         completion = self.anthropic.completions.create(
-            model="claude-2",
+            model=self.model_id,
             max_tokens_to_sample=3000,
             prompt=prompt,
         )
@@ -108,10 +93,10 @@ class Claude(AbstractLLM):
 class Gemini(AbstractLLM):
     """Gemini Large Language Model."""
 
-    def __init__(self):
+    def __init__(self, model_id="gemini-pro"):
         super().__init__()
         genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
-        self.model = genai.GenerativeModel('gemini-pro')
+        self.model = genai.GenerativeModel(model_id)
 
     def generate(self, conversation: Conversation):
         conv_messages = conversation.get_messages()
@@ -241,9 +226,10 @@ class CodeLlama(AbstractLLM):
 class Mistral(AbstractLLM):
     """Mistral Large Language Model."""
 
-    def __init__(self):
+    def __init__(self, model_id="open-mixtral-8x22b"):
         super().__init__()
         self.client = MistralClient(api_key=os.environ['MISTRAL_API_KEY'])
+        self.model_id = model_id
 
     def generate(self, conversation: Conversation):
         messages = []
@@ -254,7 +240,7 @@ class Mistral(AbstractLLM):
             ))
 
         response = self.client.chat(
-            model="open-mixtral-8x22b",
+            model=self.model_id,
             messages=messages,
         )
 
