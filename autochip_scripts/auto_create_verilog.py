@@ -8,34 +8,105 @@ import sys
 import getopt
 from time import time
 import re
-from threading import Timer
+
+class LLMResponse():
+    """Class to store the response from the LLM"""
+    def __init__(self, full_text):
+        self.full_text = full_text
+        self.tokens = 0
+
+        self.parsed_text = ""
+        self.parsed_length = 0
+
+        self.feedback = ""
+        self.compiled = False
+        self.rank = 0
+        self.message = ""
+
+    def set_parsed_text(self, parsed_text):
+        self.parsed_text = parsed_text
+        self.parsed_length = len(parsed_text)
+
+    def parse_verilog(self):
+        module_list = find_verilog_modules(self.full_text)
+        if not module_list:
+            print("No modules found in response")
+            exit(3)
+        for module in module_list:
+            self.parsed_text += module + "\n\n"
+        self.parsed_length = len(self.parsed_text)
+
+    def calculate_rank(self, outdir, module, testbench):
+        filename = os.path.join(outdir,module+".sv")
+        vvp_file = os.path.join(outdir,module+".vvp")
+
+        compiler_cmd = f"iverilog -Wall -Winfloop -Wno-timescale -g2012 -s tb -o {vvp_file} {filename} {testbench}"
+        simulator_cmd = f"vvp -n {vvp_file}"
+
+        comp_return,comp_err,comp_out = compile_iverilog(outdir,module,compiler_cmd,self)
+
+        if comp_return != 0:
+            self.feedback = comp_err
+            self.compiled = False
+            print("Compilation error")
+            self.message = "The design failed to compile. Please fix the module. The output of iverilog is as follows:\n"+comp_err
+
+            self.rank = -1
+
+        elif comp_err != "":
+            self.feedback = comp_err
+            self.compiled = True
+            print("Compilation warning")
+            self.message = "The design compiled with warnings. Please fix the module. The output of iverilog is as follows:\n"+comp_err
+
+            self.rank = -0.5
+
+        else:
+            sim_return,sim_err,sim_out = simulate_iverilog(simulator_cmd)
+            mismatch_pattern = r"Mismatches: (\d+) in (\d+) samples"
+            match = re.search(mismatch_pattern, sim_out.splitlines()[-1])
+            print(f"Match: {match}")
+
+            if match:
+                mismatches = int(match.group(1))
+                samples = int(match.group(2))
+            else:
+                raise ValueError("Simulation output does not contain final mismatch information")
+
+            if mismatches > 0:
+                self.feedback = sim_out
+                self.compiled = True
+                print("Simulation error")
+                self.message = "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\n"+sim_out
+            else:
+                self.compiled = True
+                print("Testbench ran successfully")
+                self.message = "The testbench completed successfully"
+
+            print(f"Mismatches: {mismatches}")
+            print(f"Samples: {samples}")
+            self.rank = (samples-mismatches)/samples
+
+        #return self.rank
 
 
-# def find_verilog_modules(markdown_string, module_name='top_module'):
-#     # Convert the input to a string
-#     markdown_string = str(markdown_string)
-#
-#     # This pattern captures the entire code block with the module definition
-#     code_block_pattern = r'```verilog(.*?)```'
-#     code_blocks = re.findall(code_block_pattern, markdown_string, re.DOTALL)
-#
-#     # If no code blocks found, return an empty list
-#     if not code_blocks:
-#         return []
-#
-#     # This pattern captures the module definition within the code block
-#     module_pattern = rf'\bmodule\b\s+{module_name}\s*\(.*?\)\s*;(.*?)\bendmodule\b'
-#
-#     module_matches = []
-#     for code_block in code_blocks:
-#         match = re.search(module_pattern, code_block, re.DOTALL)
-#         if match:
-#             module_matches.append(match.group())
-#
-#     return module_matches
 
+def compile_iverilog(outdir,module,compiler_cmd,response:LLMResponse):
+    """Compile the Verilog module and return the output"""
+
+    filename = os.path.join(outdir,module+".sv")
+    write_code_blocks_to_file(response.parsed_text, "module", filename)
+    proc = subprocess.run(compiler_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    return proc.returncode, proc.stderr, proc.stdout
+
+def simulate_iverilog(simulation_cmd):
+    """Compile the Verilog module and return the output"""
+
+    proc = subprocess.run(simulation_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    return proc.returncode, proc.stderr, proc.stdout
 
 def find_verilog_modules(markdown_string):
+    """Find all Verilog modules in the markdown string"""
 
     module_pattern = r'\bmodule\b\s+\w+\s*\([^)]*\)\s*;.*?endmodule\b'
     parameter_module_pattern = r'\bmodule\b\s+\w+\s*#\s*\([^)]*\)\s*\([^)]*\)\s*;.*?endmodule\b'
@@ -99,26 +170,27 @@ def parse_iverilog_output(output):
 
     return results
 
-def generate_verilog(conv, model_type, model_id=""):
-    ## TODO: Change to switch case
-    if model_type == "ChatGPT":
-        model = lm.ChatGPT(model_id)
-    elif model_type == "Claude":
-        model = lm.Claude(model_id)
-    elif model_type == "Gemini":
-        model = lm.Gemini(model_id)
-    elif model_type == "Human":
-        model = lm.HumanInput()
-    elif model_type == "Mistral":
-        model = lm.Mistral(model_id)
-    elif model_type == "CodeLLama":
-        model = lm.CodeLlama(model_id)
-    else:
-        raise ValueError("Invalid model type")
+def generate_verilog(conv, model_type, model_id="", num_responses=1):
+    match model_type:
+        case "ChatGPT":
+            model = lm.ChatGPT(model_id)
+            print(f"Using ChatGPT model with id {model_id}")
+        ##case "Claude":
+        ##    model = lm.Claude(model_id)
+        ##case "Gemini":
+        ##    model = lm.Gemini(model_id)
+        ##case "Human":
+        ##    model = lm.HumanInput()
+        ##case "Mistral":
+        ##    model = lm.Mistral(model_id)
+        ##case "CodeLLama":
+        ##    model = lm.CodeLlama(model_id)
+        case _:
+            raise ValueError("Invalid model type")
 
-    return(model.generate(conversation=conv))
+    return(model.generate(conversation=conv, num_choices=num_responses))
 
-def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, model_id="", outdir="", log=None):
+def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, num_responses=5, model_id="", outdir="", log=None):
 
     if outdir != "":
         outdir = outdir + "/"
@@ -144,58 +216,50 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, m
 
     iterations = 0
 
-    filename = os.path.join(outdir,module+".sv")
+    ##############################
 
     status = ""
     while not (success or timeout):
+
+        print(f"Model type: {model_type}")
+        print(f"Model ID: {model_id}")
+        print(f"Number of responses: {num_responses}")
+
         start_time = time()
         # Generate a response
-        response = generate_verilog(conv, model_type, model_id)
+        response_texts=generate_verilog(conv, model_type, model_id, num_responses=num_responses)
         end_time = time()
-
         llm_response_time = end_time - start_time
 
-        conv.add_message("assistant", response)
+        responses = [LLMResponse(response_text) for response_text in response_texts]
+        for index, response in enumerate(responses):
 
-        write_code_blocks_to_file(response, module, filename)
+            response_outdir = os.path.join(outdir, f"iter{str(iterations)}/response{index}/")
+            if not os.path.exists(response_outdir):
+                os.makedirs(response_outdir)
 
-        vvp_file = os.path.join(outdir,module+".vvp")
-        compiler_cmd = f"iverilog -Wall -Winfloop -Wno-timescale -g2012 -s tb -o {vvp_file} {filename} {testbench}"
-        simulator_cmd = f"vvp -n {vvp_file}"
+            response.parse_verilog()
+            response.calculate_rank(response_outdir, module, testbench)
 
-        proc = subprocess.run(compiler_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            with open(os.path.join(response_outdir,f"log.txt"), 'w') as file:
+                file.write('\n'.join(str(i) for i in conv.get_messages()))
+                file.write('\n\n Iteration status: ' + status + '\n') ## FIX
 
-        ## Check compilation error
-        if proc.returncode != 0:
-            status = "Compilation error"
-            print(status)
-            message = "The design failed to compile. Please fix the module. The output of iverilog is as follows:\n"+proc.stderr
+        ## RANK RESPONSES
+        max_rank_response = max(responses, key=lambda resp: (resp.rank, -resp.parsed_length))
 
-        elif proc.stderr != "":
-            status = "Compilation warning"
-            print(status)
-            message = "The design compiled with warnings. Please fix the module. The output of iverilog is as follows:\n"+proc.stderr
+        print(f"Response ranks: {[resp.rank for resp in responses]}")
+        print(f"Response lengths: {[resp.parsed_length for resp in responses]}")
 
-        else:
-            proc = subprocess.run(simulator_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            result = proc.stdout.strip().split('\n')[-1].split()
-            print(result)
+        conv.add_message("assistant", max_rank_response.parsed_text)
 
-            if result[1] != '0':
-                status = "Mismatches in simulation: "+result[1]+" in "+result[3]+" samples"
-                print(status)
-                message = "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\n"+proc.stdout
+        if max_rank_response.rank == 1:
+            success = True
+            status = "Success"
 
-            else:
-                status = "Testbench ran successfully"
-                print(status)
-                message = ""
-                success = True
+
 
 ################################
-        with open(os.path.join(outdir,"log_iter_"+str(iterations)+".txt"), 'w') as file:
-            file.write('\n'.join(str(i) for i in conv.get_messages()))
-            file.write('\n\n Iteration status: ' + status + '\n')
 
 
         if not success:
@@ -206,12 +270,15 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, m
             #with open(testbench, 'r') as file: testbench_text = file.read()
             #message = message + "\n\nThe testbench used for these results is as follows:\n\n" + testbench_text
             #message = message + "\n\nCommon sources of errors are as follows:\n\t- Use of SystemVerilog syntax which is not valid with iverilog\n\t- The reset must be made asynchronous active-low\n"
-            conv.add_message("user", message)
+            conv.add_message("user", max_rank_response.message)
 
         if iterations >= max_iterations:
             timeout = True
 
         iterations += 1
+
+    print(max_rank_response.parsed_text)
+
 
 def main():
     usage = "Usage: auto_create_verilog.py [--help] --prompt=<prompt> --name=<module name> --testbench=<testbench file> --iter=<iterations> --model=<llm model> --model_id=<model id> --log=<log file>\n\n\t-h|--help: Prints this usage message\n\n\t-p|--prompt: The initial design prompt for the Verilog module\n\n\t-n|--name: The module name, must match the testbench expected module name\n\n\t-t|--testbench: The testbench file to be run\n\n\t-i|--iter: [Optional] Number of iterations before the tool quits (defaults to 10)\n\n\t-m|--model: The LLM to use for this generation. Must be one of the following\n\t\t- ChatGPT3p5\n\t\t- ChatGPT4\n\t\t- Claude\n\n\t- CodeLLama\n\n\t-l|--log: [Optional] Log the output of the model to the given file"
@@ -279,6 +346,11 @@ def main():
         sys.exit(2)
 
     try:
+        model_id
+    except NameError:
+        model_id = ""
+
+    try:
         outdir
     except NameError:
         outdir = ""
@@ -287,7 +359,7 @@ def main():
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
-    verilog_loop(prompt, module, testbench, max_iterations, model, model_id, outdir, log)
+    verilog_loop(design_prompt=prompt, module=module, testbench=testbench, max_iterations=max_iterations, model_type=model, model_id=model_id, outdir=outdir, log=log)
 
 if __name__ == "__main__":
     main()
