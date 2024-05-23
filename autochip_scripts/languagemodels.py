@@ -78,24 +78,20 @@ class Claude(AbstractLLM):
         self.model_id = model_id
 
     def generate(self,  conversation: Conversation, num_candidates=1):
-        prompt = ""
-        for message in conversation.get_messages():
-            if message['role'] == 'system' or message['role'] == 'user':
-                prompt += f"\n\nHuman: {message['content']}"
-            elif message['role'] == 'assistant':
-                prompt += f"\n\nAssistant: {message['content']}"
-        prompt += "\n\nAssistant:"
-
+        messages = conversation.get_messages()
+        system = next((item for item in messages if item["role"] == "system"), None)
+        messages = [item for item in messages if item["role"] != "system"]
 
         responses = []
         for n in range(num_candidates):
-            completion = self.anthropic.completions.create(
+            completion = self.anthropic.messages.create(
                 model=self.model_id,
-                max_tokens_to_sample=3000,
-                prompt=prompt,
+                messages=messages,
+                system=system["content"] if system else "",
+                max_tokens=3000,
             )
 
-            responses.append(completion.completion)
+            responses.append(completion.content[0].text)
         return responses
 
 class Gemini(AbstractLLM):
