@@ -48,7 +48,7 @@ def parse_and_save_json(tasks_json_path, descriptions_json_path):
             task_id = data['task_id']
 
             # Create a directory for each task
-            directory = os.path.join('VerilogEval_separated_files', task_id)
+            directory = os.path.join('ve_testbenches', task_id)
             os.makedirs(directory, exist_ok=True)
 
             # Combine detail_description with the prompt
@@ -66,7 +66,7 @@ def parse_and_save_json(tasks_json_path, descriptions_json_path):
             with open(os.path.join(directory, f"{task_id}_tb.sv"), 'w') as test_file:
                 test_file.write(data['test'])
 
-            modify_testbench(os.path.join(directory, f"{task_id}_tb.sv"))
+            #modify_testbench(os.path.join(directory, f"{task_id}_tb.sv"))
 
 # Example usage:
 # Replace 'tasks_json_file.json' and 'descriptions_json_file.json' with your actual file paths

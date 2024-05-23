@@ -11,7 +11,10 @@ import re
 
 class LLMResponse():
     """Class to store the response from the LLM"""
-    def __init__(self, full_text):
+    def __init__(self, iteration, response_num, full_text):
+        self.iteration = iteration
+        self.response_num = response_num
+
         self.full_text = full_text
         self.tokens = 0
 
@@ -31,9 +34,10 @@ class LLMResponse():
         module_list = find_verilog_modules(self.full_text)
         if not module_list:
             print("No modules found in response")
-            exit(3)
-        for module in module_list:
-            self.parsed_text += module + "\n\n"
+            self.parsed_text = ""
+        else:
+            for module in module_list:
+                self.parsed_text += module + "\n\n"
         self.parsed_length = len(self.parsed_text)
 
     def calculate_rank(self, outdir, module, testbench):
@@ -89,7 +93,8 @@ class LLMResponse():
 
         #return self.rank
 
-
+def format_message(role, content):
+    return f"\n{{'{role}': '{content}'}}"
 
 def compile_iverilog(outdir,module,compiler_cmd,response:LLMResponse):
     """Compile the Verilog module and return the output"""
@@ -170,27 +175,27 @@ def parse_iverilog_output(output):
 
     return results
 
-def generate_verilog(conv, model_type, model_id="", num_responses=1):
+def generate_verilog(conv, model_type, model_id="", num_candidates=1):
     match model_type:
         case "ChatGPT":
             model = lm.ChatGPT(model_id)
             print(f"Using ChatGPT model with id {model_id}")
-        ##case "Claude":
-        ##    model = lm.Claude(model_id)
-        ##case "Gemini":
-        ##    model = lm.Gemini(model_id)
-        ##case "Human":
-        ##    model = lm.HumanInput()
-        ##case "Mistral":
-        ##    model = lm.Mistral(model_id)
-        ##case "CodeLLama":
-        ##    model = lm.CodeLlama(model_id)
+        case "Claude":
+            model = lm.Claude(model_id)
+        case "Gemini":
+            model = lm.Gemini(model_id)
+        case "Human":
+            model = lm.HumanInput()
+        case "Mistral":
+            model = lm.Mistral(model_id)
+        case "CodeLLama":
+            model = lm.CodeLlama(model_id)
         case _:
             raise ValueError("Invalid model type")
 
-    return(model.generate(conversation=conv, num_choices=num_responses))
+    return(model.generate(conversation=conv, num_candidates=num_candidates))
 
-def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, num_responses=5, model_id="", outdir="", log=None):
+def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, model_id="", num_candidates=5, outdir="", log=None):
 
     if outdir != "":
         outdir = outdir + "/"
@@ -216,22 +221,19 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, n
 
     iterations = 0
 
+    global_max_response = LLMResponse(-1,-1,"")
+
     ##############################
 
-    status = ""
     while not (success or timeout):
 
         print(f"Model type: {model_type}")
         print(f"Model ID: {model_id}")
-        print(f"Number of responses: {num_responses}")
+        print(f"Number of responses: {num_candidates}")
 
-        start_time = time()
-        # Generate a response
-        response_texts=generate_verilog(conv, model_type, model_id, num_responses=num_responses)
-        end_time = time()
-        llm_response_time = end_time - start_time
+        response_texts=generate_verilog(conv, model_type, model_id, num_candidates=num_candidates)
 
-        responses = [LLMResponse(response_text) for response_text in response_texts]
+        responses = [LLMResponse(iterations,response_num,response_text) for response_num,response_text in enumerate(response_texts)]
         for index, response in enumerate(responses):
 
             response_outdir = os.path.join(outdir, f"iter{str(iterations)}/response{index}/")
@@ -239,14 +241,23 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, n
                 os.makedirs(response_outdir)
 
             response.parse_verilog()
-            response.calculate_rank(response_outdir, module, testbench)
+            if response.parsed_text == "":
+                response.rank = -2
+                response.message = "No modules found in response"
+            else:
+                response.calculate_rank(response_outdir, module, testbench)
 
             with open(os.path.join(response_outdir,f"log.txt"), 'w') as file:
                 file.write('\n'.join(str(i) for i in conv.get_messages()))
-                file.write('\n\n Iteration status: ' + status + '\n') ## FIX
+                file.write(format_message("assistant", response.full_text))
+                file.write('\n\n Iteration rank: ' + str(response.rank) + '\n') ## FIX
 
         ## RANK RESPONSES
         max_rank_response = max(responses, key=lambda resp: (resp.rank, -resp.parsed_length))
+        if max_rank_response.rank > global_max_response.rank:
+            global_max_response = max_rank_response
+        elif max_rank_response.rank == global_max_response.rank and max_rank_response.parsed_length > global_max_response.parsed_length:
+            global_max_response = max_rank_response
 
         print(f"Response ranks: {[resp.rank for resp in responses]}")
         print(f"Response lengths: {[resp.parsed_length for resp in responses]}")
@@ -255,7 +266,6 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, n
 
         if max_rank_response.rank == 1:
             success = True
-            status = "Success"
 
 
 
@@ -277,14 +287,14 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, n
 
         iterations += 1
 
-    print(max_rank_response.parsed_text)
+    return global_max_response
 
 
 def main():
     usage = "Usage: auto_create_verilog.py [--help] --prompt=<prompt> --name=<module name> --testbench=<testbench file> --iter=<iterations> --model=<llm model> --model_id=<model id> --log=<log file>\n\n\t-h|--help: Prints this usage message\n\n\t-p|--prompt: The initial design prompt for the Verilog module\n\n\t-n|--name: The module name, must match the testbench expected module name\n\n\t-t|--testbench: The testbench file to be run\n\n\t-i|--iter: [Optional] Number of iterations before the tool quits (defaults to 10)\n\n\t-m|--model: The LLM to use for this generation. Must be one of the following\n\t\t- ChatGPT3p5\n\t\t- ChatGPT4\n\t\t- Claude\n\n\t- CodeLLama\n\n\t-l|--log: [Optional] Log the output of the model to the given file"
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hp:n:t:i:m:o:l:", ["help", "prompt=", "name=", "testbench=", "iter=", "model=", "model-id=", "outdir=","log="])
+        opts, args = getopt.getopt(sys.argv[1:], "hp:n:t:i:m:o:l:", ["help", "prompt=", "name=", "testbench=", "iter=", "model=", "model-id=", "num-candidates=", "outdir=","log="])
     except getopt.GetoptError as err:
         print(err)
         print(usage)
@@ -310,6 +320,8 @@ def main():
             model = arg
         elif opt in ("--model-id"):
             model_id = arg
+        elif opt in ("--num-candidates"):
+            num_candidates = int(arg)
         elif opt in ("-o", "--outdir"):
             outdir = arg
         elif opt in ("-l", "--log"):
@@ -351,6 +363,12 @@ def main():
         model_id = ""
 
     try:
+        num_candidates
+    except NameError:
+        num_candidates = 1
+
+
+    try:
         outdir
     except NameError:
         outdir = ""
@@ -359,7 +377,20 @@ def main():
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
-    verilog_loop(design_prompt=prompt, module=module, testbench=testbench, max_iterations=max_iterations, model_type=model, model_id=model_id, outdir=outdir, log=log)
+    start_time = time()
+    max_response = verilog_loop(design_prompt=prompt, module=module, testbench=testbench, max_iterations=max_iterations, model_type=model, model_id=model_id, num_candidates=num_candidates, outdir=outdir, log=log)
+    end_time = time()
+    generation_time = end_time - start_time
+
+    try:
+        with open(log, 'a') as file:
+            file.write(f"Time to Generate: {generation_time}\n")
+            file.write(f"Best ranked response at iteration {max_response.iteration} with response number {max_response.response_num}\n")
+            file.write(f"Rank of best repsonse: {max_response.rank}\n")
+            file.write(f"Best response module:\n{max_response.parsed_text}\n")
+    except:
+        pass
+
 
 if __name__ == "__main__":
     main()
