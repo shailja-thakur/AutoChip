@@ -47,7 +47,12 @@ class LLMResponse():
         compiler_cmd = f"iverilog -Wall -Winfloop -Wno-timescale -g2012 -s tb -o {vvp_file} {filename} {testbench}"
         simulator_cmd = f"vvp -n {vvp_file}"
 
-        comp_return,comp_err,comp_out = compile_iverilog(outdir,module,compiler_cmd,self)
+        try:
+            comp_return,comp_err,comp_out = compile_iverilog(outdir,module,compiler_cmd,self)
+        except ValueError as e:
+            print(e)
+            self.rank = -2
+            return
 
         if comp_return != 0:
             self.feedback = comp_err
@@ -69,7 +74,7 @@ class LLMResponse():
             sim_return,sim_err,sim_out = simulate_iverilog(simulator_cmd)
             mismatch_pattern = r"Mismatches: (\d+) in (\d+) samples"
             match = re.search(mismatch_pattern, sim_out.splitlines()[-1])
-            print(f"Match: {match}")
+            #print(f"Match: {match}")
 
             if match:
                 mismatches = int(match.group(1))
@@ -101,14 +106,32 @@ def compile_iverilog(outdir,module,compiler_cmd,response:LLMResponse):
 
     filename = os.path.join(outdir,module+".sv")
     write_code_blocks_to_file(response.parsed_text, "module", filename)
-    proc = subprocess.run(compiler_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    return proc.returncode, proc.stderr, proc.stdout
+
+    attempt = 0
+    while attempt < 3:
+        try:
+            proc = subprocess.run(compiler_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            return proc.returncode, proc.stderr, proc.stdout
+        except subprocess.TimeoutExpired:
+            attempt += 1
+            if attempt >= 3:
+                raise ValueError("Compilation attempts timed out")
+
+
 
 def simulate_iverilog(simulation_cmd):
     """Compile the Verilog module and return the output"""
 
-    proc = subprocess.run(simulation_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    return proc.returncode, proc.stderr, proc.stdout
+    attempt = 0
+    while attempt < 3:
+        try:
+            proc = subprocess.run(simulation_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=300)
+            return proc.returncode, proc.stderr, proc.stdout
+        except subprocess.TimeoutExpired:
+            attempt += 1
+            if attempt >= 3:
+                raise ValueError("Simulation attempts timed out")
+
 
 def find_verilog_modules(markdown_string):
     """Find all Verilog modules in the markdown string"""
@@ -179,7 +202,6 @@ def generate_verilog(conv, model_type, model_id="", num_candidates=1):
     match model_type:
         case "ChatGPT":
             model = lm.ChatGPT(model_id)
-            print(f"Using ChatGPT model with id {model_id}")
         case "Claude":
             model = lm.Claude(model_id)
         case "Gemini":
@@ -291,7 +313,9 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, m
 
 
 def main():
-    usage = "Usage: auto_create_verilog.py [--help] --prompt=<prompt> --name=<module name> --testbench=<testbench file> --iter=<iterations> --model=<llm model> --model_id=<model id> --log=<log file>\n\n\t-h|--help: Prints this usage message\n\n\t-p|--prompt: The initial design prompt for the Verilog module\n\n\t-n|--name: The module name, must match the testbench expected module name\n\n\t-t|--testbench: The testbench file to be run\n\n\t-i|--iter: [Optional] Number of iterations before the tool quits (defaults to 10)\n\n\t-m|--model: The LLM to use for this generation. Must be one of the following\n\t\t- ChatGPT3p5\n\t\t- ChatGPT4\n\t\t- Claude\n\n\t- CodeLLama\n\n\t-l|--log: [Optional] Log the output of the model to the given file"
+    #usage = "Usage: auto_create_verilog.py [--help] --prompt=<prompt> --name=<module name> --testbench=<testbench file> --iter=<iterations> --model=<llm model> --model_id=<model id> --log=<log file>\n\n\t-h|--help: Prints this usage message\n\n\t-p|--prompt: The initial design prompt for the Verilog module\n\n\t-n|--name: The module name, must match the testbench expected module name\n\n\t-t|--testbench: The testbench file to be run\n\n\t-i|--iter: [Optional] Number of iterations before the tool quits (defaults to 10)\n\n\t-m|--model: The LLM to use for this generation. Must be one of the following\n\t\t- ChatGPT3p5\n\t\t- ChatGPT4\n\t\t- Claude\n\n\t- CodeLLama\n\n\t-l|--log: [Optional] Log the output of the model to the given file"
+
+    usage = open("usage.txt", "r").read()
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hp:n:t:i:m:o:l:", ["help", "prompt=", "name=", "testbench=", "iter=", "model=", "model-id=", "num-candidates=", "outdir=","log="])
@@ -377,13 +401,18 @@ def main():
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
+    try:
+        logfile = os.path.join(outdir, log)
+    except NameError:
+        logfile = None
+
     start_time = time()
-    max_response = verilog_loop(design_prompt=prompt, module=module, testbench=testbench, max_iterations=max_iterations, model_type=model, model_id=model_id, num_candidates=num_candidates, outdir=outdir, log=log)
+    max_response = verilog_loop(design_prompt=prompt, module=module, testbench=testbench, max_iterations=max_iterations, model_type=model, model_id=model_id, num_candidates=num_candidates, outdir=outdir, log=logfile)
     end_time = time()
     generation_time = end_time - start_time
 
     try:
-        with open(log, 'a') as file:
+        with open(logfile, 'a') as file:
             file.write(f"Time to Generate: {generation_time}\n")
             file.write(f"Best ranked response at iteration {max_response.iteration} with response number {max_response.response_num}\n")
             file.write(f"Rank of best repsonse: {max_response.rank}\n")
