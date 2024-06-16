@@ -1,8 +1,8 @@
 #!/bin/bash
 
-verilog_eval_dir=`pwd`/../verilogeval_prompts_tbs/ve_testbenches_human
+verilog_eval_dir=`pwd`/../verilogeval_prompts_tbs/rerun_haiku_machine
 
-output_dir=`pwd`/outputs/gpt3.5_turbo_16k
+output_dir=./outputs/reruns/claude-3-haiku-20240307_RERUNS/machine
 
 autogen_script=`pwd`/auto_create_verilog.py
 
@@ -27,6 +27,6 @@ for prompt in "${prompts[@]}"; do
 	#test_set_dir=$output_dir/candidates${c}_depth${d}
 	mkdir -p $output_dir/$prompt
 
-	python3 auto_create_verilog.py --prompt="$(cat $verilog_eval_dir/${prompt}/${prompt}.sv)" -n top_module -t $verilog_eval_dir/${prompt}/${prompt}_tb.sv -i $d -m ChatGPT --model-id=gpt-3.5-turbo-16k -o $output_dir/$prompt --log=log.txt --num-candidates=$c
+	python3 auto_create_verilog.py --prompt="$(cat $verilog_eval_dir/${prompt}/${prompt}.sv)" -n top_module -t $verilog_eval_dir/${prompt}/${prompt}_tb.sv -i 10 -m Claude --model-id=claude-3-haiku-20240307 -o $output_dir/$prompt --log=log.txt --num-candidates=5
 	#echo "Prompt: $prompt, Candidates: $c, Depth: $d"
 done

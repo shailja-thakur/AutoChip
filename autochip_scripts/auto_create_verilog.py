@@ -23,7 +23,7 @@ class LLMResponse():
 
         self.feedback = ""
         self.compiled = False
-        self.rank = 0
+        self.rank = -3
         self.message = ""
 
     def set_parsed_text(self, parsed_text):
@@ -110,7 +110,7 @@ def compile_iverilog(outdir,module,compiler_cmd,response:LLMResponse):
     attempt = 0
     while attempt < 3:
         try:
-            proc = subprocess.run(compiler_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            proc = subprocess.run(compiler_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=120)
             return proc.returncode, proc.stderr, proc.stdout
         except subprocess.TimeoutExpired:
             attempt += 1
@@ -125,7 +125,7 @@ def simulate_iverilog(simulation_cmd):
     attempt = 0
     while attempt < 3:
         try:
-            proc = subprocess.run(simulation_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=300)
+            proc = subprocess.run(simulation_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=120)
             return proc.returncode, proc.stderr, proc.stdout
         except subprocess.TimeoutExpired:
             attempt += 1
@@ -133,22 +133,36 @@ def simulate_iverilog(simulation_cmd):
                 raise ValueError("Simulation attempts timed out")
 
 
+#def find_verilog_modules(markdown_string):
+#    """Find all Verilog modules in the markdown string"""
+#
+#    module_pattern = r'\bmodule\b\s+\w+\s*\([^)]*\)\s*;.*?endmodule\b'
+#    parameter_module_pattern = r'\bmodule\b\s+\w+\s*#\s*\([^)]*\)\s*\([^)]*\)\s*;.*?endmodule\b'
+#
+#    module_matches = re.findall(module_pattern, markdown_string, re.DOTALL)
+#
+#    parameter_module_matches = re.findall(parameter_module_pattern, markdown_string, re.DOTALL)
+#
+#    all_module_matches = module_matches + parameter_module_matches
+#
+#    if not all_module_matches:
+#        return []
+#
+#    return all_module_matches
+
 def find_verilog_modules(markdown_string):
     """Find all Verilog modules in the markdown string"""
 
-    module_pattern = r'\bmodule\b\s+\w+\s*\([^)]*\)\s*;.*?endmodule\b'
-    parameter_module_pattern = r'\bmodule\b\s+\w+\s*#\s*\([^)]*\)\s*\([^)]*\)\s*;.*?endmodule\b'
+    # Regular expression to match module definitions with or without parameters
+    module_pattern = r'\bmodule\b\s+[\w\\_]+\s*(?:#\s*\([^)]*\))?\s*\([^)]*\)\s*;.*?endmodule\b'
 
-    module_matches = re.findall(module_pattern, markdown_string, re.DOTALL)
+    # Find all matches in the input string
+    matches = re.findall(module_pattern, markdown_string, re.DOTALL)
 
-    parameter_module_matches = re.findall(parameter_module_pattern, markdown_string, re.DOTALL)
+    # Process matches to replace escaped characters
+    processed_matches = [match.replace('\\_', '_') for match in matches]
 
-    all_module_matches = module_matches + parameter_module_matches
-
-    if not all_module_matches:
-        return []
-
-    return all_module_matches
+    return processed_matches
 
 def write_code_blocks_to_file(markdown_string, module_name, filename):
     # Find all code blocks using a regular expression (matches content between triple backticks)
@@ -210,8 +224,10 @@ def generate_verilog(conv, model_type, model_id="", num_candidates=1):
             model = lm.HumanInput()
         case "Mistral":
             model = lm.Mistral(model_id)
-        case "CodeLLama":
+        case "CodeLlama":
             model = lm.CodeLlama(model_id)
+        case "RTLCoder":
+            model = lm.RTLCoder(model_id)
         case _:
             raise ValueError("Invalid model type")
 
@@ -243,7 +259,7 @@ def verilog_loop(design_prompt, module, testbench, max_iterations, model_type, m
 
     iterations = 0
 
-    global_max_response = LLMResponse(-1,-1,"")
+    global_max_response = LLMResponse(-3,-3,"")
 
     ##############################
 
@@ -415,7 +431,7 @@ def main():
         with open(logfile, 'a') as file:
             file.write(f"Time to Generate: {generation_time}\n")
             file.write(f"Best ranked response at iteration {max_response.iteration} with response number {max_response.response_num}\n")
-            file.write(f"Rank of best repsonse: {max_response.rank}\n")
+            file.write(f"Rank of best response: {max_response.rank}\n")
             file.write(f"Best response module:\n{max_response.parsed_text}\n")
     except:
         pass
