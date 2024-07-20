@@ -48,7 +48,7 @@ def parse_and_save_json(tasks_json_path, descriptions_json_path):
             task_id = data['task_id']
 
             # Create a directory for each task
-            directory = os.path.join('ve_testbenches', task_id)
+            directory = os.path.join('ve_testbenches_machine', task_id)
             os.makedirs(directory, exist_ok=True)
 
             # Combine detail_description with the prompt
@@ -70,4 +70,4 @@ def parse_and_save_json(tasks_json_path, descriptions_json_path):
 
 # Example usage:
 # Replace 'tasks_json_file.json' and 'descriptions_json_file.json' with your actual file paths
-parse_and_save_json("VerilogEval_Human.jsonl","VerilogDescription_Human.jsonl")
+parse_and_save_json("VerilogEval_Machine.jsonl","VerilogDescription_Machine.jsonl")

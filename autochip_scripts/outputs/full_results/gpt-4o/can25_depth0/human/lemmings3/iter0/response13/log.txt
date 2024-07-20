@@ -1,0 +1,122 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The game Lemmings involves critters with fairly simple brains. So simple that we are going to model it using a finite state machine. In the Lemmings\' 2D world, Lemmings can be in one of two states: walking left (walk_left is 1) or walking right (walk_right is 1). It will switch directions if it hits an obstacle. In particular, if a Lemming is bumped on the left (by receiving a 1 on bump_left), it will walk right. If it\'s bumped on the right (by receiving a 1 on bump_right), it will walk left. If it\'s bumped on both sides at the same time, it will still switch directions. \n// In addition to walking left and right and changing direction when bumped, when ground=0, the Lemming will fall and say "aaah!". When the ground reappears (ground=1), the Lemming will resume walking in the same direction as before the fall. Being bumped while falling does not affect the walking direction, and being bumped in the same cycle as ground disappears (but not yet falling), or when the ground reappears while still falling, also does not affect the walking direction.\n// In addition to walking and falling, Lemmings can sometimes be told to do useful things, like dig (it starts digging when dig=1). A Lemming can dig if it is currently walking on ground (ground=1 and not falling), and will continue digging until it reaches the other side (ground=0). At that point, since there is no ground, it will fall (aaah!), then continue walking in its original direction once it hits ground again. As with falling, being bumped while digging has no effect, and being told to dig when falling or when there is no ground is ignored. (In other words, a walking Lemming can fall, dig, or switch directions. If more than one of these conditions are satisfied, fall has higher precedence than dig, which has higher precedence than switching directions.)\n// Implement a Moore state machine that models this behaviour. areset is positive edge triggered asynchronous reseting the Lemming machine to walk left.\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput bump_left,\n\tinput bump_right,\n\tinput ground,\n\tinput dig,\n\toutput walk_left,\n\toutput walk_right,\n\toutput aaah,\n\toutput digging\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    input ground,
+    input dig,
+    output reg walk_left,
+    output reg walk_right,
+    output reg aaah,
+    output reg digging
+);
+
+    typedef enum logic [2:0] {
+        LEFT = 3'b000,
+        RIGHT = 3'b001,
+        FALL_LEFT = 3'b010,
+        FALL_RIGHT = 3'b011,
+        DIG_LEFT = 3'b100,
+        DIG_RIGHT = 3'b101,
+        FALL_DIG = 3'b110
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge areset) begin
+        if (areset) begin
+            state <= LEFT;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    always_comb begin
+        next_state = state;  // Default to holding state
+        case (state)
+            LEFT: begin
+                if (!ground) next_state = FALL_LEFT;
+                else if (dig) next_state = DIG_LEFT;
+                else if (bump_left || bump_right) next_state = RIGHT;
+            end
+            RIGHT: begin
+                if (!ground) next_state = FALL_RIGHT;
+                else if (dig) next_state = DIG_RIGHT;
+                else if (bump_left || bump_right) next_state = LEFT;
+            end
+            FALL_LEFT: begin
+                if (ground) next_state = LEFT;
+            end
+            FALL_RIGHT: begin
+                if (ground) next_state = RIGHT;
+            end
+            DIG_LEFT: begin
+                if (!ground) next_state = FALL_LEFT;
+            end
+            DIG_RIGHT: begin
+                if (!ground) next_state = FALL_RIGHT;
+            end
+        endcase
+    end
+
+    always_ff @(posedge clk or posedge areset) begin
+        if (areset) begin
+            walk_left <= 1;
+            walk_right <= 0;
+            aaah <= 0;
+            digging <= 0;
+        end else begin
+            case (state)
+                LEFT: begin
+                    walk_left <= 1;
+                    walk_right <= 0;
+                    aaah <= 0;
+                    digging <= 0;
+                end
+                RIGHT: begin
+                    walk_left <= 0;
+                    walk_right <= 1;
+                    aaah <= 0;
+                    digging <= 0;
+                end
+                FALL_LEFT: begin
+                    walk_left <= 0;
+                    walk_right <= 0;
+                    aaah <= 1;
+                    digging <= 0;
+                end
+                FALL_RIGHT: begin
+                    walk_left <= 0;
+                    walk_right <= 0;
+                    aaah <= 1;
+                    digging <= 0;
+                end
+                DIG_LEFT: begin
+                    walk_left <= 0;
+                    walk_right <= 0;
+                    aaah <= 0;
+                    digging <= 1;
+                end
+                DIG_RIGHT: begin
+                    walk_left <= 0;
+                    walk_right <= 0;
+                    aaah <= 0;
+                    digging <= 1;
+                end
+                default: begin
+                    walk_left <= 0;
+                    walk_right <= 0;
+                    aaah <= 0;
+                    digging <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+```'}
+
+ Iteration rank: 0.7268623024830699

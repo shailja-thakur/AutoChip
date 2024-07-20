@@ -1,0 +1,58 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// You are to design a one-input one-output serial 2's complementer Moore state machine. The input (x) is a series of bits (one per clock cycle) beginning with the least-significant bit of the number, and the output (Z) is the 2's complement of the input. The machine will accept input numbers of arbitrary length. The circuit requires a positive edge triggered asynchronous reset. The conversion begins when Reset is released and stops when Reset is asserted.\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput x,\n\toutput z\n);"}
+{'assistant': 'module top_module (
+	input clk,
+	input areset,
+	input x,
+	output reg z
+);
+
+	typedef enum reg [1:0] {STATE_IDLE, STATE_FIRST_ONE, STATE_COMPLEMENT} state_t;
+	state_t state, next_state;
+
+	always @(posedge clk or posedge areset) begin
+		if (areset)
+			state <= STATE_IDLE;
+		else
+			state <= next_state;
+	end
+
+	always @* begin
+		case (state)
+			STATE_IDLE: begin
+				if (~areset) next_state = STATE_FIRST_ONE;
+				else next_state = STATE_IDLE;
+			end
+			STATE_FIRST_ONE: begin
+				if (~x) next_state = STATE_FIRST_ONE;
+				else next_state = STATE_COMPLEMENT;
+			end
+			STATE_COMPLEMENT: begin
+				if (areset) next_state = STATE_IDLE;
+				else next_state = STATE_COMPLEMENT;
+			end
+			default: next_state = STATE_IDLE;
+		endcase
+	end
+
+	always @(posedge clk or posedge areset) begin
+		if (areset) begin
+			z <= 1'b0;
+		end
+		else begin
+			case (state)
+				STATE_IDLE: begin
+					z <= 1'b0;
+				end
+				STATE_FIRST_ONE: begin
+					z <= x;
+				end
+				STATE_COMPLEMENT: begin
+					z <= ~x;
+				end
+			endcase
+		end
+	end
+endmodule'}
+
+ Iteration rank: 0.9220183486238532

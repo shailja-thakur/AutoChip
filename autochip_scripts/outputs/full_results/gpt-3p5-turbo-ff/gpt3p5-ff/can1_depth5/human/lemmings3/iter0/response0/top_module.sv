@@ -1,0 +1,112 @@
+module top_module (
+	input clk,
+	input areset,
+	input bump_left,
+	input bump_right,
+	input ground,
+	input dig,
+	output walk_left,
+	output walk_right,
+	output aaah,
+	output digging
+);
+
+reg walk_left_reg, walk_right_reg, aaah_reg, digging_reg;
+reg [1:0] state;
+
+parameter [1:0] WALK_LEFT = 2'b00;
+parameter [1:0] WALK_RIGHT = 2'b01;
+parameter [1:0] FALL = 2'b10;
+parameter [1:0] DIG = 2'b11;
+
+always @(posedge clk or posedge areset) begin
+	if (areset) begin
+		state <= WALK_LEFT;
+		walk_left_reg <= 1'b1;
+		walk_right_reg <= 1'b0;
+		aaah_reg <= 1'b0;
+		digging_reg <= 1'b0;
+	end else begin
+		case (state)
+			WALK_LEFT: begin
+				if (bump_right) begin
+					state <= WALK_RIGHT;
+					walk_left_reg <= 1'b0;
+					walk_right_reg <= 1'b1;
+					aaah_reg <= 1'b0;
+					digging_reg <= 1'b0;
+				end else if (bump_left) begin
+					state <= WALK_LEFT;
+					walk_left_reg <= 1'b1;
+					walk_right_reg <= 1'b0;
+					aaah_reg <= 1'b0;
+					digging_reg <= 1'b0;
+				end else if (!ground) begin
+					state <= FALL;
+					walk_left_reg <= 1'b0;
+					walk_right_reg <= 1'b0;
+					aaah_reg <= 1'b1;
+					digging_reg <= 1'b0;
+				end else if (dig) begin
+					state <= DIG;
+					walk_left_reg <= 1'b0;
+					walk_right_reg <= 1'b0;
+					aaah_reg <= 1'b0;
+					digging_reg <= 1'b1;
+				end
+			end
+			WALK_RIGHT: begin
+				if (bump_left) begin
+					state <= WALK_LEFT;
+					walk_left_reg <= 1'b1;
+					walk_right_reg <= 1'b0;
+					aaah_reg <= 1'b0;
+					digging_reg <= 1'b0;
+				end else if (bump_right) begin
+					state <= WALK_RIGHT;
+					walk_left_reg <= 1'b0;
+					walk_right_reg <= 1'b1;
+					aaah_reg <= 1'b0;
+					digging_reg <= 1'b0;
+				end else if (!ground) begin
+					state <= FALL;
+					walk_left_reg <= 1'b0;
+					walk_right_reg <= 1'b0;
+					aaah_reg <= 1'b1;
+					digging_reg <= 1'b0;
+				end else if (dig) begin
+					state <= DIG;
+					walk_left_reg <= 1'b0;
+					walk_right_reg <= 1'b0;
+					aaah_reg <= 1'b0;
+					digging_reg <= 1'b1;
+				end
+			end
+			FALL: begin
+				if (ground) begin
+					state <= walk_left_reg ? WALK_LEFT : WALK_RIGHT;
+					walk_left_reg <= walk_left_reg;
+					walk_right_reg <= walk_right_reg;
+					aaah_reg <= 1'b0;
+					digging_reg <= 1'b0;
+				end
+			end
+			DIG: begin
+				if (!ground) begin
+					state <= FALL;
+					walk_left_reg <= 1'b0;
+					walk_right_reg <= 1'b0;
+					aaah_reg <= 1'b1;
+					digging_reg <= 1'b0;
+				end
+			end
+		endcase
+	end
+end
+
+assign walk_left = walk_left_reg;
+assign walk_right = walk_right_reg;
+assign aaah = aaah_reg;
+assign digging = digging_reg;
+
+endmodule

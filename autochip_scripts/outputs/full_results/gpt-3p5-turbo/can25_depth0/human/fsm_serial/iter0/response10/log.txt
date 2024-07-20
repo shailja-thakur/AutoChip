@@ -1,0 +1,67 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': 'module top_module (
+	input clk,
+	input in,
+	input reset,
+	output done
+);
+
+reg [3:0] state;
+reg [7:0] received_data;
+reg [7:0] temp_data;
+reg [2:0] bit_counter;
+
+parameter IDLE = 0, START_BIT = 1, DATA_BITS = 2, STOP_BIT = 3;
+
+always @(posedge clk or posedge reset) begin
+	if (reset)
+		state <= IDLE;
+	else begin
+		case(state)
+			IDLE: begin
+				if (in == 1'b0)
+					state <= START_BIT;
+				else
+					state <= IDLE;
+			end
+			
+			START_BIT: begin
+				if (in == 1'b1) begin
+					state <= DATA_BITS;
+					bit_counter <= 0;
+					temp_data <= 8'b0;
+				end
+				else
+					state <= START_BIT;
+			end
+			
+			DATA_BITS: begin
+				if (bit_counter == 7) begin
+					state <= STOP_BIT;
+					received_data <= temp_data;
+				end
+				else begin
+					state <= DATA_BITS;
+					bit_counter <= bit_counter + 1;
+					temp_data <= {temp_data[6:0], in};
+				end
+			end
+			
+			STOP_BIT: begin
+				if (in == 1'b0) begin
+					state <= IDLE;
+					done <= 1'b1;
+				end
+				else begin
+					state <= STOP_BIT;
+					done <= 1'b0;
+				end
+			end
+		endcase
+	end
+end
+
+endmodule'}
+
+ Iteration rank: -1

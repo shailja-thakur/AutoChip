@@ -1,0 +1,88 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The following is the state transition table for a Moore state machine with one input, one output, and four states. Implement this state machine. Include a synchronous active high reset that resets the FSM to state A. \n// State | Next state in=0, Next state in=1 | Output\n// A | A, B | 0\n// B | C, B | 0\n// C | A, D | 0\n// D | C, B | 1\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg out
+);
+
+reg [1:0] state, next_state;
+
+// State definitions
+localparam A = 2'd0;
+localparam B = 2'd1;
+localparam C = 2'd2;
+localparam D = 2'd3;
+
+// State transition logic
+always @(*) begin
+    case (state)
+        A: begin
+            if (in == 1'b0) begin
+                next_state = A;
+            end else begin
+                next_state = B;
+            end
+            out = 1'b0;
+        end
+        B: begin
+            if (in == 1'b0) begin
+                next_state = C;
+            end else begin
+                next_state = B;
+            end
+            out = 1'b0;
+        end
+        C: begin
+            if (in == 1'b0) begin
+                next_state = A;
+            end else begin
+                next_state = D;
+            end
+            out = 1'b0;
+        end
+        D: begin
+            if (in == 1'b0) begin
+                next_state = C;
+            end else begin
+                next_state = B;
+            end
+            out = 1'b1;
+        end
+        default: begin
+            next_state = A;
+            out = 1'b0;
+        end
+    endcase
+end
+
+// State register
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        state <= A;
+    end else begin
+        state <= next_state;
+    end
+end
+
+endmodule
+```
+
+The provided Verilog module specification describes a Moore state machine with the following characteristics:
+
+1. The state machine has four states: A, B, C, and D.
+2. The next state and output are determined by the current state and the input signal `in`.
+3. The state transition table is provided in the comment section.
+4. The module has a synchronous active-high reset that resets the FSM to state A.
+
+The implemented Verilog module includes the following:
+
+1. The state and next_state registers are defined using 2-bit wide registers to represent the four states.
+2. The state transition logic is implemented using a case statement that determines the next state and output based on the current state and the input signal `in`.
+3. The state register is updated on the positive edge of the clock, with the reset signal resetting the state to A.
+
+The module should correctly implement the specified Moore state machine with the desired behavior.'}
+
+ Iteration rank: 0.9869565217391304

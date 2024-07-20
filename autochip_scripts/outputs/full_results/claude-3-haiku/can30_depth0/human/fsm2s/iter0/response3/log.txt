@@ -1,0 +1,54 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, two inputs, and one output. Implement this state machine in Verilog. Reset is an active-high synchronous reset to state OFF.\n\n// OFF (out=0) --j=0--> OFF\n// OFF (out=0) --j=1--> ON\n// ON (out=1) --k=0--> ON\n// ON (out=1) --k=1--> OFF\n\nmodule top_module (\n\tinput clk,\n\tinput j,\n\tinput k,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input j,
+    input k,
+    input reset,
+    output reg out
+);
+
+typedef enum {OFF, ON} state_t;
+state_t state, next_state;
+
+always @(posedge clk) begin
+    if (reset)
+        state <= OFF;
+    else
+        state <= next_state;
+end
+
+always @(*) begin
+    case (state)
+        OFF: begin
+            if (j)
+                next_state = ON;
+            else
+                next_state = OFF;
+            out = 0;
+        end
+        ON: begin
+            if (k)
+                next_state = OFF;
+            else
+                next_state = ON;
+            out = 1;
+        end
+        default: begin
+            next_state = OFF;
+            out = 0;
+        end
+    endcase
+end
+
+endmodule
+```
+
+This Verilog module implements the given Moore state machine specification. The state machine has two states, `OFF` and `ON`, which are represented as an enumeration `state_t`. The current state is stored in the `state` register, and the next state is calculated in the combinational `next_state` logic based on the inputs `j` and `k`.
+
+The reset signal is handled synchronously, where the state is set to `OFF` on the active-high reset.
+
+The output `out` is assigned the appropriate value based on the current state, with `out` being 0 in the `OFF` state and 1 in the `ON` state.'}
+
+ Iteration rank: 1.0

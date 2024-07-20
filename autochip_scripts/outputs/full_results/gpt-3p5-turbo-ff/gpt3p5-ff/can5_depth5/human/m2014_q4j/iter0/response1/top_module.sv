@@ -1,0 +1,44 @@
+module top_module (
+    input [3:0] x,
+    input [3:0] y,
+    output reg [4:0] sum
+);
+
+// Internal signals
+wire [3:0] carry;
+wire overflow;
+
+// Instantiate full adders
+full_adder FA0(x[0], y[0], 1'b0, sum[0], carry[0]);
+full_adder FA1(x[1], y[1], carry[0], sum[1], carry[1]);
+full_adder FA2(x[2], y[2], carry[1], sum[2], carry[2]);
+full_adder FA3(x[3], y[3], carry[2], sum[3], carry[3]);
+
+// Calculate the overflow bit
+assign overflow = carry[3] ^ carry[2];
+
+// Assign sum[4] as overflow bit
+assign sum[4] = overflow;
+
+endmodule
+module full_adder (
+    input a,
+    input b,
+    input cin,
+    output reg sum,
+    output reg cout
+);
+    
+    always @ (a, b, cin)
+        case ({a, b, cin})
+            3'b000: begin sum = 0; cout = 0; end
+            3'b001: begin sum = 1; cout = 0; end
+            3'b010: begin sum = 1; cout = 0; end
+            3'b011: begin sum = 0; cout = 1; end
+            3'b100: begin sum = 1; cout = 0; end
+            3'b101: begin sum = 0; cout = 1; end
+            3'b110: begin sum = 0; cout = 1; end
+            3'b111: begin sum = 1; cout = 1; end
+        endcase
+
+endmodule

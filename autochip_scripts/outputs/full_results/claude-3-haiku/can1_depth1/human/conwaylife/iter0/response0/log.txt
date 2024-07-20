@@ -1,0 +1,59 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The "game" is played on a two-dimensional grid of cells, where each cell is either 1 (alive) or 0 (dead). At each time step, each cell changes state depending on how many neighbours it has:\n// (1) 0-1 neighbour: Cell becomes 0.\n// (2) 2 neighbours: Cell state does not change.\n// (3) 3 neighbours: Cell becomes 1.\n// (4) 4+ neighbours: Cell becomes 0.\n// The game is formulated for an infinite grid. In this circuit, we will use a 16x16 grid. To make things more interesting, we will use a 16x16 toroid, where the sides wrap around to the other side of the grid. For example, the corner cell (0,0) has 8 neighbours: (15,1), (15,0), (15,15), (0,1), (0,15), (1,1), (1,0), and (1,15). The 16x16 grid is represented by a length 256 vector, where each row of 16 cells is represented by a sub-vector: q[15:0] is row 0, q[31:16] is row 1, etc. \n// (1) load: Loads data into q at the next clock edge, for loading initial state. Active high synchronous.\n// (2) q: The 16x16 current state of the game, updated every clock cycle.\n// The game state should advance by one timestep every clock cycle.\n\nmodule top_module(\n\tinput clk,\n\tinput load,\n\tinput [255:0] data,\n\toutput reg [255:0] q);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input load,
+    input [255:0] data,
+    output reg [255:0] q
+);
+
+// Define helper functions to get neighbors
+function automatic [15:0] get_left(input [15:0] row);
+    return {row[0], row[15:1]};
+endfunction
+
+function automatic [15:0] get_right(input [15:0] row);
+    return {row[14:0], row[15]};
+endfunction
+
+function automatic [15:0] get_up(input [255:0] grid, input integer row_idx);
+    return (row_idx == 0) ? grid[15:0] : grid[(row_idx-1)*16 +: 16];
+endfunction
+
+function automatic [15:0] get_down(input [255:0] grid, input integer row_idx);
+    return (row_idx == 15) ? grid[255:240] : grid[(row_idx+1)*16 +: 16];
+endfunction
+
+// Main logic
+always @(posedge clk) begin
+    if (load) begin
+        q <= data;
+    end
+    else begin
+        for (int row_idx = 0; row_idx < 16; row_idx++) begin
+            for (int col_idx = 0; col_idx < 16; col_idx++) begin
+                // Count neighbors
+                int neighbors = 0;
+                neighbors += q[row_idx*16 + col_idx]; // Self
+                neighbors += get_left(q[row_idx*16 +: 16])[col_idx];
+                neighbors += get_right(q[row_idx*16 +: 16])[col_idx];
+                neighbors += get_up(q, row_idx)[col_idx];
+                neighbors += get_down(q, row_idx)[col_idx];
+
+                // Update state
+                case (neighbors)
+                    0, 1: q[row_idx*16 + col_idx] <= 1'b0;
+                    2: q[row_idx*16 + col_idx] <= q[row_idx*16 + col_idx];
+                    3: q[row_idx*16 + col_idx] <= 1'b1;
+                    default: q[row_idx*16 + col_idx] <= 1'b0;
+                endcase
+            end
+        end
+    end
+end
+
+endmodule
+```'}
+
+ Iteration rank: -1

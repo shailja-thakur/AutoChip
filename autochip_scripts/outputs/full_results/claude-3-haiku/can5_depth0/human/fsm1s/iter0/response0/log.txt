@@ -1,0 +1,57 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, one input, and one output. Implement this state machine in Verilog. The reset state is B and reset is active-high synchronous.\n\n// B (out=1) --in=0--> A\n// B (out=1) --in=1--> B\n// A (out=0) --in=0--> B\n// A (out=0) --in=1--> A\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg out
+);
+
+reg [1:0] state;
+parameter A = 2'b00, B = 2'b01;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= B;
+        out <= 1;
+    end
+    else begin
+        case (state)
+            B: begin
+                out <= 1;
+                if (in) begin
+                    state <= B;
+                end
+                else begin
+                    state <= A;
+                end
+            end
+            A: begin
+                out <= 0;
+                if (in) begin
+                    state <= A;
+                end
+                else begin
+                    state <= B;
+                end
+            end
+            default: begin
+                state <= B;
+                out <= 1;
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+The Verilog module above implements the Moore state machine as described in the problem statement. The key aspects of the implementation are:
+
+1. The state is represented using a 2-bit register `state`, with the states `A` and `B` defined as parameters.
+2. The `out` signal is assigned based on the current state, with `out = 1` when the state is `B`, and `out = 0` when the state is `A`.
+3. The state transitions are handled in the `case` statement, where the next state is determined based on the current state and the input `in`.
+4. The reset behavior is handled by setting the state to `B` and `out` to `1` when `reset` is `1`.'}
+
+ Iteration rank: 0.6391304347826087

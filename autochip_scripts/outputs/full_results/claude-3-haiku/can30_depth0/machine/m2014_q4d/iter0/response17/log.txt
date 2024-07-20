@@ -1,0 +1,26 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '//  This module is a simple toggle flip-flop. It takes an input signal (in) and a clock signal (clk) and produces an output signal (out). The output signal is initially set to 0.   When the clock signal (clk) transitions from low to high (posedge), the output signal (out) is set to the logical XOR of the input signal (in) and the previous output signal (out). This means that the output signal (out) will toggle (change from 0 to 1 or from 1 to 0) every time the clock signal (clk) transitions from low to high.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\toutput logic out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    output logic out
+);
+
+    always_ff @(posedge clk) begin
+        out <= out ^ in;
+    end
+
+endmodule
+```
+
+The provided Verilog module specification is correct, and the completed module is as follows:
+
+1. The module is named `top_module` and has three ports: `clk` (input clock signal), `in` (input signal), and `out` (output signal).
+2. The `out` port is declared as `logic` type, which is a common practice for modeling registers or flip-flops in Verilog.
+3. The module uses an `always_ff` block, which is a Verilog construct for modeling sequential logic. It is triggered on the positive edge of the `clk` signal.
+4. Inside the `always_ff` block, the output `out` is assigned the XOR of the current `out` value and the `in` signal. This effectively implements the toggle flip-flop functionality, where the output toggles on every positive edge of the clock signal.
+
+This completed Verilog module correctly implements the specified toggle flip-flop behavior.'}
+
+ Iteration rank: 0.99

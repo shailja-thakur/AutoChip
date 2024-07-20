@@ -1,0 +1,71 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The following is the state transition table for a Moore state machine with one input, one output, and four states. Implement this state machine. Include a synchronous active high reset that resets the FSM to state A. \n// State | Next state in=0, Next state in=1 | Output\n// A | A, B | 0\n// B | C, B | 0\n// C | A, D | 0\n// D | C, B | 1\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output out
+);
+
+reg [1:0] state, next_state;
+parameter A = 2'b00, B = 2'b01, C = 2'b10, D = 2'b11;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= A;
+    end
+    else begin
+        state <= next_state;
+    end
+end
+
+always @(*) begin
+    case (state)
+        A: begin
+            if (in == 1'b0) begin
+                next_state = A;
+            end
+            else begin
+                next_state = B;
+            end
+            out = 1'b0;
+        end
+        B: begin
+            if (in == 1'b0) begin
+                next_state = C;
+            end
+            else begin
+                next_state = B;
+            end
+            out = 1'b0;
+        end
+        C: begin
+            if (in == 1'b0) begin
+                next_state = A;
+            end
+            else begin
+                next_state = D;
+            end
+            out = 1'b0;
+        end
+        D: begin
+            if (in == 1'b0) begin
+                next_state = C;
+            end
+            else begin
+                next_state = B;
+            end
+            out = 1'b1;
+        end
+        default: begin
+            next_state = A;
+            out = 1'b0;
+        end
+    endcase
+end
+
+endmodule
+```'}
+
+ Iteration rank: -1

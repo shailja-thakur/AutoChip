@@ -1,0 +1,74 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a finite-state machine that searches for the sequence 1101 in an input bit stream. When the sequence is found, it should set start_shifting to 1, forever, until reset. Reset is active high synchronous.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\tinput data,\n\toutput start_shifting);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    input data,
+    output reg start_shifting
+);
+
+// Define the states
+localparam STATE_INIT = 2'b00;
+localparam STATE_FOUND_1 = 2'b01;
+localparam STATE_FOUND_11 = 2'b10;
+localparam STATE_FOUND_1101 = 2'b11;
+
+// Declare state register
+reg [1:0] state;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= STATE_INIT;
+        start_shifting <= 1'b0;
+    end
+    else begin
+        case (state)
+            STATE_INIT: begin
+                if (data == 1'b1) begin
+                    state <= STATE_FOUND_1;
+                end
+                else begin
+                    state <= STATE_INIT;
+                end
+                start_shifting <= 1'b0;
+            end
+            STATE_FOUND_1: begin
+                if (data == 1'b1) begin
+                    state <= STATE_FOUND_11;
+                end
+                else begin
+                    state <= STATE_INIT;
+                end
+                start_shifting <= 1'b0;
+            end
+            STATE_FOUND_11: begin
+                if (data == 1'b0) begin
+                    state <= STATE_FOUND_1101;
+                end
+                else begin
+                    state <= STATE_FOUND_1;
+                end
+                start_shifting <= 1'b0;
+            end
+            STATE_FOUND_1101: begin
+                if (data == 1'b1) begin
+                    state <= STATE_FOUND_1;
+                end
+                else begin
+                    state <= STATE_INIT;
+                end
+                start_shifting <= 1'b1;
+            end
+            default: begin
+                state <= STATE_INIT;
+                start_shifting <= 1'b0;
+            end
+        endcase
+    end
+end
+
+endmodule
+```'}
+
+ Iteration rank: 0.5645412130637636

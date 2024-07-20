@@ -1,0 +1,59 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The following is the state transition table for a Moore state machine with one input, one output, and four states. Implement this state machine. Include a positive edge triggered asynchronous reset that resets the FSM to state A.\n \n// state | next state in=0, next state in=1 | output\n// A | A, B | 0\n// B | C, B | 0\n// C | A, D | 0\n// D | C, B | 1\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+reg [1:0] state, next_state;
+
+// State definitions
+parameter A = 2'b00, B = 2'b01, C = 2'b10, D = 2'b11;
+
+// State transition logic
+always @(*) begin
+    case (state)
+        A: next_state = (in) ? B : A;
+        B: next_state = (in) ? B : C;
+        C: next_state = (in) ? D : A;
+        D: next_state = (in) ? B : C;
+    endcase
+end
+
+// Output logic
+always @(*) begin
+    case (state)
+        D: out = 1'b1;
+        default: out = 1'b0;
+    endcase
+end
+
+// State register
+always @(posedge clk, posedge areset) begin
+    if (areset)
+        state <= A;
+    else
+        state <= next_state;
+end
+
+endmodule
+```
+
+The provided Verilog code implements the given state transition table for a Moore state machine. It includes the following features:
+
+1. The module has three inputs: `clk`, `in`, and `areset`, and one output: `out`.
+2. The state of the FSM is represented using a 2-bit `state` register, with the following state definitions:
+   - `A = 2'b00`
+   - `B = 2'b01`
+   - `C = 2'b10`
+   - `D = 2'b11`
+3. The `next_state` logic is implemented using a `case` statement, which determines the next state based on the current state and the input `in`.
+4. The output logic is also implemented using a `case` statement, which sets the `out` signal based on the current state.
+5. The state register is updated on the positive edge of the `clk` signal, and is reset to state `A` when the `areset` signal is high.
+
+This Verilog code should correctly implement the given state transition table for the Moore state machine.'}
+
+ Iteration rank: 1.0

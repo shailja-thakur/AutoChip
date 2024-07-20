@@ -1,0 +1,66 @@
+module top_module (
+    input clk,
+    input reset,
+    input w,
+    output reg z
+);
+
+    // Define the state variables
+    reg [2:0] state;
+    parameter A = 3'b000, B = 3'b001, C = 3'b010, D = 3'b011, E = 3'b100, F = 3'b101;
+
+    // Update the state on each clock cycle
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= A;
+            z <= 0;
+        end
+        else begin
+            case (state)
+                A: begin
+                    if (w == 0)
+                        state <= B;
+                    else
+                        state <= A;
+                    z <= 0;
+                end
+                B: begin
+                    if (w == 0)
+                        state <= C;
+                    else
+                        state <= D;
+                    z <= 0;
+                end
+                C: begin
+                    if (w == 0)
+                        state <= E;
+                    else
+                        state <= D;
+                    z <= 0;
+                end
+                D: begin
+                    if (w == 0)
+                        state <= F;
+                    else
+                        state <= A;
+                    z <= 0;
+                end
+                E: begin
+                    if (w == 0)
+                        state <= E;
+                    else
+                        state <= D;
+                    z <= 1;
+                end
+                F: begin
+                    if (w == 0)
+                        state <= C;
+                    else
+                        state <= D;
+                    z <= 1;
+                end
+            endcase
+        end
+    end
+
+endmodule

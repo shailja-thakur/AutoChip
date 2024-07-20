@@ -1,0 +1,26 @@
+module top_module(
+    input clk,
+    input reset,
+    output reg [31:0] q);
+
+    reg [31:0] q_next;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            q <= 32'h1;
+        end else begin
+            q <= q_next;
+        end
+    end
+
+    always @(*) begin
+        // Shift register with feedback
+        q_next = {q[0], q[31:1]};
+
+        // Implementing feedback: Bits 0, 1, and 21 are affected
+        q_next[31] = q[0];
+        q_next[1] = q_next[1] ^ q[0];
+        q_next[21] = q_next[21] ^ q[0];
+    end
+
+endmodule

@@ -1,0 +1,64 @@
+module top_module(
+    input wire clk,
+    input wire reset,
+    input wire data,
+    output wire [3:0] count,
+    output reg counting,
+    output reg done,
+    input wire ack );
+
+    reg [2:0] state;
+    reg [7:0] delay;
+    reg [7:0] counter;
+    reg flag;
+    reg start;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= 0;
+            delay <= 0;
+            counter <= 0;
+            counting <= 0;
+            done <= 0;
+            flag <= 0;
+            start <= 0;
+        end else begin
+            case (state)
+                0: begin
+                    if (data == 1 && flag) begin
+                        state <= 1;
+                        counting <= 1;
+                        start <= 1;
+                    end else if (data == 1) begin
+                        flag <= 1;
+                    end
+                end
+                1: begin
+                    delay <= {data, delay[7:1]};
+                    state <= 2;
+                    counter <= 0;
+                end
+                2: begin
+                    if (counter == (delay + 1) * 1000) begin
+                        counting <= 0;
+                        done <= 1;
+                        state <= 3;
+                    end else begin
+                        counter <= counter + 1;
+                    end
+                end
+                3: begin
+                    if (ack == 1) begin
+                        done <= 0;
+                        flag <= 0;
+                        start <= 0;
+                        state <= 0;
+                    end
+                end
+            endcase
+        end
+    end
+
+    assign count = counting ? delay[3:0] : 4'dx;
+
+endmodule

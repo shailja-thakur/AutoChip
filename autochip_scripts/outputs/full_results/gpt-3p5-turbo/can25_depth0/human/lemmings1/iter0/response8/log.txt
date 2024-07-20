@@ -1,0 +1,66 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The game Lemmings involves critters with fairly simple brains. So simple that we are going to model it using a finite state machine. In the Lemmings' 2D world, Lemmings can be in one of two states: walking left (walk_left is 1) or walking right (walk_right is 1). It will switch directions if it hits an obstacle. In particular, if a Lemming is bumped on the left (by receiving a 1 on bump_left), it will walk right. If it's bumped on the right (by receiving a 1 on bump_right), it will walk left. If it's bumped on both sides at the same time, it will still switch directions. Implement a Moore state machine with two states, two inputs, and one output (internal to the module) that models this behaviour. areset is positive edge triggered asynchronous reseting the Lemming machine to walk left.\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput bump_left,\n\tinput bump_right,\n\toutput walk_left,\n\toutput walk_right\n);"}
+{'assistant': 'module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    output walk_left,
+    output walk_right
+);
+    
+    // Define states
+    reg [1:0] state;
+    parameter LEFT = 2'b00;
+    parameter RIGHT = 2'b01;
+    
+    // Define outputs
+    reg walk_left;
+    reg walk_right;
+    
+    // Define internal signals
+    wire hit_left;
+    wire hit_right;
+    
+    // Detect if Lemming is bumped on left or right
+    assign hit_left = areset ? 0 : (bump_left & (~bump_right));
+    assign hit_right = areset ? 0 : (bump_right & (~bump_left));
+    
+    always @(posedge clk or negedge areset) begin
+        if (areset) begin
+            // Reset Lemming to walk left
+            state <= LEFT;
+        end else begin
+            // State transitions
+            case (state)
+                LEFT:
+                    // Switch to right if bumped on left
+                    if (hit_left) begin
+                        state <= RIGHT;
+                    end
+                RIGHT:
+                    // Switch to left if bumped on right
+                    if (hit_right) begin
+                        state <= LEFT;
+                    end
+            endcase
+        end
+    end
+    
+    always @(state) begin
+        // Define Lemming's walking direction based on state
+        case (state)
+            LEFT: begin
+                walk_left = 1;
+                walk_right = 0;
+            end
+            RIGHT: begin
+                walk_left = 0;
+                walk_right = 1;
+            end
+        endcase
+    end
+    
+endmodule'}
+
+ Iteration rank: -1

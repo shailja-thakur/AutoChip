@@ -1,0 +1,55 @@
+module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    output reg walk_left,
+    output reg walk_right
+);
+
+    // Parameters for the state machine
+    parameter WL = 1'b0;
+    parameter WR = 1'b1;
+
+    // Register to store the current state
+    reg state;
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            state <= WL;
+        end
+        else begin
+            case (state)
+                WL: begin
+                    if (bump_left) begin
+                        state <= WR;
+                    end
+                    else begin
+                        state <= WL;
+                    end
+                end
+                WR: begin
+                    if (bump_right) begin
+                        state <= WL;
+                    end
+                    else begin
+                        state <= WR;
+                    end
+                end
+            endcase
+        end
+    end
+
+    // Assign the output signals based on the current state
+    always @(*) begin
+        if (state == WL) begin
+            walk_left = 1'b1;
+            walk_right = 1'b0;
+        end
+        else begin
+            walk_left = 1'b0;
+            walk_right = 1'b1;
+        end
+    end
+
+endmodule

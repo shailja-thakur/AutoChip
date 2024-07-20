@@ -1,0 +1,102 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // This module is a part of the FSM for controlling the shift register, we want the ability to enable the shift register for exactly 4 clock cycles whenever the proper bit pattern is detected. Whenever the FSM is reset, assert shift_ena for 4 cycles, then 0 forever (until reset). Reset should be active high synchronous.
+
+module top_module(
+	input clk,
+	input reset,
+	output shift_ena);
+assistant: module top_module(
+    input clk,
+    input reset,
+    output reg shift_ena
+);
+
+parameter CYCLES = 4;
+
+reg [1:0] state;
+localparam [1:0] IDLE = 2'b00, ACTIVE = 2'b01, DONE = 2'b11;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= ACTIVE;
+        shift_ena <= 1'b1;
+    end
+    else begin
+        case (state)
+            ACTIVE: begin
+                if (shift_ena == 1'b1 && CYCLES == 4) begin
+                    state <= DONE;
+                    shift_ena <= 1'b0;
+                end
+                else begin
+                    shift_ena <= 1'b1;
+                end
+            end
+            DONE: begin
+                shift_ena <= 1'b0;
+            end
+            default: begin
+                state <= IDLE;
+                shift_ena <= 1'b0;
+            end
+        endcase
+    end
+end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/review2015_fsmshift/review2015_fsmshift_tb.sv:44: $finish called at 1001 (1ps)
+Hint: Output 'shift_ena' has 6 mismatches. First mismatch occurred at time 360.
+Hint: Total mismatched samples is 6 out of 200 samples
+
+Simulation finished at 1001 ps
+Mismatches: 6 in 200 samples
+
+Time to Generate: 16.754772186279297
+Best ranked response at iteration 0 with response number 3
+Rank of best response: 0.97
+Best response module:
+module top_module(
+    input clk,
+    input reset,
+    output reg shift_ena
+);
+
+parameter CYCLES = 4;
+
+reg [1:0] state;
+localparam [1:0] IDLE = 2'b00, ACTIVE = 2'b01, DONE = 2'b11;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= ACTIVE;
+        shift_ena <= 1'b1;
+    end
+    else begin
+        case (state)
+            ACTIVE: begin
+                if (shift_ena == 1'b1 && CYCLES == 4) begin
+                    state <= DONE;
+                    shift_ena <= 1'b0;
+                end
+                else begin
+                    shift_ena <= 1'b1;
+                end
+            end
+            DONE: begin
+                shift_ena <= 1'b0;
+            end
+            default: begin
+                state <= IDLE;
+                shift_ena <= 1'b0;
+            end
+        endcase
+    end
+end
+
+endmodule
+
+

@@ -1,0 +1,44 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider this Verilog module "full_module":\n\n// module full_module (\n//     input [2:0] r,\n//     input L,\n//     input clk,\n//     output reg [2:0] q\n);\n\n// always @(posedge clk) begin\n//     if (L) begin\n//         q <= r;\n//     end else begin\n//         q <= {q[1] ^ q[2], q[0], q[2]};\n//     end\n// end\n\n// endmodule\n\n// You want to create a hierarchical Verilog design where a flipflop and 2-1 multiplexer are in a submodule, and that submodule is instantiated three times in this code. Create the submodule called "top_module".\n\n\nmodule top_module(\n\tinput clk,\n\tinput L,\n\tinput q_in,\n\tinput r_in,\n\toutput reg Q);'}
+{'assistant': '```verilog
+// Submodule: flipflop_mux
+module flipflop_mux (
+    input clk,
+    input L,
+    input d,
+    input r,
+    output reg q
+);
+    always @(posedge clk) begin
+        if (L) begin
+            q <= r;
+        end else begin
+            q <= d;
+        end
+    end
+endmodule
+
+// Top module: top_module
+module top_module(
+    input clk,
+    input L,
+    input [2:0] r,
+    input q_in,
+    output [2:0] Q
+);
+    wire q1, q2, q3;
+    wire mux_out1, mux_out2, mux_out3;
+
+    // Instantiate the submodule flipflop_mux three times
+    flipflop_mux u1 (.clk(clk), .L(L), .d(q_in), .r(r[0]), .q(q1));
+    flipflop_mux u2 (.clk(clk), .L(L), .d(q1), .r(r[1]), .q(q2));
+    flipflop_mux u3 (.clk(clk), .L(L), .d(q2), .r(r[2]), .q(q3));
+
+    // Output of top_module
+    assign Q = {q3, q2, q1};
+endmodule
+```
+
+This design instantiates the `flipflop_mux` module three times within `top_module`, covering the hierarchical design requirement. The `flipflop_mux` submodule behaves as both the flip-flop and multiplexer described. The three instances of this submodule are connected accordingly to match the function of the `full_module` described. Note that `q_in` is externally provided and should match the intended behavior of the output at `q` in `full_module`.'}
+
+ Iteration rank: -1

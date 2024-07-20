@@ -1,0 +1,21 @@
+module top_module (
+    input c,
+    input d,
+    output [3:0] mux_in
+);
+
+wire x1, x2, x3, x4;
+
+// Implement the Karnaugh map using 2-to-1 multiplexers
+assign x1 = (c & ~d) | (~c & d);
+assign x2 = (~c & ~d);
+assign x3 = (c & ~d) | (c & d) | (~c & d);
+assign x4 = (c & ~d) | (~c & d) | (c & d);
+
+// Connect the 2-to-1 mux outputs to the 4-to-1 mux inputs
+assign mux_in[0] = x1;
+assign mux_in[1] = x2;
+assign mux_in[2] = x3;
+assign mux_in[3] = x4;
+
+endmodule

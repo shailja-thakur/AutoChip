@@ -1,0 +1,51 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, two inputs, and one output. Implement this state machine in Verilog. Reset is an active-high synchronous reset to state OFF.\n\n// OFF (out=0) --j=0--> OFF\n// OFF (out=0) --j=1--> ON\n// ON (out=1) --k=0--> ON\n// ON (out=1) --k=1--> OFF\n\nmodule top_module (\n\tinput clk,\n\tinput j,\n\tinput k,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+	input clk,
+	input j,
+	input k,
+	input reset,
+	output out
+);
+	// state enumeration
+	typedef enum logic [1:0] {
+		OFF,
+		ON
+	} state_t;
+
+	reg state;
+	reg next_state;
+	always @(posedge clk or posedge reset) begin
+		if (reset) begin
+			state <= OFF; // initial state
+		end else begin
+			state <= next_state;
+		end
+	end
+
+	always @(state or j or k) begin
+		case (state)
+			OFF: begin
+				if (j) begin
+					next_state = ON;
+				end else begin
+					next_state = OFF;
+				end
+			end
+			
+			ON: begin
+				if (k) begin
+					next_state = OFF;
+				end else begin
+					next_state = ON;
+				end
+			end
+		endcase
+	end
+
+	assign out = (state == ON) ? 1'b1 : 1'b0;
+endmodule
+```'}
+
+ Iteration rank: 0.9128630705394191

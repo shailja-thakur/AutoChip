@@ -1,0 +1,21 @@
+module top_module (
+	input a,
+	input b,
+	input c,
+	input d,
+	input e,
+	output [24:0] out
+);
+
+	// Compute the first vector
+	wire [24:0] not_vec;
+	assign not_vec = ~{{5{a}}, {5{b}}, {5{c}}, {5{d}}, {5{e}}};
+
+	// Compute the second vector
+	wire [24:0] selector;
+	assign selector = {5{a,b,c,d,e}};
+
+	// Compute the output
+	assign out = not_vec ^ selector;
+
+endmodule

@@ -1,0 +1,12 @@
+module top_module (
+	input a,
+	input b,
+	input cin,
+	output cout,
+	output sum
+);
+
+  // Assign statement to calculate the outputs
+  assign {cout, sum} = a + b + cin;
+
+endmodule

@@ -1,0 +1,53 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Given the state-assigned table shown below, implement the finite-state machine. Reset should synchronous active high reset the FSM to state 000.\n\n// Present state y[2:0] | Next state y[2:0] x=0, Next state y[2:0] x=1, Output z\n// 000 | 000, 001 | 0\n// 001 | 001, 100 | 0\n// 010 | 010, 001 | 0\n// 011 | 001, 010 | 1\n// 100 | 011, 100 | 1\n\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput x,\n\toutput reg z\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input reset,
+    input x,
+    output reg z
+);
+
+    reg [2:0] state, next_state;
+
+    // State definitions
+    localparam S0 = 3'b000;
+    localparam S1 = 3'b001;
+    localparam S2 = 3'b010;
+    localparam S3 = 3'b011;
+    localparam S4 = 3'b100;
+
+    // State transition
+    always @(*) begin
+        case(state)
+            S0: next_state = (x == 1'b0) ? S0 : S1;
+            S1: next_state = (x == 1'b0) ? S1 : S4;
+            S2: next_state = (x == 1'b0) ? S2 : S1;
+            S3: next_state = (x == 1'b0) ? S1 : S2;
+            S4: next_state = (x == 1'b0) ? S3 : S4;
+            default: next_state = S0;
+        endcase
+    end
+
+    // Output logic
+    always @(*) begin
+        case(state)
+            S0, S1, S2: z = 1'b0;
+            S3, S4: z = 1'b1;
+            default: z = 1'b0;
+        endcase
+    end
+
+    // State update
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= S0;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+endmodule
+```'}
+
+ Iteration rank: 1.0

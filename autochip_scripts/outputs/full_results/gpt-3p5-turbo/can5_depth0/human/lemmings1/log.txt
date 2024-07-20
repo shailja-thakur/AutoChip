@@ -1,0 +1,121 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // The game Lemmings involves critters with fairly simple brains. So simple that we are going to model it using a finite state machine. In the Lemmings' 2D world, Lemmings can be in one of two states: walking left (walk_left is 1) or walking right (walk_right is 1). It will switch directions if it hits an obstacle. In particular, if a Lemming is bumped on the left (by receiving a 1 on bump_left), it will walk right. If it's bumped on the right (by receiving a 1 on bump_right), it will walk left. If it's bumped on both sides at the same time, it will still switch directions. Implement a Moore state machine with two states, two inputs, and one output (internal to the module) that models this behaviour. areset is positive edge triggered asynchronous reseting the Lemming machine to walk left.
+
+module top_module (
+	input clk,
+	input areset,
+	input bump_left,
+	input bump_right,
+	output walk_left,
+	output walk_right
+);
+assistant: module top_module (
+	input clk,
+	input areset,
+	input bump_left,
+	input bump_right,
+	output walk_left,
+	output walk_right
+);
+	reg [1:0] state;
+    reg [1:0] next_state;
+	
+	always @(posedge clk or posedge areset) begin
+		if (areset) begin
+			state <= 2'b01; // walking left
+		end else begin
+			state <= next_state;
+		end
+	end
+	
+	always @(*) begin
+		case (state)
+			2'b00: begin // walking right
+				if (bump_left && bump_right) begin // bumped on both sides
+					next_state = 2'b01; // switch to walking left
+				end else if (bump_left) begin // bumped on the left side
+					next_state = 2'b00; // continue walking right
+				end else if (bump_right) begin // bumped on the right side
+					next_state = 2'b01; // switch to walking left
+				end
+			end
+			
+			2'b01: begin // walking left
+				if (bump_left && bump_right) begin // bumped on both sides
+					next_state = 2'b00; // switch to walking right
+				end else if (bump_left) begin // bumped on the left side
+					next_state = 2'b01; // continue walking left
+				end else if (bump_right) begin // bumped on the right side
+					next_state = 2'b00; // switch to walking right
+				end
+			end
+		endcase
+	end
+	
+	assign walk_left = (state == 2'b01) ? 1'b1 : 1'b0;
+	assign walk_right = (state == 2'b00) ? 1'b1 : 1'b0;
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/lemmings1/lemmings1_tb.sv:102: $finish called at 1146 (1ps)
+Hint: Output 'walk_left' has 83 mismatches. First mismatch occurred at time 120.
+Hint: Output 'walk_right' has 83 mismatches. First mismatch occurred at time 120.
+Hint: Total mismatched samples is 83 out of 229 samples
+
+Simulation finished at 1146 ps
+Mismatches: 83 in 229 samples
+
+Time to Generate: 4.855562925338745
+Best ranked response at iteration 0 with response number 4
+Rank of best response: 0.6375545851528385
+Best response module:
+module top_module (
+	input clk,
+	input areset,
+	input bump_left,
+	input bump_right,
+	output walk_left,
+	output walk_right
+);
+	reg [1:0] state;
+    reg [1:0] next_state;
+	
+	always @(posedge clk or posedge areset) begin
+		if (areset) begin
+			state <= 2'b01; // walking left
+		end else begin
+			state <= next_state;
+		end
+	end
+	
+	always @(*) begin
+		case (state)
+			2'b00: begin // walking right
+				if (bump_left && bump_right) begin // bumped on both sides
+					next_state = 2'b01; // switch to walking left
+				end else if (bump_left) begin // bumped on the left side
+					next_state = 2'b00; // continue walking right
+				end else if (bump_right) begin // bumped on the right side
+					next_state = 2'b01; // switch to walking left
+				end
+			end
+			
+			2'b01: begin // walking left
+				if (bump_left && bump_right) begin // bumped on both sides
+					next_state = 2'b00; // switch to walking right
+				end else if (bump_left) begin // bumped on the left side
+					next_state = 2'b01; // continue walking left
+				end else if (bump_right) begin // bumped on the right side
+					next_state = 2'b00; // switch to walking right
+				end
+			end
+		endcase
+	end
+	
+	assign walk_left = (state == 2'b01) ? 1'b1 : 1'b0;
+	assign walk_right = (state == 2'b00) ? 1'b1 : 1'b0;
+endmodule
+
+

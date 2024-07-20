@@ -1,0 +1,31 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// Suppose you're building a circuit to process scancodes from a PS/2 keyboard for a game. Given the last two bytes of scancodes received, you need to indicate whether one of the arrow keys on the keyboard have been pressed. This involves a fairly simple mapping, which can be implemented as a case statement (or if-elseif) with four cases.\n// Scancode[15:0] | Arrow key\n// 16'he06b | left arrow\n// 16'he072 | down arrow\n// 16'he074 | right arrow\n// 16'he075 | up arrow\n// Anything else | none\n// Your circuit has one 16-bit input, and four outputs. Build this circuit that recognizes these four scancodes and asserts the correct output.\n\n\n\nmodule top_module (\n\tinput [15:0] scancode,\n\toutput reg left,\n\toutput reg down,\n\toutput reg right,\n\toutput reg up\n);"}
+{'assistant': '```verilog
+module top_module (
+    input [15:0] scancode,
+    output reg left,
+    output reg down,
+    output reg right,
+    output reg up
+);
+
+    always @(scancode) begin
+        // Default all outputs to 0
+        left = 0;
+        down = 0;
+        right = 0;
+        up = 0;
+        
+        case (scancode)
+            16'he06b: left  = 1;
+            16'he072: down  = 1;
+            16'he074: right = 1;
+            16'he075: up    = 1;
+            default: ; // No action, outputs remain 0
+        endcase
+    end
+
+endmodule
+```'}
+
+ Iteration rank: 1.0

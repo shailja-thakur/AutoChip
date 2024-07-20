@@ -1,0 +1,15 @@
+module top_module (
+  input clk,
+  input a,
+  output reg q
+);
+
+  always @(posedge clk or posedge a) begin
+    if (a == 1) begin
+      q <= 1;
+    end else begin
+      q <= 0;
+    end
+  end
+
+endmodule

@@ -1,0 +1,38 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This module is a part of the FSM for controlling the shift register, we want the ability to enable the shift register for exactly 4 clock cycles whenever the proper bit pattern is detected. Whenever the FSM is reset, assert shift_ena for 4 cycles, then 0 forever (until reset). Reset should be active high synchronous.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput shift_ena);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    output reg shift_ena
+);
+
+reg [1:0] count;
+
+always @(posedge clk) begin
+    if (reset) begin
+        count <= 2'd3;
+        shift_ena <= 1'b1;
+    end
+    else if (count != 0) begin
+        count <= count - 1'b1;
+        shift_ena <= 1'b1;
+    end
+    else begin
+        shift_ena <= 1'b0;
+    end
+end
+
+endmodule
+```
+
+The corrected module achieves the desired functionality. The key changes are:
+
+1. Added a register `count` to keep track of the remaining cycles to enable the shift register.
+2. In the reset condition, `count` is initialized to 3 (4 cycles) and `shift_ena` is asserted.
+3. In the non-reset condition, if `count` is non-zero, it is decremented and `shift_ena` remains asserted.
+4. When `count` reaches 0, `shift_ena` is deasserted.
+
+This ensures that whenever the module is reset, the `shift_ena` signal is asserted for exactly 4 clock cycles, and then remains deasserted until the next reset.'}
+
+ Iteration rank: 1.0

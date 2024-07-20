@@ -1,0 +1,8 @@
+module top_module (
+	input [7:0] in,
+	output [31:0] out
+);
+
+assign out = {in, in, in, in}; // Replicate the 8-bit input 4 times to form the 32-bit output
+
+endmodule

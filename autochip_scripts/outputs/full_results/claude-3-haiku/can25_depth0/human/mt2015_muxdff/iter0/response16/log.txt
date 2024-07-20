@@ -1,0 +1,64 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider this Verilog module "full_module":\n\n// module full_module (\n//     input [2:0] r,\n//     input L,\n//     input clk,\n//     output reg [2:0] q\n);\n\n// always @(posedge clk) begin\n//     if (L) begin\n//         q <= r;\n//     end else begin\n//         q <= {q[1] ^ q[2], q[0], q[2]};\n//     end\n// end\n\n// endmodule\n\n// You want to create a hierarchical Verilog design where a flipflop and 2-1 multiplexer are in a submodule, and that submodule is instantiated three times in this code. Create the submodule called "top_module".\n\n\nmodule top_module(\n\tinput clk,\n\tinput L,\n\tinput q_in,\n\tinput r_in,\n\toutput reg Q);'}
+{'assistant': 'Here's the completed Verilog code for the hierarchical design:
+
+```verilog
+module top_module(
+    input clk,
+    input L,
+    input [2:0] r_in,
+    output [2:0] q
+);
+
+    wire [2:0] q1, q2, q3;
+
+    sub_module sub_module1 (
+        .clk(clk),
+        .L(L),
+        .q_in(q3[0]),
+        .r_in(r_in[0]),
+        .Q(q1[0])
+    );
+
+    sub_module sub_module2 (
+        .clk(clk),
+        .L(L),
+        .q_in(q1[1]),
+        .r_in(r_in[1]),
+        .Q(q2[1])
+    );
+
+    sub_module sub_module3 (
+        .clk(clk),
+        .L(L),
+        .q_in(q2[2]),
+        .r_in(r_in[2]),
+        .Q(q3[2])
+    );
+
+    assign q = {q3[0], q2[1], q1[2]};
+
+endmodule
+
+module sub_module(
+    input clk,
+    input L,
+    input q_in,
+    input r_in,
+    output reg Q
+);
+
+    always @(posedge clk) begin
+        if (L) begin
+            Q <= r_in;
+        end else begin
+            Q <= q_in;
+        end
+    end
+
+endmodule
+```
+
+The `top_module` contains three instances of the `sub_module`, each responsible for one bit of the output `q`. The `sub_module` implements a flip-flop with a 2-1 multiplexer, where the input is selected based on the `L` signal. The output of the three `sub_module` instances are then concatenated to form the 3-bit `q` output.'}
+
+ Iteration rank: -1

@@ -1,0 +1,797 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // 	The top module is a state machine. There are 10 states in this state machine, which are S, S1, S11, S110, B0, B1, B2, B3, Count and Wait.
+	The done signal is 1 in the state Wait.
+	The counting signal is 1 in the state Count.
+	The shift_ena signal is 1 if any of the states B3, B2, B1 and B0 is active.
+	The output of the top module B3_next is 1 when the state B2 is active.
+	The output of the top module S_next is 1 when the state S and d is 0, or the state S1 and d is 0, or the state S110 and d is 0, or the state Wait and ack is 1.
+	The output of the top module S1_next is 1 when the state S and d is 1.
+	The output of the top module Count_next is 1 when the state B3 is active, or the state Count and done_counting is 0.
+	The output of the top module Wait_next is 1 when the state Count and done_counting is 1, or the state Wait and ack is 0.
+	
+
+module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output B3_next,
+    output S_next,
+    output S1_next,
+    output Count_next,
+    output Wait_next,
+    output done,
+    output counting,
+    output shift_ena
+ );
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+
+always @(*) begin
+    assign done = (state == 10'd9);
+    assign counting = (state == 10'd8);
+    assign shift_ena = (state[3] || state[2] || state[1] || state[0]);
+    
+    case (state)
+        10'd0: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd1: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd2: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd3: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd4: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd5: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd6: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd7: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = (ack == 1'b1);
+        end
+        10'd8: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = (done_counting == 1'b0);
+            Wait_next = (ack == 1'b0);
+        end
+        10'd9: begin
+            B3_next = 1'b1;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+    endcase
+end
+
+endmodule
+
+
+user: The design compiled with warnings. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth5/machine/review2015_fsmonehot/iter0/response0/top_module.sv:17: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth5/machine/review2015_fsmonehot/iter0/response0/top_module.sv:18: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth5/machine/review2015_fsmonehot/iter0/response0/top_module.sv:19: vvp.tgt sorry: procedural continuous assignments are not yet fully supported. The RHS of this assignment will only be evaluated once, at the time the assignment statement is executed.
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+
+always @(*)
+    case (state)
+        10'd0: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd1: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd2: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd3: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd4: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd5: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd6: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'd7: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = (ack == 1'b1);
+        end
+        10'd8: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = (done_counting == 1'b0);
+            Wait_next = (ack == 1'b0);
+        end
+        10'd9: begin
+            B3_next = 1'b1;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+    endcase
+
+assign done = (state == 10'd9);
+assign counting = (state == 10'd8);
+assign shift_ena = (state[3] || state[2] || state[1] || state[0]);
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:70: $finish called at 16516 (1ps)
+Hint: Output 'B3_next' has 1532 mismatches. First mismatch occurred at time 45.
+Hint: Output 'S_next' has 1725 mismatches. First mismatch occurred at time 5.
+Hint: Output 'S1_next' has 1151 mismatches. First mismatch occurred at time 10.
+Hint: Output 'Count_next' has 1964 mismatches. First mismatch occurred at time 10.
+Hint: Output 'Wait_next' has 1440 mismatches. First mismatch occurred at time 60.
+Hint: Output 'done' has 1536 mismatches. First mismatch occurred at time 30.
+Hint: Output 'counting' has 1571 mismatches. First mismatch occurred at time 70.
+Hint: Output 'shift_ena' has 600 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 3264 out of 3303 samples
+
+Simulation finished at 16516 ps
+Mismatches: 3264 in 3303 samples
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+
+always @(*)
+    case (state)
+        10'b0000000001: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000000010: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000000100: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000001000: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000010000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000100000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0001000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0010000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = (ack == 1'b1);
+        end
+        10'b0100000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = (done_counting == 1'b0);
+            Wait_next = (ack == 1'b0);
+        end
+        10'b1000000000: begin
+            B3_next = 1'b1;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        default: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+    endcase
+
+assign done = (state == 10'b1000000000);
+assign counting = (state == 10'b0100000000);
+assign shift_ena = (state[3] || state[2] || state[1] || state[0]);
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:70: $finish called at 16516 (1ps)
+Hint: Output 'B3_next' has 1532 mismatches. First mismatch occurred at time 30.
+Hint: Output 'S_next' has 1752 mismatches. First mismatch occurred at time 30.
+Hint: Output 'S1_next' has 815 mismatches. First mismatch occurred at time 25.
+Hint: Output 'Count_next' has 1923 mismatches. First mismatch occurred at time 10.
+Hint: Output 'Wait_next' has 1368 mismatches. First mismatch occurred at time 15.
+Hint: Output 'done' has 1500 mismatches. First mismatch occurred at time 1515.
+Hint: Output 'counting' has 1504 mismatches. First mismatch occurred at time 1515.
+Hint: Output 'shift_ena' has 600 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 3245 out of 3303 samples
+
+Simulation finished at 16516 ps
+Mismatches: 3245 in 3303 samples
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+
+always @(state)
+    case (state)
+        10'b0000000001: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000000010: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000000100: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000001000: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000010000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000100000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0001000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0010000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = (ack == 1'b1);
+        end
+        10'b0100000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = (done_counting == 1'b0);
+            Wait_next = (ack == 1'b0);
+        end
+        10'b1000000000: begin
+            B3_next = 1'b1;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        default: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+    endcase
+
+always @(posedge clk)
+begin
+    done <= (state == 10'b1000000000);
+    counting <= (state == 10'b0100000000);
+    shift_ena <= (state[3] || state[2] || state[1] || state[0]);
+end
+
+endmodule
+
+
+user: The design failed to compile. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth5/machine/review2015_fsmonehot/iter3/response0/top_module.sv:97: error: Unable to bind wire/reg/memory `clk' in `tb.top_module1'
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth5/machine/review2015_fsmonehot/iter3/response0/top_module.sv:97: error: Failed to evaluate event expression 'posedge clk'.
+2 error(s) during elaboration.
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    input clk,
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+
+always @(state)
+    case (state)
+        10'b0000000001: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000000010: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000000100: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000001000: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000010000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000100000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0001000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0010000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = (ack == 1'b1);
+        end
+        10'b0100000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = (done_counting == 1'b0);
+            Wait_next = (ack == 1'b0);
+        end
+        10'b1000000000: begin
+            B3_next = 1'b1;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        default: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+    endcase
+
+always @(posedge clk)
+begin
+    done <= (state == 10'b1000000000);
+    counting <= (state == 10'b0100000000);
+    shift_ena <= (state[3] || state[2] || state[1] || state[0]);
+end
+
+endmodule
+
+
+user: The design compiled with warnings. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:162: warning: Instantiating module top_module with dangling input port 5 (clk) floating.
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    input wire clk,
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+
+always @(state)
+    case (state)
+        10'b0000000001: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000000010: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000000100: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000001000: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000010000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000100000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0001000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0010000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = (ack == 1'b1);
+        end
+        10'b0100000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = (done_counting == 1'b0);
+            Wait_next = (ack == 1'b0);
+        end
+        10'b1000000000: begin
+            B3_next = 1'b1;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        default: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+    endcase
+
+always @(posedge clk)
+begin
+    done <= (state == 10'b1000000000);
+    counting <= (state == 10'b0100000000);
+    shift_ena <= (state[3] || state[2] || state[1] || state[0]);
+end
+
+endmodule
+
+
+user: The design compiled with warnings. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:162: warning: Instantiating module top_module with dangling input port 5 (clk) floating.
+
+Time to Generate: 72.15938591957092
+Best ranked response at iteration 2 with response number 0
+Rank of best response: 0.01755979412655162
+Best response module:
+module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+
+always @(*)
+    case (state)
+        10'b0000000001: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000000010: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000000100: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000001000: begin
+            B3_next = 1'b0;
+            S_next = (d == 1'b0);
+            S1_next = (d == 1'b1);
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000010000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0000100000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0001000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        10'b0010000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = (ack == 1'b1);
+        end
+        10'b0100000000: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = (done_counting == 1'b0);
+            Wait_next = (ack == 1'b0);
+        end
+        10'b1000000000: begin
+            B3_next = 1'b1;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+        default: begin
+            B3_next = 1'b0;
+            S_next = 1'b0;
+            S1_next = 1'b0;
+            Count_next = 1'b0;
+            Wait_next = 1'b0;
+        end
+    endcase
+
+assign done = (state == 10'b1000000000);
+assign counting = (state == 10'b0100000000);
+assign shift_ena = (state[3] || state[2] || state[1] || state[0]);
+
+endmodule
+
+

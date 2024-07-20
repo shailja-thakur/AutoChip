@@ -1,0 +1,77 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a finite-state machine that searches for the sequence 1101 in an input bit stream. When the sequence is found, it should set start_shifting to 1, forever, until reset. Reset is active high synchronous.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\tinput data,\n\toutput start_shifting);'}
+{'assistant': 'module top_module(
+	input clk,
+	input reset,
+	input data,
+	output reg start_shifting);
+
+	// State encoding
+	typedef enum logic[2:0] {
+		IDLE = 3'b000,
+		S1   = 3'b001,
+		S2   = 3'b010,
+		S3   = 3'b011,
+		S4   = 3'b100
+	} state_t;
+
+	state_t state, next_state;
+
+	// Sequential logic (state transitions)
+	always @(posedge clk or posedge reset) begin
+		if (reset)
+			state <= IDLE;
+		else
+			state <= next_state;
+	end
+
+	// Combinational logic (next state and output logic)
+	always @(*) begin
+		// Default values
+		next_state = state;
+
+		case (state)
+			IDLE: begin
+				if (data)
+					next_state = S1;
+			end
+
+			S1: begin
+				if (data)
+					next_state = S2;
+				else
+					next_state = IDLE;
+			end
+
+			S2: begin
+				if (~data)
+					next_state = S3;
+				else
+					next_state = S2;
+			end
+
+			S3: begin
+				if (data)
+					next_state = S4;
+				else
+					next_state = IDLE;
+			end
+
+			S4: begin
+				start_shifting = 1;
+				next_state = S4;
+			end
+		endcase
+	end
+
+	// Output logic
+	always @(posedge clk or posedge reset) begin
+		if (reset)
+			start_shifting <= 1'b0;
+		else if (state == S4)
+			start_shifting <= 1'b1;
+	end
+
+endmodule'}
+
+ Iteration rank: 0.9922239502332815

@@ -1,0 +1,24 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a decade counter that counts from 0 through 9, inclusive, with a period of 10. The reset input is active high synchronous, and should reset the counter to 0.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput reg [3:0] q);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    output reg [3:0] q
+);
+
+always @(posedge clk) begin
+    if (reset)
+        q <= 4'b0;
+    else
+        q <= (q == 4'd9) ? 4'b0 : q + 1;
+end
+
+endmodule
+```
+
+The provided Verilog code for the decade counter is correct and should work as expected. The module takes two inputs: `clk` (clock) and `reset`, and produces a 4-bit output `q` that counts from 0 to 9 and then resets back to 0.
+
+The `always` block is triggered on the positive edge of the clock signal. If the `reset` input is high, the counter is set to 0. Otherwise, the counter is incremented by 1 until it reaches 9, at which point it resets back to 0.'}
+
+ Iteration rank: 1.0

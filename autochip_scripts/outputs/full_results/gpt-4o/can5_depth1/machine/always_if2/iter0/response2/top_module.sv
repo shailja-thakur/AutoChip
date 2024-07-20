@@ -1,0 +1,28 @@
+module top_module (
+    input cpu_overheated,
+    input arrived,
+    input gas_tank_empty,
+    input shut_off_computer_signal, // renamed from shut_off_computer to avoid conflict
+    output reg shut_off_computer,
+    output reg keep_driving
+);
+
+    // First always block to control the shut_off_computer output
+    always @(*) begin
+        if (cpu_overheated) begin
+            shut_off_computer = 1;
+        end else begin
+            shut_off_computer = 0;
+        end
+    end
+
+    // Second always block to control the keep_driving output
+    always @(*) begin
+        if (!arrived) begin
+            keep_driving = !gas_tank_empty;
+        end else begin
+            keep_driving = 0;
+        end
+    end
+
+endmodule

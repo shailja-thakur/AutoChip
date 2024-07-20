@@ -1,0 +1,36 @@
+module top_module (
+	input [3:0] x,
+	input [3:0] y,
+	output [4:0] sum
+);
+
+	// Declare signals for each stage of the adder
+	wire [3:0] s;
+	wire [4:0] c;
+
+	// Instantiate four full adders
+	full_adder fa0 (.a(x[0]), .b(y[0]), .c_in(1'b0), .s(s[0]), .c_out(c[0]));
+	full_adder fa1 (.a(x[1]), .b(y[1]), .c_in(c[0]), .s(s[1]), .c_out(c[1]));
+	full_adder fa2 (.a(x[2]), .b(y[2]), .c_in(c[1]), .s(s[2]), .c_out(c[2]));
+	full_adder fa3 (.a(x[3]), .b(y[3]), .c_in(c[2]), .s(s[3]), .c_out(c[3]));
+
+	// Connect the outputs of the full adders to form the sum
+	assign sum[0] = s[0];
+	assign sum[1] = s[1];
+	assign sum[2] = s[2];
+	assign sum[3] = s[3];
+	assign sum[4] = c[3];
+
+endmodule
+module full_adder (
+	input a,
+	input b,
+	input c_in,
+	output s,
+	output c_out
+);
+	// Generate output sum and carry-out
+	assign s = a ^ b ^ c_in;
+	assign c_out = (a & b) | (a & c_in) | (b & c_in);
+
+endmodule

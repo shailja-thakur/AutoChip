@@ -1,0 +1,48 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a 4-digit BCD (binary-coded decimal) counter. Each decimal digit is encoded using 4 bits: q[3:0] is the ones digit, q[7:4] is the tens digit, etc. For digits [3:1], also output an enable signal indicating when each of the upper three digits should be incremented. Include a synchronous active-high reset.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput [3:1] ena,\n\toutput reg [15:0] q);'}
+{'assistant': 'module top_module(
+    input clk, 
+    input reset, 
+    output [3:1] ena, 
+    output reg [15:0] q);
+         
+    reg [3:0] q0, q1, q2, q3;
+    reg [3:0] next_q0, next_q1, next_q2, next_q3;
+                 
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            q <= 0;
+        else
+            q <= next_q0 + (next_q1 << 4) + (next_q2 << 8) + (next_q3 << 12);
+    end
+
+    always @(q0, q1, q2, q3, ena) begin
+        next_q0 = q0;
+        next_q1 = q1;
+        next_q2 = q2;
+        next_q3 = q3;
+
+        if (ena[1])
+            next_q1 = q1 + 1;
+        if (ena[2])
+            next_q2 = q2 + 1;
+        if (ena[3])
+            next_q3 = q3 + 1;
+    end
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            q0 <= 0;
+            q1 <= 0;
+            q2 <= 0;
+            q3 <= 0;
+        end else begin
+            q0 <= next_q0;
+            q1 <= next_q1;
+            q2 <= next_q2;
+            q3 <= next_q3;
+        end
+    end
+endmodule'}
+
+ Iteration rank: -0.5

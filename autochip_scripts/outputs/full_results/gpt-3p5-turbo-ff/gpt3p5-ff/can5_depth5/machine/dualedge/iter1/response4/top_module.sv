@@ -1,0 +1,31 @@
+module top_module(
+	input clk,
+	input d,
+	output reg q);
+	
+	reg qp;
+	reg qn;
+	
+	always @(posedge clk) begin
+		qp <= d;
+	end
+	
+	always @(negedge clk) begin
+		qn <= d;
+	end
+	
+	always @(posedge clk or negedge clk) begin
+		if (clk)
+			q <= qp;
+		else
+			q <= qn;
+	end
+	
+	initial begin
+		$dumpfile("wave.vcd");
+		$dumpvars(0, top_module);
+		#100;
+		$finish;
+	end
+	
+endmodule

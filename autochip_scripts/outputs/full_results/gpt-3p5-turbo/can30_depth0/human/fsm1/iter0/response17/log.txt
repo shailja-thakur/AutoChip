@@ -1,0 +1,71 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the follow Moore machine with the diagram described below:\n\n// B (1) --0--> A\n// B (1) --1--> B\n// A (0) --0--> B\n// A (0) --1--> A\n\n// Write Verilog implementing this state machine. It should asynchronously reset into state B if reset if high.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+	input clk,
+	input in,
+	input areset,
+	output out
+);
+	
+	// Define the state enumeration
+	typedef enum logic [1:0] {
+		B,
+		A
+	} state_t;
+
+	// Define the state register and next state
+	reg state_t state_reg, next_state_reg;
+
+	// Define the output register
+	reg out_reg;
+
+	// Define the output logic
+	assign out = out_reg;
+
+	// Define the synchronous always block
+	always @(posedge clk or posedge areset) begin
+		if (areset) begin
+			state_reg <= B;
+			out_reg <= 0;
+		end else begin
+			state_reg <= next_state_reg;
+			out_reg <= (state_reg == A);
+		end
+	end
+
+	// Define the combinational always block for the next state logic
+	always @* begin
+		case (state_reg)
+			B: begin
+				case (in)
+					0: next_state_reg = A;
+					1: next_state_reg = B;
+					default: next_state_reg = B;
+				endcase
+			end
+			A: begin
+				case (in)
+					0: next_state_reg = B;
+					1: next_state_reg = A;
+					default: next_state_reg = A;
+				endcase
+			end
+			default: next_state_reg = B;
+		endcase
+	end
+
+endmodule
+```
+
+In this module, I have defined an enumeration `state_t` to represent the states `A` and `B`. I have also declared the state register `state_reg` and next state register `next_state_reg` to hold the current and next states respectively. The output register `out_reg` is used to store the output bit.
+
+The output `out` is assigned to `out_reg`.
+
+In the synchronous always block, the state machine transitions are defined. If `areset` is high, the state is reset to `B` and the output is set to 0. Otherwise, the current state and output are updated based on the next state.
+
+In the combinational always block, the next state is determined based on the current state and input `in`.
+
+Note that this module assumes that the inputs are synchronous with the clock `clk`. If they are not synchronous, additional synchronization logic may be required.'}
+
+ Iteration rank: 0.2850877192982456

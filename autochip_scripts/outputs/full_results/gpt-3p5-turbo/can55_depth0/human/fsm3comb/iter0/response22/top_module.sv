@@ -1,0 +1,56 @@
+module top_module (
+    input in,
+    input [1:0] state,
+    output reg [1:0] next_state,
+    output out
+);
+
+always @(*) begin
+    case (state)
+        2'b00: begin // current state A
+            if (in == 1'b0) begin
+                next_state = 2'b00; // next state A
+                out = 1'b0;
+            end
+            else begin // in == 1'b1
+                next_state = 2'b01; // next state B
+                out = 1'b0;
+            end
+        end
+        
+        2'b01: begin // current state B
+            if (in == 1'b0) begin
+                next_state = 2'b10; // next state C
+                out = 1'b0;
+            end
+            else begin // in == 1'b1
+                next_state = 2'b01; // next state B
+                out = 1'b0;
+            end
+        end
+        
+        2'b10: begin // current state C
+            if (in == 1'b0) begin
+                next_state = 2'b00; // next state A
+                out = 1'b0;
+            end
+            else begin // in == 1'b1
+                next_state = 2'b11; // next state D
+                out = 1'b0;
+            end
+        end
+        
+        2'b11: begin // current state D
+            if (in == 1'b0) begin
+                next_state = 2'b10; // next state C
+                out = 1'b1;
+            end
+            else begin // in == 1'b1
+                next_state = 2'b01; // next state B
+                out = 1'b0;
+            end
+        end
+    endcase
+end
+
+endmodule

@@ -1,0 +1,95 @@
+module top_module (
+  input clk,
+  input resetn,
+  input x,
+  input y,
+  output reg f,
+  output reg g
+);
+
+  reg [2:0] state;
+  reg f_reg, g_reg;
+  reg [2:0] count_x;
+  reg [1:0] count_y;
+
+  always @(posedge clk or negedge resetn) begin
+    if (!resetn) begin
+      state <= 3'b000;
+      f_reg <= 1'b0;
+      g_reg <= 1'b0;
+      count_x <= 3'b000;
+      count_y <= 2'b00;
+    end else begin
+      case (state)
+        3'b000: begin
+          f_reg <= 1'b0;
+          g_reg <= 1'b0;
+          count_x <= 3'b000;
+          count_y <= 2'b00;
+          if (resetn) begin
+            state <= 3'b001;
+          end
+        end
+        3'b001: begin
+          f_reg <= 1'b1;
+          g_reg <= 1'b0;
+          state <= 3'b010;
+        end
+        3'b010: begin
+          if (x == 1'b1) begin
+            state <= 3'b011;
+          end else begin
+            state <= 3'b010;
+          end
+        end
+        3'b011: begin
+          if (x == 1'b0) begin
+            state <= 3'b100;
+          end else begin
+            state <= 3'b011;
+          end
+        end
+        3'b100: begin
+          if (x == 1'b1) begin
+            state <= 3'b101;
+          end else begin
+            state <= 3'b100;
+          end
+        end
+        3'b101: begin
+          if (y == 1'b1) begin
+            if (count_y == 2'b00) begin
+              count_y <= 2'b01;
+            end else if (count_y == 2'b01) begin
+              g_reg <= 1'b1;
+              count_y <= 2'b10;
+              state <= 3'b110;
+            end
+          end else begin
+            state <= 3'b101;
+          end
+        end
+        3'b110: begin
+          if (y == 1'b1) begin
+            g_reg <= 1'b1;
+          end else begin
+            g_reg <= 1'b0;
+          end
+          if (resetn) begin
+            state <= 3'b000;
+          end
+        end
+        3'b111: begin
+          g_reg <= 1'b0;
+          if (resetn) begin
+            state <= 3'b000;
+          end
+        end
+      endcase
+    end
+  end
+
+  assign f = f_reg;
+  assign g = g_reg;
+
+endmodule

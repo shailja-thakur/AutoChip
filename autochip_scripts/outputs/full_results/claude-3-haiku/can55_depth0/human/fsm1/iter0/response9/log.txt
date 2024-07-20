@@ -1,0 +1,52 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the follow Moore machine with the diagram described below:\n\n// B (1) --0--> A\n// B (1) --1--> B\n// A (0) --0--> B\n// A (0) --1--> A\n\n// Write Verilog implementing this state machine. It should asynchronously reset into state B if reset if high.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+reg state;
+parameter A = 1'b0, B = 1'b1;
+
+always @(posedge clk, posedge areset) begin
+    if (areset) begin
+        state <= B;
+    end else begin
+        case (state)
+            B: begin
+                out <= 1'b1;
+                if (in == 1'b0) begin
+                    state <= A;
+                end else begin
+                    state <= B;
+                end
+            end
+            A: begin
+                out <= 1'b0;
+                if (in == 1'b0) begin
+                    state <= B;
+                end else begin
+                    state <= A;
+                end
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+The provided Verilog code implements the Moore machine described in the problem statement. The key points are:
+
+1. The state register `state` is defined with parameter values `A = 1'b0` and `B = 1'b1` to represent the two states.
+2. The `always` block is sensitive to the positive edge of the clock signal `clk` and the asynchronous reset signal `areset`.
+3. If `areset` is high, the state is set to `B` unconditionally.
+4. If `areset` is not high, the state transitions are handled in the `case` statement based on the current state and the input `in`.
+5. The output `out` is set to `1'b1` when the state is `B`, and `1'b0` when the state is `A`.
+
+This implementation matches the state machine diagram provided in the problem statement.'}
+
+ Iteration rank: 0.631578947368421

@@ -1,0 +1,64 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This module is a part of the FSM for controlling the shift register, we want the ability to enable the shift register for exactly 4 clock cycles whenever the proper bit pattern is detected. Whenever the FSM is reset, assert shift_ena for 4 cycles, then 0 forever (until reset). Reset should be active high synchronous.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput shift_ena);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    output reg shift_ena
+);
+
+localparam IDLE = 2'b00, SHIFT = 2'b01, RESET = 2'b10;
+reg [1:0] state, next_state;
+reg [1:0] counter;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= RESET;
+        counter <= 0;
+    end
+    else begin
+        state <= next_state;
+        counter <= counter + 1;
+    end
+end
+
+always @(*) begin
+    next_state = state;
+    shift_ena = 0;
+    case (state)
+        IDLE: begin
+            if (reset) begin
+                next_state = RESET;
+            end
+            else begin
+                next_state = IDLE;
+            end
+        end
+        RESET: begin
+            shift_ena = 1;
+            if (counter == 2'd3) begin
+                next_state = IDLE;
+                counter = 0;
+            end
+            else begin
+                next_state = RESET;
+            end
+        end
+        default: begin
+            // do nothing
+        end
+    endcase
+end
+
+endmodule
+```
+
+The provided module specification is correct, and the completed Verilog module implementation is provided above. The module includes the following features:
+
+1. The module has three states: IDLE, SHIFT, and RESET.
+2. When the `reset` input is asserted, the module enters the RESET state and asserts `shift_ena` for 4 clock cycles, then transitions to the IDLE state.
+3. In the IDLE state, the module waits for the `reset` input to be asserted, at which point it transitions to the RESET state.
+4. The `shift_ena` output is asserted for 4 clock cycles when the module is in the RESET state, and is deasserted in all other states.
+5. The module uses a counter to keep track of the number of clock cycles in the RESET state, and transitions back to the IDLE state when the counter reaches 3.'}
+
+ Iteration rank: 1.0

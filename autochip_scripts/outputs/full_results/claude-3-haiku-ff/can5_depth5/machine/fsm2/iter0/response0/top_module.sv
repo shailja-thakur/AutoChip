@@ -1,0 +1,53 @@
+module top_module (
+    input clk,
+    input j,
+    input k,
+    input areset,
+    output reg out
+);
+
+reg state, next_state;
+parameter STATE_A = 1'b0, STATE_B = 1'b1;
+
+// Combinational logic to determine the next state
+always @(*) begin
+    case (state)
+        STATE_A: begin
+            if (j) begin
+                next_state = STATE_B;
+            end else begin
+                next_state = STATE_A;
+            end
+        end
+        STATE_B: begin
+            if (k) begin
+                next_state = STATE_A;
+            end else begin
+                next_state = STATE_B;
+            end
+        end
+        default: begin
+            next_state = STATE_A;
+        end
+    endcase
+end
+
+// Sequential logic to update the state
+always @(posedge clk or posedge areset) begin
+    if (areset) begin
+        state <= STATE_A;
+    end else begin
+        state <= next_state;
+    end
+end
+
+// Combinational logic to set the output
+always @(*) begin
+    if (state == STATE_B) begin
+        out = 1'b1;
+    end else begin
+        out = 1'b0;
+    end
+end
+
+endmodule

@@ -1,0 +1,87 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'role': 'assistant', 'content': "module top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput reg done\n);\n\n\t// States of the FSM\n\ttypedef enum logic [2:0] {\n\t\tIDLE,\n\t\tSTART_BIT,\n\t\tDATA_BITS,\n\t\tSTOP_BIT,\n\t\tERROR\n\t} state_t;\n\t\n\tstate_t state, next_state;\n\treg [2:0] bit_count;\n\n\talways @(posedge clk or posedge reset) begin\n\t\tif (reset) begin\n\t\t\tstate <= IDLE;\n\t\t\tbit_count <= 3'b000;\n\t\t\tdone <= 1'b0;\n\t\tend else begin\n\t\t\tstate <= next_state;\n\t\t\tif (state == DATA_BITS) begin\n\t\t\t\tbit_count <= bit_count + 1;\n\t\t\tend else if (state != DATA_BITS) begin\n\t\t\t\tbit_count <= 3'b000;\n\t\t\tend\n\t\tend\n\tend\n\t\n\talways @(*) begin\n\t\tnext_state = state;\n\t\tdone = 1'b0;\n\t\tcase(state)\n\t\t\tIDLE: begin\n\t\t\t\tif (in == 1'b0) begin\n\t\t\t\t\tnext_state = START_BIT;\n\t\t\t\tend\n\t\t\tend\n\t\t\t\n\t\t\tSTART_BIT: begin\n\t\t\t\tnext_state = DATA_BITS;\n\t\t\tend\n\t\t\t\n\t\t\tDATA_BITS: begin\n\t\t\t\tif (bit_count == 3'b111) begin\n\t\t\t\t\tnext_state = STOP_BIT;\n\t\t\t\tend\n\t\t\tend\n\t\t\t\n\t\t\tSTOP_BIT: begin\n\t\t\t\tif (in == 1'b1) begin\n\t\t\t\t\tdone = 1'b1;\n\t\t\t\t\tnext_state = IDLE;\n\t\t\t\tend else begin\n\t\t\t\t\tnext_state = ERROR;\n\t\t\t\tend\n\t\t\tend\n\t\t\t\n\t\t\tERROR: begin\n\t\t\t\tif (in == 1'b1) begin\n\t\t\t\t\tnext_state = IDLE;\n\t\t\t\tend\n\t\t\tend\n\t\t\t\n\t\t\tdefault: next_state = IDLE;\n\t\tendcase\n\tend\nendmodule\n\n"}
+{'role': 'user', 'content': "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\nVCD info: dumpfile wave.vcd opened for output.\n/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)\nHint: Output 'done' has 48 mismatches. First mismatch occurred at time 110.\nHint: Total mismatched samples is 48 out of 905 samples\n\nSimulation finished at 4526 ps\nMismatches: 48 in 905 samples\n"}
+{'assistant': '```verilog
+module top_module (
+	input clk,
+	input in,
+	input reset,
+	output reg done
+);
+
+	// States of the FSM
+	typedef enum logic [2:0] {
+		IDLE,
+		START_BIT,
+		DATA_BITS,
+		STOP_BIT,
+		ERROR
+	} state_t;
+	
+	state_t state, next_state;
+	reg [2:0] bit_count;
+	reg [7:0] data_byte;
+
+	always @(posedge clk or posedge reset) begin
+		if (reset) begin
+			state <= IDLE;
+			bit_count <= 3'b000;
+			done <= 1'b0;
+			data_byte <= 8'b00000000;
+		end else begin
+			state <= next_state;
+			if (state == DATA_BITS) begin
+				bit_count <= bit_count + 1;
+				data_byte <= {in, data_byte[7:1]};
+			end else if (state != DATA_BITS) begin
+				bit_count <= 3'b000;
+			end
+			if (next_state == IDLE && state == STOP_BIT && in == 1'b1) begin
+				done <= 1'b1;
+			end else begin
+				done <= 1'b0;
+			end
+		end
+	end
+	
+	always @(*) begin
+		next_state = state;
+		case(state)
+			IDLE: begin
+				if (in == 1'b0) begin
+					next_state = START_BIT;
+				end
+			end
+			
+			START_BIT: begin
+				next_state = DATA_BITS;
+			end
+			
+			DATA_BITS: begin
+				if (bit_count == 3'b111) begin
+					next_state = STOP_BIT;
+				end
+			end
+			
+			STOP_BIT: begin
+				if (in == 1'b1) begin
+					next_state = IDLE;
+				end else begin
+					next_state = ERROR;
+				end
+			end
+			
+			ERROR: begin
+				if (in == 1'b1) begin
+					next_state = IDLE;
+				end
+			end
+			
+			default: next_state = IDLE;
+		endcase
+	end
+endmodule
+```'}
+
+ Iteration rank: 0.9392265193370166

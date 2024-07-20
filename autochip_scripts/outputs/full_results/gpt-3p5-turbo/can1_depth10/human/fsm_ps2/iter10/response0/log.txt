@@ -1,0 +1,73 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The PS/2 mouse protocol sends messages that are three bytes long. However, within a continuous byte stream, it's not obvious where messages start and end. The only indication is that the first byte of each three byte message always has in[3]=1 (but in[3] of the other two bytes may be 1 or 0 depending on data). We want a finite state machine that will search for message boundaries when given an input byte stream. The algorithm we'll use is to discard bytes until we see one with in[3]=1. We then assume that this is byte 1 of a message, and signal the receipt of a message once all 3 bytes have been received (done). The FSM should signal done in the cycle immediately after the third byte of each message was successfully received. Reset should be active high synchronous.\n\nmodule top_module (\n\tinput clk,\n\tinput [7:0] in,\n\tinput reset,\n\toutput done\n);"}
+{'role': 'assistant', 'content': 'module top_module (\n\tinput clk,\n\tinput [7:0] in,\n\tinput reset,\n\toutput reg done\n);\n\nreg [2:0] state;\nreg [7:0] byte1;\nreg [7:0] byte2;\nreg [7:0] byte3;\nwire [7:0] in_reg;\nreg reset_reg;\n\nalways @(posedge clk) begin\n\tif (reset)\n\t\treset_reg <= 1;\n\telse if (!reset && reset_reg)\n\t\treset_reg <= 0;\nend\n\nalways @(posedge clk or posedge reset_reg) begin\n\tif (reset_reg)\n\t\tstate <= 0;\n\telse begin\n\t\tcase(state)\n\t\t\t0: begin // IDLE state\n\t\t\t\tif (in_reg[3]) begin\n\t\t\t\t\tstate <= 1; // Transition to ACCEPT_BYTE1 state\n\t\t\t\t\tbyte1 <= in_reg;\n\t\t\t\tend\n\t\t\t\telse\n\t\t\t\t\tstate <= 0; // Stay in IDLE state\n\t\t\tend\n\t\t\t1: begin // ACCEPT_BYTE1 state\n\t\t\t\tif (!reset_reg) begin\n\t\t\t\t\tstate <= 2; // Transition to ACCEPT_BYTE2 state\n\t\t\t\t\tbyte2 <= in_reg;\n\t\t\t\tend\n\t\t\t\telse\n\t\t\t\t\tstate <= 0; // Transition to IDLE state\n\t\t\tend\n\t\t\t2: begin // ACCEPT_BYTE2 state\n\t\t\t\tif (!reset_reg) begin\n\t\t\t\t\tstate <= 3; // Transition to ACCEPT_BYTE3 state\n\t\t\t\t\tbyte3 <= in_reg;\n\t\t\t\tend\n\t\t\t\telse\n\t\t\t\t\tstate <= 0; // Transition to IDLE state\n\t\t\tend\n\t\t\t3: begin // ACCEPT_BYTE3 state\n\t\t\t\tstate <= 4; // Transition to DONE state\n\t\t\tend\n\t\t\t4: begin // DONE state\n\t\t\t\tstate <= 0; // Transition back to IDLE state\n\t\t\t\tdone <= 1; // Set done register\n\t\t\tend\n\t\t\tdefault: begin\n\t\t\t\tstate <= 0; // Default case: transition back to IDLE state\n\t\t\tend\n\t\tendcase\n\tend\nend\n\nassign in_reg = in;\n\nendmodule\n\n'}
+{'role': 'user', 'content': "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\nVCD info: dumpfile wave.vcd opened for output.\n/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_ps2/fsm_ps2_tb.sv:47: $finish called at 2001 (1ps)\nHint: Output 'done' has 279 mismatches. First mismatch occurred at time 180.\nHint: Total mismatched samples is 279 out of 400 samples\n\nSimulation finished at 2001 ps\nMismatches: 279 in 400 samples\n"}
+{'assistant': 'module top_module (
+	input clk,
+	input [7:0] in,
+	input reset,
+	output reg done
+);
+
+reg [2:0] state;
+reg [7:0] byte1;
+reg [7:0] byte2;
+reg [7:0] byte3;
+reg [7:0] in_reg;
+reg reset_reg;
+
+always @(posedge clk) begin
+	if (reset)
+		reset_reg <= 1;
+	else if (!reset && reset_reg)
+		reset_reg <= 0;
+end
+
+always @(posedge clk or posedge reset_reg) begin
+	if (reset_reg)
+		state <= 0;
+	else begin
+		case(state)
+			0: begin // IDLE state
+				if (in[3]) begin
+					state <= 1; // Transition to ACCEPT_BYTE1 state
+					byte1 <= in;
+				end
+				else
+					state <= 0; // Stay in IDLE state
+			end
+			1: begin // ACCEPT_BYTE1 state
+				if (!reset_reg) begin
+					state <= 2; // Transition to ACCEPT_BYTE2 state
+					byte2 <= in;
+				end
+				else
+					state <= 0; // Transition to IDLE state
+			end
+			2: begin // ACCEPT_BYTE2 state
+				if (!reset_reg) begin
+					state <= 3; // Transition to ACCEPT_BYTE3 state
+					byte3 <= in;
+				end
+				else
+					state <= 0; // Transition to IDLE state
+			end
+			3: begin // ACCEPT_BYTE3 state
+				state <= 4; // Transition to DONE state
+			end
+			4: begin // DONE state
+				state <= 0; // Transition back to IDLE state
+				done <= 1; // Set done register
+			end
+			default: begin
+				state <= 0; // Default case: transition back to IDLE state
+			end
+		endcase
+	end
+end
+
+assign in_reg = in;
+
+endmodule'}
+
+ Iteration rank: 0.3025

@@ -1,0 +1,49 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the follow Moore machine with the diagram described below:\n\n// B (1) --0--> A\n// B (1) --1--> B\n// A (0) --0--> B\n// A (0) --1--> A\n\n// Write Verilog implementing this state machine. It should asynchronously reset into state B if reset if high.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output out
+);
+
+    reg state;
+    
+    always @(posedge clk or posedge areset) begin
+        if (areset)
+            state <= 1'b1; // reset to state B
+        else begin
+            case (state)
+                1'b0: // state A
+                    if (in)
+                        state <= 1'b0; // stay in A
+                    else
+                        state <= 1'b1; // transition to B
+                1'b1: // state B
+                    if (in)
+                        state <= 1'b1; // stay in B
+                    else
+                        state <= 1'b0; // transition to A
+            endcase
+        end
+    end
+    
+    assign out = ~state; // out is 0 in state B, 1 in state A
+
+endmodule
+```
+
+The Verilog code above implements the given Moore state machine. Here's a breakdown of the code:
+
+1. The `state` register is used to store the current state of the state machine.
+2. The `always` block triggers on the positive edge of the clock or the asynchronous reset signal `areset`.
+3. If `areset` is high, the state is reset to `1'b1`, which corresponds to state B.
+4. If `areset` is low, the state is updated based on the current state and the input `in`.
+   - If the current state is `1'b0` (state A) and `in` is `1'b0`, the next state is `1'b1` (state B).
+   - If the current state is `1'b0` (state A) and `in` is `1'b1`, the next state is `1'b0` (stay in state A).
+   - If the current state is `1'b1` (state B) and `in` is `1'b0`, the next state is `1'b0` (state A).
+   - If the current state is `1'b1` (state B) and `in` is `1'b1`, the next state is `1'b1` (stay in state B).
+5. The `out` signal is assigned the inverse of the `state` register, which means `out` is `0` in state B and `1` in state A.'}
+
+ Iteration rank: 0.0

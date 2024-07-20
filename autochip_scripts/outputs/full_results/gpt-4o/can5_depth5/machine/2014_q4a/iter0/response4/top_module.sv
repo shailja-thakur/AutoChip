@@ -1,0 +1,21 @@
+module top_module (
+	input clk,
+	input w,
+	input R,
+	input E,
+	input L,
+	output reg Q
+);
+
+	always @(posedge clk or posedge R) begin
+		if (R) begin
+			Q <= 1'b0; // Reset to a known state
+		end else if (E) begin
+			if (L) begin
+				Q <= R; // Update Q with the value of R
+			else begin
+				Q <= w; // Update Q with the value of w
+			end
+		end
+	end
+endmodule

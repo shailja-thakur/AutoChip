@@ -1,0 +1,100 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': 'module top_module (
+	input clk,
+	input in,
+	input reset,
+	output done
+);
+	
+	// Define state enum
+	typedef enum logic [2:0] {
+		IDLE,
+		START_BIT,
+		DATA_BITS,
+		STOP_BIT
+	} state_t;
+	
+	// Define state register and next state
+	state_t state_reg, state_next;
+	
+	// Define data register
+	reg [7:0] data;
+	
+	// Define start and stop bit flags
+	reg start_bit_flag, stop_bit_flag;
+	
+	// Define done flag
+	reg done_flag;
+	
+	always_ff @(posedge clk or posedge reset) begin
+		if (reset) begin
+			state_reg <= IDLE;
+			start_bit_flag <= 0;
+			stop_bit_flag <= 0;
+			data <= 0;
+			done_flag <= 0;
+		end else begin
+			state_reg <= state_next;
+			
+			if (state_next == IDLE) begin
+				start_bit_flag <= 0;
+				stop_bit_flag <= 0;
+			end else if (state_next == START_BIT) begin
+				start_bit_flag <= 1;
+				stop_bit_flag <= 0;
+			end else if (state_next == STOP_BIT) begin
+				start_bit_flag <= 0;
+				stop_bit_flag <= 1;
+			end else begin
+				start_bit_flag <= 0;
+				stop_bit_flag <= 0;
+			end
+			
+			if (state_next == DATA_BITS) begin
+				data <= {in, data[7:1]};
+			end
+			
+			done_flag <= 0;
+		end
+	end
+	
+	always_comb begin
+		case (state_reg)
+			IDLE:
+				if (in == 0)
+					state_next = START_BIT;
+				else
+					state_next = IDLE;
+			
+			START_BIT:
+				if (in == 0)
+					state_next = DATA_BITS;
+				else
+					state_next = START_BIT;
+			
+			DATA_BITS:
+				if (in == 0)
+					state_next = DATA_BITS;
+				else
+					state_next = STOP_BIT;
+			
+			STOP_BIT:
+				if (in == 1)
+					state_next = IDLE;
+				else
+					state_next = STOP_BIT;
+		endcase
+	end
+	
+	always_ff @(posedge clk) begin
+		if (state_reg == STOP_BIT && stop_bit_flag) begin
+			done_flag <= 1;
+		end
+	end
+	
+	assign done = done_flag;
+	
+endmodule'}
+
+ Iteration rank: 0.7812154696132597

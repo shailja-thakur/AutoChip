@@ -1,0 +1,52 @@
+module top_module (
+	input clk,
+	input [7:0] in,
+	input reset,
+	output [23:0] out_bytes,
+	output done
+);
+
+  reg [1:0] state;
+  reg [7:0] byte1, byte2, byte3;
+  reg [1:0] cnt;
+
+  always @(posedge clk or posedge reset) begin
+    if (reset) begin
+      state <= 2'b00;
+      cnt <= 2'b00;
+      byte1 <= 8'b0;
+      byte2 <= 8'b0;
+      byte3 <= 8'b0;
+      out_bytes <= 24'b0;
+      done <= 0;
+    end else begin
+      case (state)
+      
+        2'b00: begin
+          if (in[3]) begin
+            state <= 2'b01;
+            byte1 <= in;
+          end
+        end
+        
+        2'b01: begin
+          byte2 <= in;
+          state <= 2'b10;
+        end
+        
+        2'b10: begin
+          byte3 <= in;
+          state <= 2'b00;
+          cnt <= cnt + 1;
+          if (cnt == 2'b11) begin
+            out_bytes <= {byte1, byte2, byte3};
+            done <= 1;
+            cnt <= 2'b00;
+          end
+        end
+        
+      endcase
+    end
+  end
+  
+endmodule

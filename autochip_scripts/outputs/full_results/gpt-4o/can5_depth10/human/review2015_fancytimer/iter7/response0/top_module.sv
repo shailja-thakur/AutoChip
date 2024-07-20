@@ -1,0 +1,105 @@
+module top_module(
+    input wire clk,
+    input wire reset,
+    input wire data,
+    output reg [3:0] count,
+    output reg counting,
+    output reg done,
+    input wire ack );
+
+    // State encoding
+    localparam IDLE = 3'b000,
+               PATTERN_DETECTED = 3'b001,
+               LOAD_DELAY = 3'b010,
+               COUNTDOWN = 3'b011,
+               DONE = 3'b100;
+
+    reg [2:0] state, next_state;
+    reg [3:0] pattern;
+    reg [3:0] delay;
+    reg [15:0] counter;  // Increased width to handle larger counts
+    reg [3:0] bits_received;
+    reg [15:0] next_counter;
+    reg [3:0] next_count;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            pattern <= 4'b0;
+            delay <= 4'b0;
+            counter <= 16'b0;
+            count <= 4'b1111; // set to all 1's instead of 0 for don't-care
+            counting <= 1'b0;
+            done <= 1'b0;
+            bits_received <= 4'b0;
+        end else begin
+            state <= next_state;
+            if (state == IDLE) begin
+                pattern <= {pattern[2:0], data};
+            end
+            if (state == PATTERN_DETECTED && bits_received < 4) begin
+                delay <= {delay[2:0], data};
+                bits_received <= bits_received + 1;
+            end
+            counter <= next_counter;
+            count <= next_count;
+        end
+    end
+
+    always @(*) begin
+        next_state = state;
+        next_counter = counter;
+        next_count = count;
+        case (state)
+            IDLE: begin
+                done = 1'b0;
+                counting = 1'b0;
+                pattern = {pattern[2:0], data};
+                if (pattern == 4'b1101) begin
+                    next_state = PATTERN_DETECTED;
+                    bits_received = 0;
+                end
+            end
+            PATTERN_DETECTED: begin
+                if (bits_received < 4) begin
+                    delay = {delay[2:0], data};
+                end else begin
+                    next_state = LOAD_DELAY;
+                end
+            end
+            LOAD_DELAY: begin
+                next_counter = (delay + 1) * 1000;
+                next_count = delay;
+                counting = 1'b1;
+                next_state = COUNTDOWN;
+            end
+            COUNTDOWN: begin
+                if (counter > 0) begin
+                    next_counter = counter - 1;
+                    if (counter[9:0] == 10'b0) begin
+                        if (count > 0) begin
+                            next_count = count - 1;
+                        end
+                    end
+                end else begin
+                    next_count = 4'b0;
+                    next_state = DONE;
+                    counting = 1'b0;
+                    done = 1'b1;
+                end
+            end
+            DONE: begin
+                if (ack) begin
+                    next_state = IDLE;
+                    pattern = 4'b0;
+                    delay = 4'b0;
+                    next_counter = 16'b0;
+                    next_count = 4'b1111;
+                    counting = 1'b0;
+                    done = 1'b0;
+                    bits_received = 4'b0;
+                end
+            end
+        endcase
+    end
+endmodule

@@ -1,0 +1,63 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a finite-state machine that searches for the sequence 1101 in an input bit stream. When the sequence is found, it should set start_shifting to 1, forever, until reset. Reset is active high synchronous.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\tinput data,\n\toutput start_shifting);'}
+{'assistant': 'module top_module(
+	input clk,
+	input reset,
+	input data,
+	output reg start_shifting); // Added reg keyword for start_shifting
+ 
+	// State enumeration
+	enum {IDLE, S0, S1, S2, S3} state;
+	reg [1:0] bit_buffer; // Added bit_buffer register to store last two bits
+	
+	always @(posedge clk) begin
+		if (reset) begin
+			start_shifting <= 0; // Reset start_shifting when reset is active
+			state <= IDLE; // Transition to IDLE state when reset is active
+			bit_buffer <= 0; // Reset bit_buffer when reset is active
+		end else begin
+			case (state)
+				IDLE:
+					if (data == 1'b1) begin
+						state <= S0;
+						bit_buffer <= {bit_buffer[0], data}; // Shift in current input bit
+					end
+				S0:
+					if (data == 1'b1) begin
+						state <= S1;
+						bit_buffer <= {bit_buffer[0], data}; // Shift in current input bit
+					end else begin
+						state <= IDLE; // Return to IDLE state if input bit is 0
+						bit_buffer <= {bit_buffer[0], data}; // Shift in current input bit
+					end
+				S1:
+					if (data == 1'b1) begin
+						state <= S2;
+						bit_buffer <= {bit_buffer[0], data}; // Shift in current input bit
+					end else begin
+						state <= IDLE; // Return to IDLE state if input bit is 0
+						bit_buffer <= {bit_buffer[0], data}; // Shift in current input bit
+					end
+				S2:
+					if (data == 1'b0) begin
+						state <= IDLE; // Return to IDLE state if input bit is 0
+						bit_buffer <= {bit_buffer[0], data}; // Shift in current input bit
+					end else if (data == 1'b1) begin
+						state <= S3;
+						start_shifting <= 1; // Set start_shifting to 1 when sequence is found
+						bit_buffer <= {bit_buffer[0], data}; // Shift in current input bit
+					end
+				S3:
+					if (data == 1'b1) begin
+						state <= S0;
+						bit_buffer <= {bit_buffer[0], data}; // Shift in current input bit
+					end else begin
+						state <= IDLE; // Return to IDLE state if input bit is 0
+						bit_buffer <= {bit_buffer[0], data}; // Shift in current input bit
+					end
+			endcase
+		end
+	end
+endmodule'}
+
+ Iteration rank: 0.6734059097978227

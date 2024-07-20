@@ -1,0 +1,45 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Implement a shift register with four D flops. Reset is active-low synchronous resettable.\n\nmodule top_module (\n\tinput clk,\n\tinput resetn,\n\tinput in,\n\toutput out\n);'}
+{'assistant': 'module top_module (
+	input clk,
+	input resetn,
+	input in,
+	output out
+);
+	// Define signals
+	reg [3:0] d;
+
+	// Flop declarations
+	reg q1, q2, q3, q4;
+	reg [3:0] next_d;
+
+	// Assign flop inputs
+	always @(posedge clk or negedge resetn) begin
+		if (!resetn) begin
+			q1 <= 1'b0;
+			q2 <= 1'b0;
+			q3 <= 1'b0;
+			q4 <= 1'b0;
+		end else begin
+			q1 <= next_d[0];
+			q2 <= next_d[1];
+			q3 <= next_d[2];
+			q4 <= next_d[3];
+		end
+	end
+
+	// Assign flop outputs to the shift register output
+	assign out = q4;
+
+	// Assign next_d based on the input and current flops' states
+	always @(posedge clk or negedge resetn) begin
+		if (!resetn) begin
+			next_d <= 4'b0;
+		end else begin
+			next_d <= d << 1;
+			next_d[0] <= in;
+		end
+	end
+endmodule'}
+
+ Iteration rank: 0.3745819397993311

@@ -1,0 +1,42 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// For each bit in a 32-bit vector, capture when the input signal changes from 1 in one clock cycle to 0 the next. "Capture" means that the output will remain 1 until the register is reset (active high synchronous reset).\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\tinput [31:0] in,\n\toutput reg [31:0] out);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    input [31:0] in,
+    output reg [31:0] out
+);
+
+always @(posedge clk) begin
+    if (reset) begin
+        out <= 32'b0;
+    end
+    else begin
+        for (int i = 0; i < 32; i++) begin
+            if (in[i] && !in[i]) begin
+                out[i] <= 1'b1;
+            end
+            else if (out[i]) begin
+                out[i] <= 1'b1;
+            end
+            else begin
+                out[i] <= 1'b0;
+            end
+        end
+    end
+end
+
+endmodule
+```
+
+The provided Verilog module captures the transition of each bit in a 32-bit vector from 1 to 0 on the next clock cycle. The `out` register is initialized to 0 on reset, and then updated on each clock cycle based on the value of the corresponding bit in the `in` signal.
+
+The logic is as follows:
+1. If the current bit in `in` is 1 and the previous bit was 0, then set the corresponding bit in `out` to 1 (to capture the transition).
+2. If the corresponding bit in `out` is already 1, keep it at 1 (to maintain the capture).
+3. Otherwise, set the corresponding bit in `out` to 0.
+
+This implementation ensures that the output bit remains high until the register is reset, as per the specification.'}
+
+ Iteration rank: 0.14661654135338345

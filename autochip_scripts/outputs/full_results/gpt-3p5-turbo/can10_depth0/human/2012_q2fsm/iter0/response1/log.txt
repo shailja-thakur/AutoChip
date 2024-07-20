@@ -1,0 +1,86 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the state machine shown below:\n\n// A (0) --1--> B\n// A (0) --0--> A\n// B (0) --1--> C\n// B (0) --0--> D\n// C (0) --1--> E\n// C (0) --0--> D\n// D (0) --1--> F\n// D (0) --0--> A\n// E (1) --1--> E\n// E (1) --0--> D\n// F (1) --1--> C\n// F (1) --0--> D\n\n// Reset resets into state A and is synchronous active-high. \n\n// Write complete Verilog code that represents this FSM. Use separate **always** blocks for the state table and the state flip-flops. Describe the FSM output, which is called _z_, using either continuous assignment statement(s) or an **always** block (at your discretion). Assign any state codes that you wish to use.\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput w,\n\toutput z\n);'}
+{'assistant': '```verilog
+module top_module (
+	input clk,
+	input reset,
+	input w,
+	output reg z
+);
+
+	// state codes
+	parameter A = 2'b00;
+	parameter B = 2'b01;
+	parameter C = 2'b10;
+	parameter D = 2'b11;
+	
+	// state flip-flops
+	reg [1:0] state_d, state_q;
+	
+	// state transition logic
+	always @(posedge clk or posedge reset)
+	begin
+		if (reset)
+			state_q <= A;
+		else
+			state_q <= state_d;
+	end
+	
+	// state table
+	always @(state_q or w)
+	begin
+		case (state_q)
+			A: begin
+				if (w)
+					state_d <= B;
+				else
+					state_d <= A;
+			end
+			B: begin
+				if (w)
+					state_d <= C;
+				else
+					state_d <= D;
+			end
+			C: begin
+				if (w)
+					state_d <= E;
+				else
+					state_d <= D;
+			end
+			D: begin
+				if (w)
+					state_d <= F;
+				else
+					state_d <= A;
+			end
+			E: begin
+				if (w)
+					state_d <= E;
+				else
+					state_d <= D;
+			end
+			F: begin
+				if (w)
+					state_d <= C;
+				else
+					state_d <= D;
+			end
+		endcase
+	end
+	
+	// FSM output
+	always @(state_q)
+	begin
+		case (state_q)
+			A, D: z = 0;
+			E, F: z = 1;
+			default: z = 0;
+		endcase
+	end
+	
+endmodule
+```
+In the above code, the state flip-flops are implemented using `state_d` and `state_q`. The state transition logic is implemented separately using an always block, and the state table is implemented using another always block. The FSM output `z` is assigned values based on the current state using another always block. The reset is used to initialize the state to A.'}
+
+ Iteration rank: -1

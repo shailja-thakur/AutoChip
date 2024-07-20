@@ -1,0 +1,47 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// Rule 110 is a one-dimensional cellular automaton with interesting properties (such as being Turing-complete). There is a one-dimensional array of cells (on or off). At each time step, the state of each cell changes. In Rule 110, the next state of each cell depends only on itself and its two neighbours, according to the following table:\n// Left | Center | Right | Center's next state\n// 1 | 1 | 1 | 0\n// 1 | 1 | 0 | 1\n// 1 | 0 | 1 | 1\n// 1 | 0 | 0 | 0\n// 0 | 1 | 1 | 1\n// 0 | 1 | 0 | 1\n// 0 | 0 | 1 | 1\n// 0 | 0 | 0 | 0 \n// In this circuit, create a 512-cell system (q[511:0]), and advance by one time step each clock cycle. The synchronous active high load input indicates the state of the system should be loaded with data[511:0]. Assume the boundaries (q[-1] and q[512]) are both zero (off).\n\nmodule top_module(\n\tinput clk,\n\tinput load,\n\tinput [511:0] data,\n\toutput reg [511:0] q);"}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input load,
+    input [511:0] data,
+    output reg [511:0] q);
+
+    reg [511:0] next_q;
+
+    always @(*) begin
+        integer i;
+        for (i = 0; i < 512; i = i + 1) begin
+            // Boundary conditions with zero neighbors
+            if (i == 0) begin
+                next_q[i] = (q[0] == 0 && q[1] == 1) ? 1 : 0;
+            end else if (i == 511) begin
+                next_q[i] = (q[510] == 1 || q[511] == 1) ? 1 : 0;
+            end else begin
+                // Apply Rule 110
+                case ({q[i-1], q[i], q[i+1]})
+                    3'b111: next_q[i] = 0;
+                    3'b110: next_q[i] = 1;
+                    3'b101: next_q[i] = 1;
+                    3'b100: next_q[i] = 0;
+                    3'b011: next_q[i] = 1;
+                    3'b010: next_q[i] = 1;
+                    3'b001: next_q[i] = 1;
+                    3'b000: next_q[i] = 0;
+                endcase
+            end
+        end
+    end
+
+    always @(posedge clk) begin
+        if (load) begin
+            q <= data;
+        end else begin
+            q <= next_q;
+        end
+    end
+
+endmodule
+```'}
+
+ Iteration rank: 0.010027057138309725

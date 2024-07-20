@@ -1,0 +1,67 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The game Lemmings involves critters with fairly simple brains. So simple that we are going to model it using a finite state machine. In the Lemmings' 2D world, Lemmings can be in one of two states: walking left (walk_left is 1) or walking right (walk_right is 1). It will switch directions if it hits an obstacle. In particular, if a Lemming is bumped on the left (by receiving a 1 on bump_left), it will walk right. If it's bumped on the right (by receiving a 1 on bump_right), it will walk left. If it's bumped on both sides at the same time, it will still switch directions. Implement a Moore state machine with two states, two inputs, and one output (internal to the module) that models this behaviour. areset is positive edge triggered asynchronous reseting the Lemming machine to walk left.\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput bump_left,\n\tinput bump_right,\n\toutput walk_left,\n\toutput walk_right\n);"}
+{'assistant': '```
+module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    output reg walk_left,
+    output reg walk_right
+);
+    reg [1:0] state;
+
+    always @(posedge clk or posedge areset) begin
+        if (areset)
+            state <= 2'b00;
+        else
+            case (state)
+                2'b00: begin
+                    if (bump_left & !bump_right)
+                        state <= 2'b01;
+                    else if (bump_right & !bump_left)
+                        state <= 2'b10;
+                end
+                2'b01: begin
+                    if (!bump_left & !bump_right)
+                        state <= 2'b00;
+                end
+                2'b10: begin
+                    if (!bump_left & !bump_right)
+                        state <= 2'b00;
+                end
+            endcase
+        end
+    end
+
+    always @(state) begin
+        case (state)
+            2'b00: begin
+                walk_left = 1'b1;
+                walk_right = 1'b0;
+            end
+            2'b01: begin
+                walk_left = 1'b0;
+                walk_right = 1'b1;
+            end
+            2'b10: begin
+                walk_left = 1'b1;
+                walk_right = 1'b0;
+            end
+            default: begin
+                walk_left = 1'b0;
+                walk_right = 1'b0;
+            end
+        endcase
+    end
+endmodule
+```
+In the provided solution, we have added a state variable named `state` to track the current state of the finite state machine. The `state` variable is a 2-bit register.
+
+In the first always block, we have defined the state transitions based on the given conditions. When `areset` is true, the machine is reset to the initial state 2'b00 (walking left). Otherwise, we check the current state and inputs to determine the next state.
+
+In the second always block, we assign the outputs `walk_left` and `walk_right` based on the current state. In state 2'b00, `walk_left` is set to 1 and `walk_right` is set to 0, indicating that the Lemming is walking left. In state 2'b01, `walk_left` is set to 0 and `walk_right` is set to 1, indicating that the Lemming is walking right. In state 2'b10, `walk_left` is set to 1 and `walk_right` is set to 0, indicating that the Lemming is walking left. In all other states, both outputs are set to 0.
+
+Note that we have declared `walk_left` and `walk_right` as registered outputs (`output reg walk_left` and `output reg walk_right`) to properly synchronize them with the clock signal `clk`.'}
+
+ Iteration rank: -1

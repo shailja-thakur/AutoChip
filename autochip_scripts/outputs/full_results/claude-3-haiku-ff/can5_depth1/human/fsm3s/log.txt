@@ -1,0 +1,102 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // The following is the state transition table for a Moore state machine with one input, one output, and four states. Implement this state machine. Include a synchronous active high reset that resets the FSM to state A. 
+// State | Next state in=0, Next state in=1 | Output
+// A | A, B | 0
+// B | C, B | 0
+// C | A, D | 0
+// D | C, B | 1
+
+module top_module (
+	input clk,
+	input in,
+	input reset,
+	output out
+);
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg out
+);
+
+reg [1:0] state, next_state;
+parameter A = 2'd0, B = 2'd1, C = 2'd2, D = 2'd3;
+
+// State transition logic
+always @(posedge clk) begin
+    if (reset) begin
+        state <= A;
+    end
+    else begin
+        state <= next_state;
+    end
+end
+
+// Next state logic
+always @(*) begin
+    case (state)
+        A: next_state = (in) ? B : A;
+        B: next_state = (in) ? B : C;
+        C: next_state = (in) ? D : A;
+        D: next_state = (in) ? B : C;
+        default: next_state = A;
+    endcase
+end
+
+// Output logic
+always @(*) begin
+    case (state)
+        D: out = 1;
+        default: out = 0;
+    endcase
+end
+
+endmodule
+
+
+Time to Generate: 12.73469066619873
+Best ranked response at iteration 0 with response number 1
+Rank of best response: 1.0
+Best response module:
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg out
+);
+
+reg [1:0] state, next_state;
+parameter A = 2'd0, B = 2'd1, C = 2'd2, D = 2'd3;
+
+// State transition logic
+always @(posedge clk) begin
+    if (reset) begin
+        state <= A;
+    end
+    else begin
+        state <= next_state;
+    end
+end
+
+// Next state logic
+always @(*) begin
+    case (state)
+        A: next_state = (in) ? B : A;
+        B: next_state = (in) ? B : C;
+        C: next_state = (in) ? D : A;
+        D: next_state = (in) ? B : C;
+        default: next_state = A;
+    endcase
+end
+
+// Output logic
+always @(*) begin
+    case (state)
+        D: out = 1;
+        default: out = 0;
+    endcase
+end
+
+endmodule
+
+

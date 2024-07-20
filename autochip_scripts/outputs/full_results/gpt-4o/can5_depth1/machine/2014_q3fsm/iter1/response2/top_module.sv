@@ -1,0 +1,92 @@
+module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+    typedef enum reg[2:0] {
+        A = 3'b000, 
+        B = 3'b001, 
+        C = 3'b010, 
+        S10 = 3'b011, 
+        S11 = 3'b100, 
+        S20 = 3'b101, 
+        S21 = 3'b110, 
+        S22 = 3'b111
+    } state_t;
+
+    state_t state, next_state;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            state <= A;
+        else
+            state <= next_state;
+    end
+
+    always @(*) begin
+        // Default next state
+        next_state = state;
+        z = 1'b0; // Default output value
+
+        case (state)
+            A: begin
+                z = 1'b0;
+                if (s) 
+                    next_state = B;
+            end
+            B: begin
+                z = 1'b0;
+                if (w) 
+                    next_state = S11;
+                else 
+                    next_state = S10;
+            end
+            C: begin
+                z = 1'b0;
+                if (w) 
+                    next_state = S11;
+                else 
+                    next_state = S10;
+            end
+            S10: begin
+                z = 1'b0;
+                if (w) 
+                    next_state = S21;
+                else 
+                    next_state = S20;
+            end
+            S11: begin
+                z = 1'b1; // Based on the pattern, z should be 1 in S11 state
+                if (w) 
+                    next_state = S22;
+                else 
+                    next_state = S21;
+            end
+            S20: begin
+                z = 1'b0;
+                next_state = B;
+            end
+            S21: begin
+                z = 1'b1; // Output high in S21 state
+                if (w) 
+                    next_state = C;
+                else 
+                    next_state = B;
+            end
+            S22: begin
+                z = 1'b1; // Output high in S22 state
+                if (w) 
+                    next_state = B;
+                else 
+                    next_state = C;
+            end
+            default: begin
+                z = 1'b0; // Default output value
+                next_state = A;
+            end
+        endcase
+    end
+endmodule

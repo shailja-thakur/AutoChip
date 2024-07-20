@@ -1,0 +1,110 @@
+module top_module (
+    input clk,
+    input reset,
+    input in,
+    output reg disc,
+    output reg flag,
+    output reg err);
+
+    // State encoding
+    typedef enum reg [2:0] {
+        IDLE = 3'b000,
+        S1 = 3'b001,  // 01
+        S2 = 3'b010,  // 011
+        S3 = 3'b011,  // 0111
+        S4 = 3'b100,  // 01111
+        S5 = 3'b101,  // 011111
+        S6 = 3'b110,  // 0111111
+        S7 = 3'b111   // 01111111 or error
+    } state_t;
+    
+    state_t current_state, next_state;
+    reg disc_next, flag_next, err_next;
+
+    // State transition
+    always @(posedge clk) begin
+        if (reset) begin
+            current_state <= IDLE;
+            disc <= 1'b0;
+            flag <= 1'b0;
+            err <= 1'b0;
+        end else begin
+            current_state <= next_state;
+            disc <= disc_next;
+            flag <= flag_next;
+            err <= err_next;
+        end
+    end
+
+    // Next state logic
+    always @(*) begin
+        // Default outputs
+        next_state = current_state;
+        disc_next = 1'b0;
+        flag_next = 1'b0;
+        err_next = 1'b0;
+
+        case (current_state)
+            IDLE: begin
+                if (in == 1'b0) begin
+                    next_state = IDLE;
+                end else begin
+                    next_state = S1;
+                end
+            end
+            S1: begin
+                if (in) begin
+                    next_state = S2;
+                end else begin
+                    next_state = IDLE;
+                end
+            end
+            S2: begin
+                if (in) begin
+                    next_state = S3;
+                end else begin
+                    next_state = IDLE;
+                end
+            end
+            S3: begin
+                if (in) begin
+                    next_state = S4;
+                end else begin
+                    next_state = IDLE;
+                end
+            end
+            S4: begin
+                if (in) begin
+                    next_state = S5;
+                end else begin
+                    next_state = IDLE;
+                end
+            end
+            S5: begin
+                if (in) begin
+                    next_state = S6;
+                end else begin
+                    disc_next = 1'b1; // 0111110 detected, discard bit
+                    next_state = IDLE;
+                end
+            end
+            S6: begin
+                if (in) begin
+                    next_state = S7;
+                end else begin
+                    flag_next = 1'b1; // 01111110 detected
+                    next_state = IDLE;
+                end
+            end
+            S7: begin
+                if (in) begin
+                    err_next = 1'b1; // 01111111... 7 or more 1s detected
+                    next_state = S7;
+                end else begin
+                    flag_next = 1'b1; // 01111110 detected
+                    next_state = IDLE;
+                end
+            end
+        endcase
+    end
+endmodule

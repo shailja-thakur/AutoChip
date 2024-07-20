@@ -1,0 +1,79 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': '```verilog
+module top_module (
+	input clk,
+	input in,
+	input reset,
+	output done
+);
+
+	reg [3:0] state;
+	reg prev_bit;
+	reg receive_byte;
+	reg [7:0] received_byte;
+	
+	always @(posedge clk or posedge reset) begin
+		if (reset) begin
+			state <= 4'b0000;
+			prev_bit <= 1'b0;
+			receive_byte <= 1'b0;
+			received_byte <= 8'b0;
+			done <= 1'b0;
+		end else begin
+			case (state)
+				0: begin // Idle
+					if (in == 1'b0 && prev_bit == 1'b1) begin
+						state <= 4'b0001; // Start bit detected, transition to receiving
+					end else begin
+						state <= 4'b0000; // Stay in idle state
+					end
+				end
+				1: begin // Receiving
+					if (in == 1'b0 && prev_bit == 1'b0) begin
+						state <= 4'b0010; // Received a data bit
+						received_byte <= {in, received_byte[7:1]}; // Shift in the received bit
+					end else if (in == 1'b0 && prev_bit == 1'b1) begin
+						state <= 4'b0011; // Stop bit detected, transition to verifying stop bit
+					end else begin
+						state <= 4'b0000; // Restart if unexpected transition
+					end
+				end
+				2: begin // Receiving
+					if (in == 1'b0 && prev_bit == 1'b0) begin
+						state <= 4'b0010; // Received a data bit
+						received_byte <= {in, received_byte[7:1]}; // Shift in the received bit
+					end else if (in == 1'b0 && prev_bit == 1'b1) begin
+						state <= 4'b0011; // Stop bit detected, transition to verifying stop bit
+					end else begin
+						state <= 4'b0000; // Restart if unexpected transition
+					end
+				end
+				3: begin // Verifying stop bit
+					if (in == 1'b1 && prev_bit == 1'b0) begin
+						state <= 4'b0100; // Valid stop bit detected, transition to done state
+						receive_byte <= 1'b1; // Signal that a byte has been received
+					end else if (in == 1'b0 && prev_bit == 1'b1) begin
+						state <= 4'b0011; // Continue checking for stop bit
+					end else begin
+						state <= 4'b0000; // Restart if unexpected transition
+					end
+				end
+				4: begin // Done state
+					if (in == 1'b1 && prev_bit == 1'b1) begin
+						state <= 4'b0000; // Transition back to idle state
+						done <= 1'b1; // Signal that a byte has been processed
+					end else begin
+						state <= 4'b0000; // Restart if unexpected transition
+					end
+				end
+			endcase
+		end
+		prev_bit <= in;
+	end
+	
+endmodule
+```
+'}
+
+ Iteration rank: -1

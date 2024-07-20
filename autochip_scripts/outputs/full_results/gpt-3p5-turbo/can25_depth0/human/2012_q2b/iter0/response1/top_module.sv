@@ -1,0 +1,22 @@
+module top_module (
+	input [5:0] y,
+	input w,
+	output Y1,
+	output Y3
+);
+
+	reg Y1_reg;
+	reg Y3_reg;
+	
+	always @(posedge w) begin
+		// Logic for Y1 flip flop
+		Y1_reg <= y[1];
+		
+		// Logic for Y3 flip flop
+		Y3_reg <= y[3];
+	end
+	
+	assign Y1 = Y1_reg;
+	assign Y3 = Y3_reg;
+	
+endmodule

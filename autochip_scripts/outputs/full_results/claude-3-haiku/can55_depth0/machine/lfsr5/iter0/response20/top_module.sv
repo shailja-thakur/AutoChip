@@ -1,0 +1,25 @@
+module top_module(
+    input clk,
+    input reset,
+    output reg [4:0] q
+);
+
+    // Define the q_next signal for the state transition
+    reg [4:0] q_next;
+
+    // State transition logic
+    always @(*) begin
+        q_next[4:1] = q[4:1]; // Assign q_next[4:1] with q[4:1]
+        q_next[0] = q[4]; // Assign q_next[0] with q[4]
+        q_next[2] = q_next[2] ^ q[0]; // XOR q_next[2] with q[0]
+    end
+
+    // Update the q register
+    always @(posedge clk) begin
+        if (reset)
+            q <= 5'h1; // Reset q to 5'h1
+        else
+            q <= q_next; // Update q with q_next
+    end
+
+endmodule

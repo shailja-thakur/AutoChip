@@ -1,0 +1,52 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, one input, and one output. Implement this state machine in Verilog. The reset state is B and reset is active-high synchronous.\n\n// B (out=1) --in=0--> A\n// B (out=1) --in=1--> B\n// A (out=0) --in=0--> B\n// A (out=0) --in=1--> A\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg out
+);
+
+localparam STATE_A = 1'b0, STATE_B = 1'b1;
+reg state;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= STATE_B;
+        out <= 1'b1;
+    end
+    else begin
+        case (state)
+            STATE_A: begin
+                if (in) begin
+                    state <= STATE_A;
+                    out <= 1'b0;
+                end
+                else begin
+                    state <= STATE_B;
+                    out <= 1'b0;
+                end
+            end
+            STATE_B: begin
+                if (in) begin
+                    state <= STATE_B;
+                    out <= 1'b1;
+                end
+                else begin
+                    state <= STATE_A;
+                    out <= 1'b1;
+                end
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+The provided Verilog module implements the specified Moore state machine. The module has three inputs: `clk`, `in`, and `reset`, and one output: `out`. The state machine has two states, `STATE_A` and `STATE_B`, with `STATE_B` being the reset state.
+
+In the always block, the state machine transitions between the two states based on the input `in` and the current state. When the reset signal is asserted, the state machine transitions to `STATE_B` and sets the output `out` to 1. The output `out` is set to 1 when the state machine is in `STATE_B`, and 0 when the state machine is in `STATE_A`.'}
+
+ Iteration rank: 0.6391304347826087

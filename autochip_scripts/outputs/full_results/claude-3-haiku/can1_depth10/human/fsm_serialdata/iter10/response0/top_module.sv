@@ -1,0 +1,69 @@
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg [7:0] out_byte,
+    output reg done
+);
+
+localparam IDLE = 2'b00;
+localparam START = 2'b01;
+localparam DATA = 2'b10;
+localparam STOP = 2'b11;
+
+reg [1:0] state;
+reg [3:0] bit_count;
+reg [7:0] data_reg;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= IDLE;
+        bit_count <= 0;
+        data_reg <= 0;
+        done <= 0;
+        out_byte <= 0;
+    end else begin
+        case (state)
+            IDLE: begin
+                if (in == 0) begin
+                    state <= START;
+                    bit_count <= 1; // Start counting from 1 for the start bit
+                    data_reg <= 0;
+                end
+                done <= 0;
+            end
+            START: begin
+                if (bit_count == 1 && in == 0) begin
+                    state <= DATA;
+                    bit_count <= 1; // Reset bit_count for data bits
+                end else if (bit_count > 1 && in == 1) begin
+                    state <= IDLE;
+                    bit_count <= 0;
+                end else begin
+                    bit_count <= bit_count + 1;
+                end
+            end
+            DATA: begin
+                data_reg[bit_count-1] <= in; // Assign the input bit to the correct position in data_reg
+                if (bit_count == 8) begin
+                    state <= STOP;
+                    bit_count <= 1; // Reset bit_count for stop bit
+                end else begin
+                    bit_count <= bit_count + 1;
+                end
+            end
+            STOP: begin
+                if (in == 1) begin
+                    out_byte <= data_reg;
+                    done <= 1;
+                    state <= IDLE;
+                end else begin
+                    state <= IDLE;
+                end
+                bit_count <= 0;
+            end
+        endcase
+    end
+end
+
+endmodule

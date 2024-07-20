@@ -1,0 +1,40 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// A dual-edge triggered flip-flop is triggered on both edges of the clock. However, FPGAs don't have dual-edge triggered flip-flops, and always @(posedge clk or negedge clk) is not accepted as a legal sensitivity list. Build a circuit that functionally behaves like a dual-edge triggered flip-flop.\n\nmodule top_module(\n\tinput clk,\n\tinput d,\n\toutput reg q);"}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input d,
+    output reg q
+);
+
+    reg q_reg1, q_reg2;
+
+    // Capture the input data on both clock edges
+    always @(posedge clk) begin
+        q_reg1 <= d;
+    end
+
+    always @(negedge clk) begin
+        q_reg2 <= d;
+    end
+
+    // Update the output based on the two registered values
+    always @(*) begin
+        if (clk) begin
+            q <= q_reg1;
+        end else begin
+            q <= q_reg2;
+        end
+    end
+
+endmodule
+```
+
+The key steps are:
+
+1. Use two separate registers, `q_reg1` and `q_reg2`, to capture the input data on the positive and negative clock edges, respectively.
+2. In the final output logic, check the current clock state to select between `q_reg1` and `q_reg2` to produce the dual-edge triggered behavior.
+
+This approach effectively mimics the behavior of a dual-edge triggered flip-flop using standard single-edge triggered flip-flops available in FPGAs.'}
+
+ Iteration rank: 1.0

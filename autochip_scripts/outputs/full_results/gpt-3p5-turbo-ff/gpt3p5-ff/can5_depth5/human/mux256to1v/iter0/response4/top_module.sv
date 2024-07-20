@@ -1,0 +1,47 @@
+module top_module (
+	input [1023:0] in,
+	input [7:0] sel,
+	output [3:0] out
+);
+	// Parameter to define the number of bits in each input
+	parameter WIDTH = 4;
+	
+	// Calculate the number of inputs
+	parameter NUM_INPUTS = 256;
+	
+	// Calculate the number of bits to select each input
+	parameter SELECT_BITS = $clog2(NUM_INPUTS);
+	
+	// Create an array of wires to store the selected inputs
+	wire [WIDTH-1:0] selected_input [NUM_INPUTS-1:0];
+	
+	// Generate the selected inputs using a loop
+	generate
+		genvar i;
+		for (i = 0; i < NUM_INPUTS; i = i + 1) begin : select_input
+			assign selected_input[i] = in[i*WIDTH +: WIDTH];
+		end
+	endgenerate
+	
+	// Create a wire to store the final output
+	wire [WIDTH-1:0] output_wire;
+	
+	// Create a case statement to select the correct input based on the value of sel
+	always @(*) begin
+		case (sel)
+			0: output_wire = selected_input[0];
+			1: output_wire = selected_input[1];
+			2: output_wire = selected_input[2];
+			3: output_wire = selected_input[3];
+			4: output_wire = selected_input[4];
+			5: output_wire = selected_input[5];
+			6: output_wire = selected_input[6];
+			7: output_wire = selected_input[7];
+			//...
+			default: output_wire = 0; // Default case if sel is out of range
+		endcase
+	end
+	
+	// Assign the output wire to the output signal
+	assign out = output_wire;
+endmodule

@@ -1,0 +1,49 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '//  This Verilog module implements a state machine with four states, A, B, C, and D. The state machine is triggered by the clock signal, clk, and the input signal, in. The output signal, out, is set to 1 when the state machine is in state D. The state machine is reset to state A when the reset signal, areset, is triggered.   The state machine is implemented using a 2-bit register, state, and a combinational logic block. The combinational logic block is used to determine the next state of the state machine based on the current state and the input signal. The logic is as follows:   If the current state is A, then the next state will be B if the input signal is 1, and A if the input signal is 0.   If the current state is B, then the next state will be B if the input signal is 1, and C if the input signal is 0.   If the current state is C, then the next state will be D if the input signal is 1, and A if the input signal is 0.   If the current state is D, then the next state will be B if the input signal is 1, and C if the input signal is 0.   The state register is updated on the rising edge of the clock signal, clk, and is reset to state A on the rising edge of the reset signal, areset. The output signal, out, is set to 1 when the state machine is in state D.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+    // Define States
+    typedef enum reg [1:0] {
+        A = 2'b00,
+        B = 2'b01,
+        C = 2'b10,
+        D = 2'b11
+    } state_t;
+
+    // State Register
+    reg [1:0] state, next_state;
+
+    // State Transition Logic (Combinational Logic)
+    always @(*) begin
+        case (state)
+            A: next_state = in ? B : A;
+            B: next_state = in ? B : C;
+            C: next_state = in ? D : A;
+            D: next_state = in ? B : C;
+            default: next_state = A;
+        endcase
+    end
+
+    // State Register Update Logic (Sequential Logic)
+    always @(posedge clk or posedge areset) begin
+        if (areset) 
+            state <= A;
+        else 
+            state <= next_state;
+    end
+
+    // Output Logic
+    always @(state) begin
+        out = (state == D);
+    end
+
+endmodule
+```'}
+
+ Iteration rank: 1.0

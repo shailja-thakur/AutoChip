@@ -1,0 +1,23 @@
+module top_module(
+    input clk,
+    input shift_ena,
+    input count_ena,
+    input data,
+    output reg [3:0] q
+);
+
+always @(posedge clk) begin
+    if (shift_ena) begin
+        // Shift in the new data from the MSB
+        q <= {data, q[3:1]};
+    end
+    else if (count_ena) begin
+        // Decrement the counter
+        if (q == 0)
+            q <= 4'b1111; // Reset to maximum count if counter reaches 0
+        else
+            q <= q - 1;
+    end
+end
+
+endmodule

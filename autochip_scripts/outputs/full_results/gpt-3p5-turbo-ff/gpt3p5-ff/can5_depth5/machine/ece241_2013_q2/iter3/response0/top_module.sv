@@ -1,0 +1,23 @@
+module top_module (
+  input a,
+  input b,
+  input c,
+  input d,
+  output out_sop,
+  output out_pos
+);
+
+  wire pos0, pos1;
+  
+  assign out_sop = (c & d) | ((!a & !b) & c);
+  assign pos0 = c & ((!b & d) | (!a & b));
+  assign pos1 = c & (!a & d);
+  
+  always @(*) begin
+    if (pos0 == pos1)
+      out_pos = pos0;
+    else
+      out_pos = 1'bx;
+  end
+
+endmodule

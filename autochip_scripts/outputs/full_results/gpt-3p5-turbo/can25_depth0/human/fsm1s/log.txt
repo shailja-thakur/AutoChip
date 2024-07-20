@@ -1,0 +1,124 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // This is a Moore state machine with two states, one input, and one output. Implement this state machine in Verilog. The reset state is B and reset is active-high synchronous.
+
+// B (out=1) --in=0--> A
+// B (out=1) --in=1--> B
+// A (out=0) --in=0--> B
+// A (out=0) --in=1--> A
+
+module top_module (
+	input clk,
+	input in,
+	input reset,
+	output out
+);
+assistant: module top_module (
+	input clk,
+	input in,
+	input reset,
+	output out
+);
+
+// Define states
+parameter B = 1'b0;
+parameter A = 1'b1;
+
+// Define current state and next state
+reg state_reg, state_next;
+
+// Define output
+reg out_reg;
+
+// Synchronous reset
+always @(posedge clk) begin
+	if (reset)
+		state_reg <= B;
+	else
+		state_reg <= state_next;
+end
+
+// Combinational logic
+always @* begin
+	case (state_reg)
+		B: begin
+			if (in)
+				state_next = B;
+			else
+				state_next = A;
+			
+			out_reg = 1'b1;
+		end
+		A: begin
+			if (in)
+				state_next = A;
+			else
+				state_next = B;
+			
+			out_reg = 1'b0;
+		end
+	endcase
+end
+
+// Output assignment
+assign out = out_reg;
+
+endmodule
+
+
+Time to Generate: 9.04155707359314
+Best ranked response at iteration 0 with response number 22
+Rank of best response: 1.0
+Best response module:
+module top_module (
+	input clk,
+	input in,
+	input reset,
+	output out
+);
+
+// Define states
+parameter B = 1'b0;
+parameter A = 1'b1;
+
+// Define current state and next state
+reg state_reg, state_next;
+
+// Define output
+reg out_reg;
+
+// Synchronous reset
+always @(posedge clk) begin
+	if (reset)
+		state_reg <= B;
+	else
+		state_reg <= state_next;
+end
+
+// Combinational logic
+always @* begin
+	case (state_reg)
+		B: begin
+			if (in)
+				state_next = B;
+			else
+				state_next = A;
+			
+			out_reg = 1'b1;
+		end
+		A: begin
+			if (in)
+				state_next = A;
+			else
+				state_next = B;
+			
+			out_reg = 1'b0;
+		end
+	endcase
+end
+
+// Output assignment
+assign out = out_reg;
+
+endmodule
+
+

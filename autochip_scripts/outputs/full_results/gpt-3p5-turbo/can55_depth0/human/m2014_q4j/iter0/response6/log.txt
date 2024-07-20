@@ -1,0 +1,24 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Implement a 4-bit adder with full adders. The output sum should include the overflow bit.\n\nmodule top_module (\n\tinput [3:0] x,\n\tinput [3:0] y,\n\toutput [4:0] sum\n);'}
+{'assistant': 'module top_module (
+	input [3:0] x,
+	input [3:0] y,
+	output [4:0] sum
+);
+
+	// Internal signals
+	wire [3:0] c;
+	wire [3:0] s;
+
+	// Full adders
+	full_adder fa0(x[0], y[0], 1'b0, s[0], c[0]); // The first full adder adds the LSBs with no carry in
+	full_adder fa1(x[1], y[1], c[0], s[1], c[1]); // The second full adder adds the next LSBs with the carry out from the previous adder
+	full_adder fa2(x[2], y[2], c[1], s[2], c[2]); // The third full adder adds the next LSBs with the carry out from the previous adder
+	full_adder fa3(x[3], y[3], c[2], s[3], c[3]); // The fourth full adder adds the MSBs with the carry out from the previous adder
+	
+	// Assign the sum outputs
+	assign {c[3], s[3:0]} = sum;
+
+endmodule'}
+
+ Iteration rank: -1

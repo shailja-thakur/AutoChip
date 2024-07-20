@@ -1,0 +1,111 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    // State encoding
+    typedef enum logic [2:0] {
+        IDLE,       // Waiting for start bit
+        START,      // Start bit detected, waiting for data bits
+        BIT0,       // Waiting for bit 0
+        BIT1,       // Waiting for bit 1
+        BIT2,       // Waiting for bit 2
+        BIT3,       // Waiting for bit 3
+        BIT4,       // Waiting for bit 4
+        BIT5,       // Waiting for bit 5
+        BIT6,       // Waiting for bit 6
+        BIT7,       // Waiting for bit 7
+        STOP,       // Waiting for stop bit
+        ERROR       // Error state
+    } state_t;
+    
+    state_t state, next_state;
+    reg [2:0] bit_counter;
+    
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_counter <= 3'b000;
+        end else begin
+            state <= next_state;
+            if (state >= BIT0 && state <= BIT7)
+                bit_counter <= bit_counter + 1;
+            else
+                bit_counter <= 3'b000;
+        end
+    end
+    
+    always_comb begin
+        done = 1'b0;
+        next_state = state; // Default is to remain in current state
+
+        case (state)
+            IDLE: begin
+                if (in == 1'b0) // Start bit detected
+                    next_state = START;
+            end
+
+            START: begin
+                next_state = BIT0;
+            end
+
+            BIT0: begin
+                next_state = BIT1;
+            end
+
+            BIT1: begin
+                next_state = BIT2;
+            end
+
+            BIT2: begin
+                next_state = BIT3;
+            end
+
+            BIT3: begin
+                next_state = BIT4;
+            end
+
+            BIT4: begin
+                next_state = BIT5;
+            end
+
+            BIT5: begin
+                next_state = BIT6;
+            end
+
+            BIT6: begin
+                next_state = BIT7;
+            end
+
+            BIT7: begin
+                next_state = STOP;
+            end
+
+            STOP: begin
+                if (in == 1'b1) begin
+                    done = 1'b1;
+                    next_state = IDLE; // Successful byte received, go back to idle
+                end else begin
+                    next_state = ERROR; // Error in stop bit
+                end
+            end
+
+            ERROR: begin
+                if (in == 1'b1) // Wait for line to return to idle
+                    next_state = IDLE;
+            end
+
+            default: begin
+                next_state = IDLE;
+            end
+        endcase
+    end
+endmodule
+```'}
+
+ Iteration rank: -1

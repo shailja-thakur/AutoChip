@@ -1,0 +1,70 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': '```verilog 
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output done
+);
+
+    // State definition
+    typedef enum logic [2:0] {
+        IDLE,
+        START_BIT,
+        DATA_BITS,
+        STOP_BIT
+    } state_t;
+
+    // Internal signals
+    reg [2:0] current_state;
+    reg [7:0] received_byte;
+    reg found_start_bit;
+    reg [2:0] bit_count;
+
+    // Output signal assignment
+    assign done = (current_state == STOP_BIT);
+
+    // State machine logic
+    always @(posedge clk) begin
+        if (reset) begin
+            current_state <= IDLE;
+            received_byte <= 8'b0;
+            found_start_bit <= 0;
+            bit_count <= 0;
+        end else begin
+            case (current_state)
+                IDLE:
+                    if (in == 1'b0) begin
+                        current_state <= START_BIT;
+                        received_byte <= 8'b0;
+                        found_start_bit <= 1;
+                        bit_count <= 0;
+                    end
+                START_BIT:
+                    if (found_start_bit) begin
+                        current_state <= DATA_BITS;
+                        received_byte[bit_count] <= in;
+                        bit_count <= bit_count + 1;
+                    end
+                DATA_BITS:
+                    if (bit_count == 7) begin
+                        current_state <= STOP_BIT;
+                        received_byte[bit_count] <= in;
+                    end else begin
+                        current_state <= DATA_BITS;
+                        received_byte[bit_count] <= in;
+                        bit_count <= bit_count + 1;
+                    end
+                STOP_BIT:
+                    if (in == 1'b1) begin
+                        current_state <= IDLE;
+                    end
+            endcase
+        end
+    end
+
+endmodule
+```'}
+
+ Iteration rank: 0.8342541436464088

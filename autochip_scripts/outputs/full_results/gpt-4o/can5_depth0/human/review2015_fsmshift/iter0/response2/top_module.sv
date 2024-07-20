@@ -1,0 +1,19 @@
+module top_module(
+    input clk,
+    input reset,
+    output reg shift_ena
+);
+    reg [2:0] count;  // 3-bit counter to count up to 4
+
+    always @(posedge clk) begin
+        if (reset) begin
+            count <= 3'b000;  // Reset count
+            shift_ena <= 1'b1;  // Enable shift register
+        end else if (shift_ena && count < 4) begin
+            count <= count + 1;  // Increment counter
+            if (count == 3'b011)  // After 4 cycles
+                shift_ena <= 1'b0;  // Disable shift register
+        end
+    end
+
+endmodule

@@ -1,0 +1,60 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, two inputs, and one output. Implement this state machine in Verilog. Reset is an active-high asynchronous reset to state OFF.\n\n// OFF (out=0) --j=0--> OFF\n// OFF (out=0) --j=1--> ON\n// ON (out=1) --k=0--> ON\n// ON (out=1) --k=1--> OFF\n\nmodule top_module (\n\tinput clk,\n\tinput j,\n\tinput k,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input j,
+    input k,
+    input areset,
+    output reg out
+);
+
+localparam STATE_OFF = 1'b0;
+localparam STATE_ON = 1'b1;
+
+reg state;
+
+always @(posedge clk or posedge areset) begin
+    if (areset) begin
+        state <= STATE_OFF;
+        out <= 1'b0;
+    end
+    else begin
+        case (state)
+            STATE_OFF: begin
+                if (j) begin
+                    state <= STATE_ON;
+                    out <= 1'b1;
+                end
+                else begin
+                    state <= STATE_OFF;
+                    out <= 1'b0;
+                end
+            end
+            STATE_ON: begin
+                if (k) begin
+                    state <= STATE_OFF;
+                    out <= 1'b0;
+                end
+                else begin
+                    state <= STATE_ON;
+                    out <= 1'b1;
+                end
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+The provided Verilog module is correct and implements the specified Moore state machine. The module has the following features:
+
+1. The module has four input ports: `clk`, `j`, `k`, and `areset`.
+2. The module has one output port: `out`.
+3. The module uses two localparam constants `STATE_OFF` and `STATE_ON` to represent the two states of the state machine.
+4. The module uses a single register `state` to store the current state of the state machine.
+5. The `always` block inside the module handles the state transitions and output updates based on the current state and input values.
+6. The asynchronous reset `areset` sets the state to `STATE_OFF` and the output `out` to 0.'}
+
+ Iteration rank: 1.0

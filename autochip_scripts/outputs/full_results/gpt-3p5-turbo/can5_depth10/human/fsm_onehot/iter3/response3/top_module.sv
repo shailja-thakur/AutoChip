@@ -1,0 +1,21 @@
+module top_module (
+  input in,
+  input [9:0] state,
+  output [9:0] next_state,
+  output out1,
+  output out2);
+  
+  // Define internal wires/regs
+  wire S0, S1, S2, S3, S4, S5, S6, S7, S8, S9;
+  
+  // Assign next_state[9:0] based on state[9:0] and in
+  assign next_state = {state[7], state[6], state[9], state[1], state[7], state[4], 
+                      state[0], state[5], state[2], state[8]};
+  
+  // Assign out1
+  assign out1 = ((state[9] & state[8]) | state[4]) & ~state[6];
+  
+  // Assign out2
+  assign out2 = ((state[9] | state[8]) & state[7]) & ~state[6];
+  
+endmodule

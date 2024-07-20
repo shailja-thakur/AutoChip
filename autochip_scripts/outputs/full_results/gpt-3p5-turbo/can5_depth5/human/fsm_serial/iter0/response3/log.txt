@@ -1,0 +1,99 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': 'module top_module (
+	input clk,
+	input in,
+	input reset,
+	output done
+);
+	
+	// State definitions
+	typedef enum logic [2:0] {
+		IDLE,
+		START_BIT,
+		DATA_BITS,
+		STOP_BIT
+	} state_t;
+	
+	// Register declarations
+	reg [2:0] current_state;
+	reg [7:0] received_data;
+	reg [7:0] expected_data;
+	reg [2:0] bit_counter;
+	reg done;
+	
+	// Synchronous reset
+	always_ff @(posedge clk) begin
+		if (reset) begin
+			current_state <= IDLE;
+			received_data <= 8'h00;
+			expected_data <= 8'h00;
+			bit_counter <= 3'b0;
+		end else begin
+			current_state <= next_state;
+			received_data <= next_received_data;
+			expected_data <= next_expected_data;
+			bit_counter <= next_bit_counter;
+		end
+	end
+	
+	// Combinational logic
+	always_comb begin
+		case (current_state)
+			IDLE: begin
+				if (in == 1'b0) begin
+					next_state = START_BIT;
+				end else begin
+					next_state = IDLE;
+				end
+				next_received_data = 8'h00;
+				next_expected_data = 8'h00;
+				next_bit_counter = 3'b0;
+			end
+			START_BIT: begin
+				if (in == 1'b0) begin
+					next_state = DATA_BITS;
+				end else begin
+					next_state = START_BIT;
+				end
+				next_received_data = 8'h00;
+				next_expected_data = 8'h00;
+				next_bit_counter = 3'b0;
+			end
+			DATA_BITS: begin
+				if (bit_counter == 3'b0) begin
+					next_state = STOP_BIT;
+				end else begin
+					next_state = DATA_BITS;
+				end
+				next_received_data = {in, received_data[7:1]};
+				next_expected_data = {1'b0, expected_data[7:1]};
+				next_bit_counter = bit_counter + 1;
+			end
+			STOP_BIT: begin
+				if (in == 1'b1 && expected_data == 8'hFE) begin
+					next_state = IDLE;
+					next_received_data = 8'h00;
+					next_expected_data = 8'h00;
+					next_bit_counter = 3'b0;
+					done = 1'b1;
+				end else begin
+					next_state = STOP_BIT;
+					next_received_data = {in, received_data[7:1]};
+					next_expected_data = {1'b0, expected_data[7:1]};
+					next_bit_counter = bit_counter + 1;
+					done = 1'b0;
+				end
+			end
+			default: begin
+				next_state = IDLE;
+				next_received_data = 8'h00;
+				next_expected_data = 8'h00;
+				next_bit_counter = 3'b0;
+			end
+		endcase
+	end
+	
+endmodule'}
+
+ Iteration rank: -1

@@ -1,0 +1,91 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+localparam IDLE = 3'd0;
+localparam START = 3'd1;
+localparam DATA = 3'd2;
+localparam STOP = 3'd3;
+localparam ERROR = 3'd4;
+
+reg [2:0] state;
+reg [3:0] bit_count;
+reg [7:0] data_reg;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= IDLE;
+        bit_count <= 0;
+        data_reg <= 0;
+        done <= 0;
+    end else begin
+        case (state)
+            IDLE: begin
+                if (in == 1'b0) begin // Start bit detected
+                    state <= START;
+                    bit_count <= 0;
+                end
+            end
+            START: begin
+                if (bit_count == 4'd0) begin
+                    bit_count <= bit_count + 1;
+                end else begin
+                    bit_count <= bit_count + 1;
+                    if (bit_count == 4'd9) begin
+                        state <= DATA;
+                    end
+                end
+            end
+            DATA: begin
+                if (bit_count == 4'd0) begin
+                    data_reg[0] <= in;
+                end else begin
+                    data_reg <= {data_reg[6:0], in};
+                    bit_count <= bit_count + 1;
+                    if (bit_count == 4'd8) begin
+                        state <= STOP;
+                    end
+                end
+            end
+            STOP: begin
+                if (bit_count == 4'd0) begin
+                    bit_count <= bit_count + 1;
+                end else begin
+                    bit_count <= bit_count + 1;
+                    if (in == 1'b1 && bit_count == 4'd10) begin
+                        state <= IDLE;
+                        done <= 1'b1;
+                    end else if (in != 1'b1) begin
+                        state <= ERROR;
+                    end
+                end
+            end
+            ERROR: begin
+                if (in == 1'b1) begin
+                    state <= IDLE;
+                end
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+The provided Verilog code implements a finite state machine (FSM) that identifies when bytes have been correctly received from a serial communication protocol. The FSM has five states:
+
+1. `IDLE`: Waits for the start bit (0) to be detected.
+2. `START`: Checks the start bit and waits for the 8 data bits.
+3. `DATA`: Shifts in the 8 data bits, one bit per clock cycle.
+4. `STOP`: Checks the stop bit (1) and verifies that it is correct. If the stop bit is correct, the `done` signal is set high.
+5. `ERROR`: If the stop bit is not correct, the FSM enters this state and waits for the line to go high (1) before returning to the `IDLE` state.
+
+The FSM also includes a synchronous reset functionality, where the `reset` input resets the state machine to the `IDLE` state and clears the `data_reg` and `done` signals.'}
+
+ Iteration rank: 0.958011049723757

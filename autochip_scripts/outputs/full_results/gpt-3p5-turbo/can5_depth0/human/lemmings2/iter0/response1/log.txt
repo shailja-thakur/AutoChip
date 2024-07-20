@@ -1,0 +1,95 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The game Lemmings involves critters with fairly simple brains. So simple that we are going to model it using a finite state machine. In the Lemmings\' 2D world, Lemmings can be in one of two states: walking left (walk_left is 1) or walking right (walk_right is 1). It will switch directions if it hits an obstacle. In particular, if a Lemming is bumped on the left (by receiving a 1 on bump_left), it will walk right. If it\'s bumped on the right (by receiving a 1 on bump_right), it will walk left. If it\'s bumped on both sides at the same time, it will still switch directions. \n// In addition to walking left and right and changing direction when bumped, when ground=0, the Lemming will fall and say "aaah!". When the ground reappears (ground=1), the Lemming will resume walking in the same direction as before the fall. Being bumped while falling does not affect the walking direction, and being bumped in the same cycle as ground disappears (but not yet falling), or when the ground reappears while still falling, also does not affect the walking direction.\n// Implement a Moore state machine that models this behaviour. areset is positive edge triggered asynchronous reseting the Lemming machine to walk left.\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput bump_left,\n\tinput bump_right,\n\tinput ground,\n\toutput walk_left,\n\toutput walk_right,\n\toutput aaah\n);'}
+{'assistant': 'module top_module (    // Declaration of module top_module with input and output ports
+	input clk,         // Clock signal
+	input areset,      // Asynchronous reset signal
+	input bump_left,   // Input signal for bump on the left
+	input bump_right,  // Input signal for bump on the right
+	input ground,      // Input signal for ground
+	output walk_left,  // Output signal for walking left
+	output walk_right, // Output signal for walking right
+	output aaah        // Output signal for aaah
+);
+
+	reg [1:0] state;     // State register to hold the current state
+	reg next_walk_left;  // Next state for walking left
+	reg next_walk_right; // Next state for walking right
+
+	// Moore state machine states
+	parameter LEFT = 2'b00;
+	parameter RIGHT = 2'b01;
+	parameter FALLING = 2'b10;
+
+	// Assign the initial state of the machine
+	always @(posedge clk or posedge areset) begin
+		if (areset) begin
+			state <= LEFT;
+		end else begin
+			state <= next_state;
+		end
+	end
+
+	// Assign the next state based on the current state and input signals
+	always @(*) begin
+		next_walk_left = 1'b0;
+		next_walk_right = 1'b0;
+
+		case (state)
+			LEFT: begin
+				if (bump_right) begin
+					next_state = RIGHT;
+				end else begin
+					next_state = LEFT;
+				end
+			end
+			RIGHT: begin
+				if (bump_left) begin
+					next_state = LEFT;
+				end else begin
+					next_state = RIGHT;
+				end
+			end
+			FALLING: begin
+				if (ground) begin
+					if (state == LEFT) begin
+						next_state = LEFT;
+					end else begin
+						next_state = RIGHT;
+					end
+				end else begin
+					next_state = FALLING;
+				end
+			end
+			default: next_state = LEFT;
+		endcase
+	end
+
+	// Assign the output signals based on the current state
+	always @(*) begin
+		case (state)
+			LEFT: begin
+				walk_left = 1'b1;
+				walk_right = 1'b0;
+				aaah = 1'b0;
+			end
+			RIGHT: begin
+				walk_left = 1'b0;
+				walk_right = 1'b1;
+				aaah = 1'b0;
+			end
+			FALLING: begin
+				walk_left = 1'b0;
+				walk_right = 1'b0;
+				aaah = 1'b1;
+			end
+			default: begin
+				walk_left = 1'b1;
+				walk_right = 1'b0;
+				aaah = 1'b0;
+			end
+		endcase
+	end
+
+endmodule'}
+
+ Iteration rank: -1

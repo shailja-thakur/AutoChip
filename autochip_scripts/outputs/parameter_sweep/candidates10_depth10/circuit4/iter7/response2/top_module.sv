@@ -1,0 +1,21 @@
+module top_module (
+    input wire a,
+    input wire b,
+    input wire c,
+    input wire d,
+    output reg q
+);
+
+    always @(*)
+    begin
+        if (a & b & c & d) 
+            q = 1'b0;
+        else if (~a & ~b & c & d)
+            q = 1'b0;
+        else if (~a & b & c & ~d)
+            q = 1'b0;
+        else
+            q = 1'b1;
+    end
+
+endmodule

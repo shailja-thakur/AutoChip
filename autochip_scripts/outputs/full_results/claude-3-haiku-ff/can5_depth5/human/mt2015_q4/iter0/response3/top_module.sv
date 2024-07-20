@@ -1,0 +1,31 @@
+module top_module(
+    input x,
+    input y,
+    output z
+);
+
+wire z_a1, z_b1, z_a2, z_b2;
+
+// Module A
+module A(
+    input a,
+    input b,
+    output c
+);
+assign c = (a ^ b) & a;
+endmodule
+module B(
+    input d,
+    input e,
+    output f
+);
+reg f;
+always @(d, e) begin
+    case ({d, e})
+        2'b00: f = 1'b1;
+        2'b01: f = 1'b0;
+        2'b10: f = 1'b0;
+        2'b11: f = 1'b1;
+    endcase
+end
+endmodule

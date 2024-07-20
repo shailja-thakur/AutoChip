@@ -1,0 +1,18 @@
+module top_module (
+    input a,
+    input b,
+    input c,
+    input d,
+    output out_sop,
+    output out_pos
+);
+
+    // Generate the minterms for the numbers specified: 2, 7, and 15
+    assign out_sop = (~a & ~b & c & ~d) | (~a & b & c & d) | (a & b & c & d);
+
+    // Product-of-sums (POS) for the specified numbers: 0, 1, 4, 5, 6, 9, 10, 13, 14
+    assign out_pos = (a | b | c | d) & (a | b | c | ~d) & (a | b | ~c | d) & 
+                     (a | b | ~c | ~d) & (a | ~b | c | d) & (a | ~b | c | ~d) & 
+                     (a | ~b | ~c | d) & (~a | b | c | d) & (~a | b | c | ~d);
+
+endmodule

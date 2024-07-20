@@ -1,0 +1,51 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The game Lemmings involves critters with fairly simple brains. So simple that we are going to model it using a finite state machine. In the Lemmings' 2D world, Lemmings can be in one of two states: walking left (walk_left is 1) or walking right (walk_right is 1). It will switch directions if it hits an obstacle. In particular, if a Lemming is bumped on the left (by receiving a 1 on bump_left), it will walk right. If it's bumped on the right (by receiving a 1 on bump_right), it will walk left. If it's bumped on both sides at the same time, it will still switch directions. Implement a Moore state machine with two states, two inputs, and one output (internal to the module) that models this behaviour. areset is positive edge triggered asynchronous reseting the Lemming machine to walk left.\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput bump_left,\n\tinput bump_right,\n\toutput walk_left,\n\toutput walk_right\n);"}
+{'assistant': 'module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    output walk_left,
+    output walk_right
+);
+    
+    reg [1:0] state;
+    reg walk_left;
+    reg walk_right;
+    
+    always @(posedge clk, posedge areset) begin
+        if (areset) begin
+            state <= 2'b10;  // Initial state: walking left
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+        end else begin
+            case(state)
+                2'b10: begin  // Walking left
+                    if (bump_right) begin
+                        state <= 2'b01;
+                        walk_left <= 1'b0;
+                        walk_right <= 1'b1;
+                    end else if (bump_left || (bump_left && bump_right)) begin
+                        state <= 2'b01;
+                        walk_left <= 1'b0;
+                        walk_right <= 1'b1;
+                    end
+                end
+                
+                2'b01: begin  // Walking right
+                    if (bump_left) begin
+                        state <= 2'b10;
+                        walk_left <= 1'b1;
+                        walk_right <= 1'b0;
+                    end else if (bump_right || (bump_left && bump_right)) begin
+                        state <= 2'b10;
+                        walk_left <= 1'b1;
+                        walk_right <= 1'b0;
+                    end
+                end
+            endcase
+        end
+    end
+endmodule'}
+
+ Iteration rank: -1

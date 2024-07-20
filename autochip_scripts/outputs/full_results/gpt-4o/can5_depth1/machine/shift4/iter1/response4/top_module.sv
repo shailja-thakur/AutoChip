@@ -1,0 +1,19 @@
+module top_module(
+	input clk,
+	input areset,
+	input load,
+	input ena,
+	input [3:0] data,
+	output reg [3:0] q);
+
+	always @(posedge clk or posedge areset) begin
+		if (areset) begin
+			q <= 4'd0;
+		end else if (load) begin
+			q <= data;
+		end else if (ena) begin
+			q <= {q[2:0], 1'b0}; // Shift left by 1 bit, with 0 filling the LSB
+		end
+	end
+
+endmodule

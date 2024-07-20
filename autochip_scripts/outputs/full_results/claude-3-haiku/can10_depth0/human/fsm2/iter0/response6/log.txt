@@ -1,0 +1,66 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, two inputs, and one output. Implement this state machine in Verilog. Reset is an active-high asynchronous reset to state OFF.\n\n// OFF (out=0) --j=0--> OFF\n// OFF (out=0) --j=1--> ON\n// ON (out=1) --k=0--> ON\n// ON (out=1) --k=1--> OFF\n\nmodule top_module (\n\tinput clk,\n\tinput j,\n\tinput k,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input j,
+    input k,
+    input areset,
+    output reg out
+);
+
+    // Define the states
+    parameter OFF = 1'b0;
+    parameter ON = 1'b1;
+
+    // Define the current state register
+    reg state;
+
+    always @(posedge clk, posedge areset) begin
+        if (areset) begin
+            state <= OFF;
+            out <= 1'b0;
+        end
+        else begin
+            case (state)
+                OFF: begin
+                    out <= 1'b0;
+                    if (j) begin
+                        state <= ON;
+                    end
+                    else begin
+                        state <= OFF;
+                    end
+                end
+                ON: begin
+                    out <= 1'b1;
+                    if (k) begin
+                        state <= OFF;
+                    end
+                    else begin
+                        state <= ON;
+                    end
+                end
+                default: begin
+                    state <= OFF;
+                    out <= 1'b0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+```
+
+The corrected Verilog module implements the given Moore state machine specification. Here are the key points:
+
+1. The module has an asynchronous active-high reset `areset` that resets the state to `OFF` and the output `out` to 0.
+2. The module has two states `OFF` and `ON` defined as parameters.
+3. The current state is stored in the `state` register.
+4. The `always` block handles the state transitions and output logic:
+   - On reset, the state is set to `OFF` and the output is set to 0.
+   - In the `OFF` state, if `j` is 1, the state transitions to `ON`, otherwise it stays in `OFF`. The output is 0.
+   - In the `ON` state, if `k` is 1, the state transitions to `OFF`, otherwise it stays in `ON`. The output is 1.
+   - The `default` case ensures that the state is initialized to `OFF` and the output is 0.'}
+
+ Iteration rank: 0.6763485477178424

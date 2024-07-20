@@ -1,0 +1,56 @@
+module top_module (
+	input [5:0] y,
+	input w,
+	output Y1,
+	output Y3
+);
+
+	// Define the state flip-flops
+	reg Y1_reg;
+	reg Y3_reg;
+	
+	always @(posedge w)
+	begin
+		case (y)
+			6'b000001: begin // State A
+				Y1_reg <= 1'b0;
+				Y3_reg <= 1'b0;
+			end
+			
+			6'b000010: begin // State B
+				Y1_reg <= 1'b1;
+				Y3_reg <= 1'b0;
+			end
+			
+			6'b000100: begin // State C
+				Y1_reg <= 1'b1;
+				Y3_reg <= 1'b1;
+			end
+			
+			6'b001000: begin // State D
+				Y1_reg <= 1'b0;
+				Y3_reg <= 1'b0;
+			end
+			
+			6'b010000: begin // State E
+				Y1_reg <= 1'b0;
+				Y3_reg <= 1'b1;
+			end
+			
+			6'b100000: begin // State F
+				Y1_reg <= 1'b1;
+				Y3_reg <= 1'b1;
+			end
+			
+			default: begin // Catch-all default case
+				Y1_reg <= 1'b0;
+				Y3_reg <= 1'b0;
+			end
+		endcase
+	end
+	
+	// Assign the flip-flop outputs to the module outputs
+	assign Y1 = Y1_reg;
+	assign Y3 = Y3_reg;
+
+endmodule

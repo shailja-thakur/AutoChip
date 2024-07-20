@@ -1,0 +1,1007 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // Build a gshare branch predictor with 7-bit pc and 7-bit global history, hashed (using xor) into a 7-bit index. This index accesses a 128-entry table of two-bit saturating counters. The branch predictor should contain a 7-bit global branch history register. The branch predictor has two sets of interfaces: One for doing predictions and one for doing training. The prediction interface is used in the processor's Fetch stage to ask the branch predictor for branch direction predictions for the instructions being fetched. Once these branches proceed down the pipeline and are executed, the true outcomes of the branches become known. The branch predictor is then trained using the actual branch direction outcomes. 
+// When a branch prediction is requested (predict_valid = 1) for a given pc, the branch predictor produces the predicted branch direction and state of the branch history register used to make the prediction. The branch history register is then updated (at the next positive clock edge) for the predicted branch. 
+// When training for a branch is requested (train_valid = 1), the branch predictor is told the pc and branch history register value for the branch that is being trained, as well as the actual branch outcome and whether the branch was a misprediction (needing a pipeline flush). Update the pattern history table (PHT) to train the branch predictor to predict this branch more accurately next time. In addition, if the branch being trained is mispredicted, also recover the branch history register to the state immediately after the mispredicting branch completes execution.
+// If training for a misprediction and a prediction (for a different, younger instruction) occurs in the same cycle, both operations will want to modify the branch history register. When this happens, training takes precedence, because the branch being predicted will be discarded anyway. If training and prediction of the same PHT entry happen at the same time, the prediction sees the PHT state before training because training only modifies the PHT at the next positive clock edge. The following timing diagram shows the timing when training and predicting PHT entry 0 at the same time. The training request at cycle 4 changes the PHT entry state in cycle 5, but the prediction request in cycle 4 outputs the PHT state at cycle 4, without considering the effect of the training request in cycle 4. Reset is asynchronous active-high.
+
+module top_module(
+	input clk,
+	input areset, 
+
+	input predict_valid,
+	input [6:0] predict_pc,
+	output predict_taken, 
+	output [6:0] predict_history,
+
+	input train_valid,
+	input train_taken,
+	input train_mispredicted,
+	input [6:0] train_history, 
+	input [6:0] train_pc
+);
+assistant: module top_module(
+    input clk,
+    input areset, 
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output reg predict_taken, 
+    output reg [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history, 
+    input [6:0] train_pc
+);
+
+    reg [1:0] PHT [0:127]; // 128 entry table of two-bit saturating counters
+    reg [6:0] global_history;
+
+    // Initialization for the pattern history table
+    integer i;
+    initial begin
+        for (i = 0; i < 128; i = i + 1) begin
+            PHT[i] = 2'b01; // Weakly not taken
+        end
+    end
+
+    wire [6:0] predict_index;
+    wire [6:0] train_index;
+
+    // Calculate the indexes for prediction and training using xor
+    assign predict_index = predict_pc ^ global_history;
+    assign train_index = train_pc ^ train_history;
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            global_history <= 7'b0;
+        end else begin
+            // Handle training
+            if (train_valid) begin
+                case (PHT[train_index])
+                    2'b00: PHT[train_index] <= train_taken ? 2'b01 : 2'b00; // Strongly not taken
+                    2'b01: PHT[train_index] <= train_taken ? 2'b10 : 2'b00; // Weakly not taken
+                    2'b10: PHT[train_index] <= train_taken ? 2'b11 : 2'b01; // Weakly taken
+                    2'b11: PHT[train_index] <= train_taken ? 2'b11 : 2'b10; // Strongly taken
+                endcase
+
+                if (train_mispredicted) begin
+                    global_history <= train_history;
+                end else begin
+                    global_history <= {global_history[5:0], train_taken};
+                end
+            end else if (predict_valid) begin
+                global_history <= {global_history[5:0], predict_taken};
+            end
+        end
+    end
+
+    always @(*) begin
+        if (areset) begin
+            predict_taken = 0;
+            predict_history = 7'b0;
+        end else if (predict_valid && !train_valid) begin
+            predict_history = global_history;
+            case (PHT[predict_index])
+                2'b00, 2'b01: predict_taken = 0; // Not taken
+                2'b10, 2'b11: predict_taken = 1; // Taken
+            endcase
+        end else begin
+            predict_taken = 0;
+            predict_history = 7'b0;
+        end
+    end
+
+endmodule
+
+
+user: The design compiled with warnings. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt-4o/can1_depth10/human/gshare/iter0/response0/top_module.sv:65: warning: @* is sensitive to all 128 words in array 'PHT'.
+
+assistant: module top_module(
+    input clk,
+    input areset, 
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output reg predict_taken, 
+    output reg [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history, 
+    input [6:0] train_pc
+);
+
+    reg [1:0] PHT [0:127]; // 128 entry table of two-bit saturating counters
+    reg [6:0] global_history;
+
+    // Initialization for the pattern history table
+    integer i;
+    initial begin
+        for (i = 0; i < 128; i = i + 1) begin
+            PHT[i] = 2'b01; // Weakly not taken
+        end
+    end
+
+    wire [6:0] predict_index;
+    wire [6:0] train_index;
+
+    // Calculate the indexes for prediction and training using xor
+    assign predict_index = predict_pc ^ global_history;
+    assign train_index = train_pc ^ train_history;
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            global_history <= 7'b0;
+        end else begin
+            // Handle training
+            if (train_valid) begin
+                case (PHT[train_index])
+                    2'b00: PHT[train_index] <= train_taken ? 2'b01 : 2'b00; // Strongly not taken
+                    2'b01: PHT[train_index] <= train_taken ? 2'b10 : 2'b00; // Weakly not taken
+                    2'b10: PHT[train_index] <= train_taken ? 2'b11 : 2'b01; // Weakly taken
+                    2'b11: PHT[train_index] <= train_taken ? 2'b11 : 2'b10; // Strongly taken
+                endcase
+
+                if (train_mispredicted) begin
+                    global_history <= train_history;
+                end else begin
+                    global_history <= {global_history[5:0], train_taken};
+                end
+            end else if (predict_valid) begin
+                global_history <= {global_history[5:0], predict_taken};
+            end
+        end
+    end
+
+    always @(*) begin
+        if (areset) begin
+            predict_taken = 0;
+            predict_history = 7'b0;
+        end else if (predict_valid && !train_valid) begin
+            predict_history = global_history;
+            case (PHT[predict_index])
+                2'b00, 2'b01: predict_taken = 0; // Not taken
+                2'b10, 2'b11: predict_taken = 1; // Taken
+            endcase
+        end else begin
+            predict_taken = 0;
+            predict_history = 7'b0;
+        end
+    end
+
+endmodule
+
+
+user: The design compiled with warnings. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt-4o/can1_depth10/human/gshare/iter1/response0/top_module.sv:65: warning: @* is sensitive to all 128 words in array 'PHT'.
+
+assistant: module top_module(
+    input clk,
+    input areset, 
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output reg predict_taken, 
+    output reg [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history, 
+    input [6:0] train_pc
+);
+
+    reg [1:0] PHT [0:127]; // 128 entry table of two-bit saturating counters
+    reg [6:0] global_history;
+
+    // Initialization for the pattern history table
+    integer i;
+    initial begin
+        for (i = 0; i < 128; i = i + 1) begin
+            PHT[i] = 2'b01; // Weakly not taken
+        end
+    end
+
+    wire [6:0] predict_index;
+    wire [6:0] train_index;
+
+    // Calculate the indexes for prediction and training using xor
+    assign predict_index = predict_pc ^ global_history;
+    assign train_index = train_pc ^ train_history;
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            global_history <= 7'b0;
+        end else begin
+            // Handle training
+            if (train_valid) begin
+                case (PHT[train_index])
+                    2'b00: PHT[train_index] <= train_taken ? 2'b01 : 2'b00; // Strongly not taken
+                    2'b01: PHT[train_index] <= train_taken ? 2'b10 : 2'b00; // Weakly not taken
+                    2'b10: PHT[train_index] <= train_taken ? 2'b11 : 2'b01; // Weakly taken
+                    2'b11: PHT[train_index] <= train_taken ? 2'b11 : 2'b10; // Strongly taken
+                endcase
+
+                if (train_mispredicted) begin
+                    global_history <= train_history;
+                end else begin
+                    global_history <= {global_history[5:0], train_taken};
+                end
+            end else if (predict_valid) begin
+                global_history <= {global_history[5:0], predict_taken};
+            end
+        end
+    end
+
+    always @* begin
+        if (areset) begin
+            predict_taken = 0;
+            predict_history = 7'b0;
+        end else if (predict_valid && !train_valid) begin
+            predict_history = global_history;
+            case (PHT[predict_index])
+                2'b00, 2'b01: predict_taken = 0; // Not taken
+                2'b10, 2'b11: predict_taken = 1; // Taken
+            endcase
+        end else begin
+            predict_taken = 0;
+            predict_history = 7'b0;
+        end
+    end
+
+endmodule
+
+
+user: The design compiled with warnings. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt-4o/can1_depth10/human/gshare/iter2/response0/top_module.sv:65: warning: @* is sensitive to all 128 words in array 'PHT'.
+
+assistant: module top_module(
+    input clk,
+    input areset,
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output reg predict_taken,
+    output reg [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history,
+    input [6:0] train_pc
+);
+
+    reg [1:0] PHT [0:127]; // 128 entry table of two-bit saturating counters
+    reg [6:0] global_history;
+    reg [1:0] current_predict_pht_entry;
+
+    // Initialization for the pattern history table
+    integer i;
+    initial begin
+        for (i = 0; i < 128; i = i + 1) begin
+            PHT[i] = 2'b01; // Weakly not taken
+        end
+    end
+
+    wire [6:0] predict_index;
+    wire [6:0] train_index;
+
+    // Calculate the indexes for prediction and training using xor
+    assign predict_index = predict_pc ^ global_history;
+    assign train_index = train_pc ^ train_history;
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            global_history <= 7'b0;
+        end else begin
+            // Handle training
+            if (train_valid) begin
+                case (PHT[train_index])
+                    2'b00: PHT[train_index] <= train_taken ? 2'b01 : 2'b00; // Strongly not taken
+                    2'b01: PHT[train_index] <= train_taken ? 2'b10 : 2'b00; // Weakly not taken
+                    2'b10: PHT[train_index] <= train_taken ? 2'b11 : 2'b01; // Weakly taken
+                    2'b11: PHT[train_index] <= train_taken ? 2'b11 : 2'b10; // Strongly taken
+                endcase
+
+                if (train_mispredicted) begin
+                    global_history <= train_history;
+                end else begin
+                    global_history <= {global_history[5:0], train_taken};
+                end
+            end else if (predict_valid) begin
+                global_history <= {global_history[5:0], predict_taken};
+            end
+        end
+    end
+
+    always @* begin
+        if (predict_valid) begin
+            current_predict_pht_entry = PHT[predict_index];
+            predict_history = global_history;
+            case (current_predict_pht_entry)
+                2'b00, 2'b01: predict_taken = 0; // Not taken
+                2'b10, 2'b11: predict_taken = 1; // Taken
+                default: predict_taken = 0;
+            endcase
+        end else begin
+            predict_taken = 0;
+            predict_history = 7'b0;
+        end
+    end
+
+endmodule
+
+
+user: The design compiled with warnings. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt-4o/can1_depth10/human/gshare/iter3/response0/top_module.sv:62: warning: @* is sensitive to all 128 words in array 'PHT'.
+
+assistant: module top_module(
+    input clk,
+    input areset,
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output reg predict_taken,
+    output reg [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history,
+    input [6:0] train_pc
+);
+
+    reg [1:0] PHT [0:127]; // 128 entry table of two-bit saturating counters
+    reg [6:0] global_history;
+    reg [1:0] current_predict_pht_entry;
+
+    // Initialization for the pattern history table
+    integer i;
+    initial begin
+        for (i = 0; i < 128; i = i + 1) begin
+            PHT[i] = 2'b01; // Weakly not taken
+        end
+    end
+
+    wire [6:0] predict_index;
+    wire [6:0] train_index;
+
+    // Calculate the indexes for prediction and training using xor
+    assign predict_index = predict_pc ^ global_history;
+    assign train_index = train_pc ^ train_history;
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            global_history <= 7'b0;
+        end else begin
+            // Handle training
+            if (train_valid) begin
+                case (PHT[train_index])
+                    2'b00: PHT[train_index] <= train_taken ? 2'b01 : 2'b00; // Strongly not taken
+                    2'b01: PHT[train_index] <= train_taken ? 2'b10 : 2'b00; // Weakly not taken
+                    2'b10: PHT[train_index] <= train_taken ? 2'b11 : 2'b01; // Weakly taken
+                    2'b11: PHT[train_index] <= train_taken ? 2'b11 : 2'b10; // Strongly taken
+                endcase
+
+                if (train_mispredicted) begin
+                    global_history <= train_history;
+                end else begin
+                    global_history <= {global_history[5:0], train_taken};
+                end
+            end else if (predict_valid) begin
+                global_history <= {global_history[5:0], predict_taken};
+            end
+            
+            // Handle prediction
+            if (predict_valid) begin
+                predict_history <= global_history;
+                current_predict_pht_entry <= PHT[predict_index];
+                case (current_predict_pht_entry)
+                    2'b00, 2'b01: predict_taken <= 0; // Not taken
+                    2'b10, 2'b11: predict_taken <= 1; // Taken
+                    default: predict_taken <= 0;
+                endcase
+            end else begin
+                predict_taken <= 0;
+                predict_history <= 7'b0;
+            end
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your reset doesn't seem to be working.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/gshare/gshare_tb.sv:206: $finish called at 5416 (1ps)
+Hint: Output 'predict_taken' has 157 mismatches. First mismatch occurred at time 30.
+Hint: Output 'predict_history' has 517 mismatches. First mismatch occurred at time 30.
+Hint: Total mismatched samples is 528 out of 1083 samples
+
+Simulation finished at 5416 ps
+Mismatches: 528 in 1083 samples
+
+assistant: module top_module(
+    input clk,
+    input areset,
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output reg predict_taken,
+    output reg [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history,
+    input [6:0] train_pc
+);
+
+    reg [1:0] PHT [0:127]; // 128 entry table of two-bit saturating counters
+    reg [6:0] global_history;
+    reg [1:0] current_predict_pht_entry;
+
+    // Initialization for the pattern history table
+    integer i;
+    initial begin
+        for (i = 0; i < 128; i = i + 1) begin
+            PHT[i] = 2'b01; // Weakly not taken
+        end
+    end
+
+    wire [6:0] predict_index;
+    wire [6:0] train_index;
+
+    // Calculate the indexes for prediction and training using xor
+    assign predict_index = predict_pc ^ global_history;
+    assign train_index = train_pc ^ train_history;
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            global_history <= 7'b0;
+            predict_taken <= 0;
+            predict_history <= 7'b0;
+        end else begin
+            // Handle training
+            if (train_valid) begin
+                case (PHT[train_index])
+                    2'b00: PHT[train_index] <= train_taken ? 2'b01 : 2'b00; // Strongly not taken
+                    2'b01: PHT[train_index] <= train_taken ? 2'b10 : 2'b00; // Weakly not taken
+                    2'b10: PHT[train_index] <= train_taken ? 2'b11 : 2'b01; // Weakly taken
+                    2'b11: PHT[train_index] <= train_taken ? 2'b11 : 2'b10; // Strongly taken
+                endcase
+
+                if (train_mispredicted) begin
+                    global_history <= train_history;
+                end else begin
+                    global_history <= {global_history[5:0], train_taken};
+                end
+            end else if (predict_valid) begin
+                global_history <= {global_history[5:0], predict_taken};
+            end
+            
+            // Handle prediction
+            if (predict_valid) begin
+                predict_history <= global_history;
+                current_predict_pht_entry <= PHT[predict_index];
+                case (current_predict_pht_entry)
+                    2'b00, 2'b01: predict_taken <= 0; // Not taken
+                    2'b10, 2'b11: predict_taken <= 1; // Taken
+                    default: predict_taken <= 0;
+                endcase
+            end else begin
+                predict_taken <= 0;
+                predict_history <= global_history;
+            end
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/gshare/gshare_tb.sv:206: $finish called at 5416 (1ps)
+Hint: Output 'predict_taken' has 150 mismatches. First mismatch occurred at time 30.
+Hint: Output 'predict_history' has 557 mismatches. First mismatch occurred at time 30.
+Hint: Total mismatched samples is 561 out of 1083 samples
+
+Simulation finished at 5416 ps
+Mismatches: 561 in 1083 samples
+
+assistant: module top_module(
+    input clk,
+    input areset,
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output reg predict_taken,
+    output reg [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history,
+    input [6:0] train_pc
+);
+
+    reg [1:0] PHT [0:127]; // 128 entry table of two-bit saturating counters
+    reg [6:0] global_history;
+    wire [6:0] predict_index;
+    wire [6:0] train_index;
+
+    // Calculate the indexes for prediction and training using xor
+    assign predict_index = predict_pc ^ global_history;
+    assign train_index = train_pc ^ train_history;
+
+    // Initialization for the pattern history table
+    integer i;
+    initial begin
+        for (i = 0; i < 128; i = i + 1) begin
+            PHT[i] <= 2'b01; // Weakly not taken
+        end
+    end
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            global_history <= 7'b0;
+            predict_taken <= 0;
+            predict_history <= 7'b0;
+        end else begin
+            // Handle prediction
+            if (predict_valid) begin
+                predict_history <= global_history;
+                case (PHT[predict_index])
+                    2'b00, 2'b01: predict_taken <= 0; // Not taken
+                    2'b10, 2'b11: predict_taken <= 1; // Taken
+                    default: predict_taken <= 0;
+                endcase
+            end
+
+            // Handle training
+            if (train_valid) begin
+                case (PHT[train_index])
+                    2'b00: PHT[train_index] <= train_taken ? 2'b01 : 2'b00; // Strongly not taken
+                    2'b01: PHT[train_index] <= train_taken ? 2'b10 : 2'b00; // Weakly not taken
+                    2'b10: PHT[train_index] <= train_taken ? 2'b11 : 2'b01; // Weakly taken
+                    2'b11: PHT[train_index] <= train_taken ? 2'b11 : 2'b10; // Strongly taken
+                endcase
+
+                if (train_mispredicted) begin
+                    global_history <= train_history;
+                end else begin
+                    global_history <= {global_history[5:0], train_taken};
+                end
+            end else if (predict_valid) begin
+                global_history <= {global_history[5:0], predict_taken};
+            end
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/gshare/gshare_tb.sv:206: $finish called at 5416 (1ps)
+Hint: Output 'predict_taken' has 188 mismatches. First mismatch occurred at time 30.
+Hint: Output 'predict_history' has 548 mismatches. First mismatch occurred at time 30.
+Hint: Total mismatched samples is 554 out of 1083 samples
+
+Simulation finished at 5416 ps
+Mismatches: 554 in 1083 samples
+
+assistant: module top_module(
+    input clk,
+    input areset, 
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output reg predict_taken, 
+    output reg [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history, 
+    input [6:0] train_pc
+);
+
+    reg [1:0] PHT [0:127]; // 128 entry table of two-bit saturating counters
+    reg [6:0] global_history;
+    wire [6:0] predict_index;
+    wire [6:0] train_index;
+
+    // Calculate the indexes for prediction and training using xor
+    assign predict_index = predict_pc ^ global_history;
+    assign train_index = train_pc ^ train_history;
+    
+    // Initialize the PHT to weakly not taken for all entries
+    integer i;
+    initial begin
+        for (i = 0; i < 128; i = i + 1) begin
+            PHT[i] = 2'b01; // Weakly not taken
+        end
+    end
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            global_history <= 7'b0;
+            predict_taken <= 0;
+            predict_history <= 7'b0;
+        end else begin
+            // Handle prediction
+            if (predict_valid) begin
+                predict_history <= global_history;
+                case (PHT[predict_index])
+                    2'b00, 2'b01: predict_taken <= 0; // Not taken
+                    2'b10, 2'b11: predict_taken <= 1; // Taken
+                    default: predict_taken <= 0;
+                endcase
+            end
+
+            // Handle training
+            if (train_valid) begin
+                case (PHT[train_index])
+                    2'b00: PHT[train_index] <= train_taken ? 2'b01 : 2'b00; // Strongly not taken
+                    2'b01: PHT[train_index] <= train_taken ? 2'b10 : 2'b00; // Weakly not taken
+                    2'b10: PHT[train_index] <= train_taken ? 2'b11 : 2'b01; // Weakly taken
+                    2'b11: PHT[train_index] <= train_taken ? 2'b11 : 2'b10; // Strongly taken
+                endcase
+
+                // When training, update global history based on misprediction recovery or outcome
+                if (train_mispredicted) begin
+                    global_history <= {train_history[5:0], train_taken};
+                end else begin
+                    global_history <= {global_history[5:0], train_taken};
+                end
+            end else if (predict_valid) begin
+                // If no training is happening and prediction is valid, update global history
+                global_history <= {global_history[5:0], predict_taken};
+            end
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/gshare/gshare_tb.sv:206: $finish called at 5416 (1ps)
+Hint: Output 'predict_taken' has 190 mismatches. First mismatch occurred at time 30.
+Hint: Output 'predict_history' has 546 mismatches. First mismatch occurred at time 30.
+Hint: Total mismatched samples is 552 out of 1083 samples
+
+Simulation finished at 5416 ps
+Mismatches: 552 in 1083 samples
+
+assistant: module top_module(
+    input clk,
+    input areset, 
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output reg predict_taken, 
+    output reg [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history, 
+    input [6:0] train_pc
+);
+
+    reg [1:0] PHT [0:127]; // 128-entry table of two-bit saturating counters
+    reg [6:0] global_history;
+    wire [6:0] predict_index;
+    wire [6:0] train_index;
+
+    // Calculate the indexes for prediction and training using xor
+    assign predict_index = predict_pc ^ global_history;
+    assign train_index = train_pc ^ train_history;
+
+    // Initialize the PHT to weakly not taken for all entries
+    integer i;
+    initial begin
+        for (i = 0; i < 128; i = i + 1) begin
+            PHT[i] = 2'b01; // Weakly not taken
+        end
+    end
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            global_history <= 7'b0;
+            predict_taken <= 0;
+            predict_history <= 7'b0;
+        end else begin
+            // Handle training first
+            if (train_valid) begin
+                case (PHT[train_index])
+                    2'b00: PHT[train_index] <= train_taken ? 2'b01 : 2'b00; // Strongly not taken
+                    2'b01: PHT[train_index] <= train_taken ? 2'b10 : 2'b00; // Weakly not taken
+                    2'b10: PHT[train_index] <= train_taken ? 2'b11 : 2'b01; // Weakly taken
+                    2'b11: PHT[train_index] <= train_taken ? 2'b11 : 2'b10; // Strongly taken
+                endcase
+
+                // When training, update global history based on misprediction recovery or outcome
+                if (train_mispredicted) begin
+                    global_history <= {train_history[5:0], train_taken};
+                end else begin
+                    global_history <= {global_history[5:0], train_taken};
+                end
+            end else if (predict_valid) begin
+                // If no training is happening and prediction is valid, update global history
+                global_history <= {global_history[5:0], predict_taken};
+            end
+        end
+    end
+
+    always @* begin
+        // Handle prediction
+        if (predict_valid) begin
+            predict_history = global_history;
+            case (PHT[predict_index])
+                2'b00, 2'b01: predict_taken = 0; // Not taken
+                2'b10, 2'b11: predict_taken = 1; // Taken
+                default: predict_taken = 0;
+            endcase
+        end else begin
+            predict_taken = 0;
+            predict_history = global_history;
+        end
+    end
+endmodule
+
+
+user: The design compiled with warnings. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt-4o/can1_depth10/human/gshare/iter8/response0/top_module.sv:66: warning: @* is sensitive to all 128 words in array 'PHT'.
+
+assistant: module top_module(
+    input clk,
+    input areset, 
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output reg predict_taken, 
+    output reg [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history, 
+    input [6:0] train_pc
+);
+
+    reg [1:0] PHT [0:127]; // 128-entry table of two-bit saturating counters
+    reg [6:0] global_history;
+    wire [6:0] predict_index;
+    wire [6:0] train_index;
+
+    // Calculate the indexes for prediction and training using xor
+    assign predict_index = predict_pc ^ global_history;
+    assign train_index = train_pc ^ train_history;
+
+    // Initialize the PHT to weakly not taken for all entries
+    integer i;
+    initial begin
+        for (i = 0; i < 128; i = i + 1) begin
+            PHT[i] = 2'b01; // Weakly not taken
+        end
+    end
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            global_history <= 7'b0;
+            predict_taken <= 0;
+            predict_history <= 7'b0;
+        end else begin
+            // Handle training first
+            if (train_valid) begin
+                case (PHT[train_index])
+                    2'b00: PHT[train_index] <= train_taken ? 2'b01 : 2'b00; // Strongly not taken
+                    2'b01: PHT[train_index] <= train_taken ? 2'b10 : 2'b00; // Weakly not taken
+                    2'b10: PHT[train_index] <= train_taken ? 2'b11 : 2'b01; // Weakly taken
+                    2'b11: PHT[train_index] <= train_taken ? 2'b11 : 2'b10; // Strongly taken
+                endcase
+
+                // When training, update global history based on misprediction recovery or outcome
+                if (train_mispredicted) begin
+                    global_history <= {train_history[5:0], train_taken};
+                end else begin
+                    global_history <= {global_history[5:0], train_taken};
+                end
+            end else if (predict_valid) begin
+                // If no training is happening and prediction is valid, update global history
+                global_history <= {global_history[5:0], predict_taken};
+            end
+        end
+    end
+
+    always @(predict_valid, PHT[predict_index], global_history) begin
+        // Handle prediction
+        if (predict_valid) begin
+            predict_history = global_history;
+            case (PHT[predict_index])
+                2'b00, 2'b01: predict_taken = 0; // Not taken
+                2'b10, 2'b11: predict_taken = 1; // Taken
+                default: predict_taken = 0;
+            endcase
+        end else begin
+            predict_taken = 0;
+            predict_history = global_history;
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/gshare/gshare_tb.sv:206: $finish called at 5416 (1ps)
+Hint: Output 'predict_taken' has 156 mismatches. First mismatch occurred at time 120.
+Hint: Output 'predict_history' has 527 mismatches. First mismatch occurred at time 120.
+Hint: Total mismatched samples is 532 out of 1083 samples
+
+Simulation finished at 5416 ps
+Mismatches: 532 in 1083 samples
+
+assistant: module top_module(
+    input clk,
+    input areset,
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output reg predict_taken,
+    output reg [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history,
+    input [6:0] train_pc
+);
+
+    reg [1:0] PHT[0:127]; // 128-entry table of two-bit saturating counters
+    reg [6:0] global_history;
+    wire [6:0] predict_index;
+    wire [6:0] train_index;
+
+    // Calculate the indexes for prediction and training using xor
+    assign predict_index = predict_pc ^ global_history;
+    assign train_index = train_pc ^ train_history;
+
+    // Initialize the PHT to weakly not taken for all entries
+    integer i;
+    initial begin
+        for (i = 0; i < 128; i = i + 1) begin
+            PHT[i] = 2'b01; // Weakly not taken
+        end
+    end
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            global_history <= 7'b0;
+        end else begin
+            if (train_valid) begin
+                // Update the PHT entry for training
+                case (PHT[train_index])
+                    2'b00: PHT[train_index] <= train_taken ? 2'b01 : 2'b00; // Strongly not taken
+                    2'b01: PHT[train_index] <= train_taken ? 2'b10 : 2'b00; // Weakly not taken
+                    2'b10: PHT[train_index] <= train_taken ? 2'b11 : 2'b01; // Weakly taken
+                    2'b11: PHT[train_index] <= train_taken ? 2'b11 : 2'b10; // Strongly taken
+                endcase
+
+                // Recover the branch history register if mispredicted
+                if (train_mispredicted) begin
+                    global_history <= {train_history[5:0], train_taken};
+                end else begin
+                    global_history <= {global_history[5:0], train_taken};
+                end
+            end else if (predict_valid) begin
+                // Update the branch history register for prediction
+                global_history <= {global_history[5:0], predict_taken};
+            end
+        end
+    end
+
+    always @(*) begin
+        // Handle prediction
+        predict_history = global_history;
+        if (predict_valid) begin
+            case (PHT[predict_index])
+                2'b00, 2'b01: predict_taken = 0; // Not taken
+                2'b10, 2'b11: predict_taken = 1; // Taken
+                default: predict_taken = 0;
+            endcase
+        end else begin
+            predict_taken = 0;
+        end
+    end
+endmodule
+
+
+user: The design compiled with warnings. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt-4o/can1_depth10/human/gshare/iter10/response0/top_module.sv:64: warning: @* is sensitive to all 128 words in array 'PHT'.
+
+Time to Generate: 182.81473398208618
+Best ranked response at iteration 4 with response number 0
+Rank of best response: 0.5124653739612188
+Best response module:
+module top_module(
+    input clk,
+    input areset,
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output reg predict_taken,
+    output reg [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history,
+    input [6:0] train_pc
+);
+
+    reg [1:0] PHT [0:127]; // 128 entry table of two-bit saturating counters
+    reg [6:0] global_history;
+    reg [1:0] current_predict_pht_entry;
+
+    // Initialization for the pattern history table
+    integer i;
+    initial begin
+        for (i = 0; i < 128; i = i + 1) begin
+            PHT[i] = 2'b01; // Weakly not taken
+        end
+    end
+
+    wire [6:0] predict_index;
+    wire [6:0] train_index;
+
+    // Calculate the indexes for prediction and training using xor
+    assign predict_index = predict_pc ^ global_history;
+    assign train_index = train_pc ^ train_history;
+
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            global_history <= 7'b0;
+        end else begin
+            // Handle training
+            if (train_valid) begin
+                case (PHT[train_index])
+                    2'b00: PHT[train_index] <= train_taken ? 2'b01 : 2'b00; // Strongly not taken
+                    2'b01: PHT[train_index] <= train_taken ? 2'b10 : 2'b00; // Weakly not taken
+                    2'b10: PHT[train_index] <= train_taken ? 2'b11 : 2'b01; // Weakly taken
+                    2'b11: PHT[train_index] <= train_taken ? 2'b11 : 2'b10; // Strongly taken
+                endcase
+
+                if (train_mispredicted) begin
+                    global_history <= train_history;
+                end else begin
+                    global_history <= {global_history[5:0], train_taken};
+                end
+            end else if (predict_valid) begin
+                global_history <= {global_history[5:0], predict_taken};
+            end
+            
+            // Handle prediction
+            if (predict_valid) begin
+                predict_history <= global_history;
+                current_predict_pht_entry <= PHT[predict_index];
+                case (current_predict_pht_entry)
+                    2'b00, 2'b01: predict_taken <= 0; // Not taken
+                    2'b10, 2'b11: predict_taken <= 1; // Taken
+                    default: predict_taken <= 0;
+                endcase
+            end else begin
+                predict_taken <= 0;
+                predict_history <= 7'b0;
+            end
+        end
+    end
+
+endmodule
+
+

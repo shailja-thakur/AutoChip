@@ -1,0 +1,67 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': 'module top_module (
+	input clk,
+	input in,
+	input reset,
+	output done
+);
+
+// internal signals
+reg [2:0] state;
+reg start_bit;
+reg [7:0] data;
+reg stop_bit;
+
+// FSM states
+parameter IDLE = 3'b000;
+parameter START_BIT = 3'b001;
+parameter DATA_BITS = 3'b010;
+parameter STOP_BIT = 3'b011;
+
+// FSM
+always @(posedge clk or posedge reset) begin
+	if (reset) begin
+		state <= IDLE;
+		start_bit <= 0;
+		data <= 0;
+		stop_bit <= 0;
+	end else begin
+		case (state)
+			IDLE: begin
+				if (in == 1) begin
+					state <= START_BIT;
+				end
+			end
+
+			START_BIT: begin
+				if (in == 0) begin
+					state <= DATA_BITS;
+					data <= 0;
+				end
+			end
+
+			DATA_BITS: begin
+				if (in == 0) begin
+					data <= {data[6:0], in};
+				end else begin
+					state <= STOP_BIT;
+				end
+			end
+
+			STOP_BIT: begin
+				if (in == 1) begin
+					state <= IDLE;
+					stop_bit <= 1;
+				end
+			end
+		endcase
+	end
+end
+
+// output done signal
+assign done = (state == IDLE && stop_bit == 1);
+
+endmodule'}
+
+ Iteration rank: 0.7790055248618785

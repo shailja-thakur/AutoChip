@@ -1,0 +1,15 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '//  This top module is a simple Verilog module that takes an input of 32 bits and outputs the same 32 bits in a different order. The module assigns the output to be the input bits rearranged in 8-bit chunks. The first 8 bits of the input are assigned to the first 8 bits of the output, the second 8 bits of the input are assigned to the second 8 bits of the output, and so on. This module is useful for rearranging the order of bits in a data stream.\n\nmodule top_module (\n\tinput [31:0] in,\n\toutput [31:0] out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input [31:0] in,
+    output [31:0] out
+);
+    assign out[7:0] = in[31:24];       // Assign the first 8 bits of output to the last 8 bits of input
+    assign out[15:8] = in[23:16];      // Assign the second 8 bits of output to the third 8 bits of input
+    assign out[23:16] = in[15:8];      // Assign the third 8 bits of output to the second 8 bits of input
+    assign out[31:24] = in[7:0];       // Assign the last 8 bits of output to the first 8 bits of input
+endmodule
+```'}
+
+ Iteration rank: 1.0

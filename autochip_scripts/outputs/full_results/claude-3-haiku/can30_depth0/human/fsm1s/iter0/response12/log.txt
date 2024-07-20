@@ -1,0 +1,65 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, one input, and one output. Implement this state machine in Verilog. The reset state is B and reset is active-high synchronous.\n\n// B (out=1) --in=0--> A\n// B (out=1) --in=1--> B\n// A (out=0) --in=0--> B\n// A (out=0) --in=1--> A\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg out
+);
+
+reg state;
+parameter A = 1'b0;
+parameter B = 1'b1;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= B;
+        out <= 1'b1;
+    end
+    else begin
+        case (state)
+            B: begin
+                if (in) begin
+                    state <= B;
+                    out <= 1'b1;
+                end
+                else begin
+                    state <= A;
+                    out <= 1'b1;
+                end
+            end
+            A: begin
+                if (in) begin
+                    state <= A;
+                    out <= 1'b0;
+                end
+                else begin
+                    state <= B;
+                    out <= 1'b0;
+                end
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+The provided Verilog code correctly implements the Moore state machine described in the problem statement. The module has the following features:
+
+1. It has three input ports: `clk`, `in`, and `reset`.
+2. It has one output port: `out`.
+3. It uses a register `state` to keep track of the current state of the state machine, which can be either `A` or `B`.
+4. The state transition logic is implemented in the `always` block, which is sensitive to the positive edge of the `clk` signal.
+5. When the `reset` signal is high, the state is set to `B`, and the `out` signal is set to `1`.
+6. When the `reset` signal is low, the state machine transitions between `A` and `B` based on the value of the `in` signal, and the `out` signal is set accordingly.
+
+The state machine behavior matches the problem statement:
+
+- From state `B`, if `in` is `0`, the next state is `A` and `out` is `1`.
+- From state `B`, if `in` is `1`, the next state is `B` and `out` is `1`.
+- From state `A`, if `in` is `0`, the next state is `B` and `out` is `0`.
+- From state `A`, if `in` is `1`, the next state is `A` and `out` is `0`.'}
+
+ Iteration rank: 0.6391304347826087

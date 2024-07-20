@@ -1,0 +1,71 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the state machine shown below:\n\n// A (0) --0--> B\n// A (0) --1--> A\n// B (0) --0--> C\n// B (0) --1--> D\n// C (0) --0--> E\n// C (0) --1--> D\n// D (0) --0--> F\n// D (0) --1--> A\n// E (1) --0--> E\n// E (1) --1--> D\n// F (1) --0--> C\n// F (1) --1--> D\n\n// Implement this state machine in Verilog.\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput w,\n\toutput z\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input reset,
+    input w,
+    output reg z
+);
+
+    // State register
+    reg [3:0] state;
+    parameter A = 4'b0000, B = 4'b0001, C = 4'b0010, D = 4'b0011, 
+              E = 4'b0100, F = 4'b0101;
+
+    // Next state logic
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= A;
+        end else begin
+            case (state)
+                A: begin
+                    if (w) state <= A;
+                    else state <= B;
+                end
+                B: begin
+                    if (w) state <= D;
+                    else state <= C;
+                end
+                C: begin
+                    if (w) state <= D;
+                    else state <= E;
+                end
+                D: begin
+                    if (w) state <= A;
+                    else state <= F;
+                end
+                E: begin
+                    if (w) state <= D;
+                    else state <= E;
+                end
+                F: begin
+                    if (w) state <= D;
+                    else state <= C;
+                end
+                default: state <= A;
+            endcase
+        end
+    end
+
+    // Output logic
+    always @(*) begin
+        case (state)
+            E, F: z = 1'b1;
+            default: z = 1'b0;
+        endcase
+    end
+
+endmodule
+```
+
+The Verilog module implements the given state machine with the following features:
+
+1. The state is stored in a 4-bit register `state`, with each state represented by a unique 4-bit value (A = 4'b0000, B = 4'b0001, etc.).
+2. The `reset` input resets the state to `A`.
+3. The next state logic is implemented in the `always` block, which updates the state based on the current state and the input `w`.
+4. The output logic is implemented in the second `always` block, which sets the `z` output based on the current state (1 if in state E or F, 0 otherwise).
+
+The module correctly implements the state machine as described in the problem statement.'}
+
+ Iteration rank: 1.0

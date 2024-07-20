@@ -1,0 +1,28 @@
+module top_module (
+    input [3:0] in,
+    output reg out_and,
+    output reg out_or,
+    output reg out_xor
+);
+
+always @(*) begin
+    // Logical AND operation
+    out_and = 1'b1;
+    for (int i = 0; i < 4; i++) begin
+        out_and = out_and & in[i];
+    end
+
+    // Logical OR operation
+    out_or = 1'b0;
+    for (int i = 0; i < 4; i++) begin
+        out_or = out_or | in[i];
+    end
+
+    // Logical XOR operation
+    out_xor = in[0];
+    for (int i = 1; i < 4; i++) begin
+        out_xor = out_xor ^ in[i];
+    end
+end
+
+endmodule

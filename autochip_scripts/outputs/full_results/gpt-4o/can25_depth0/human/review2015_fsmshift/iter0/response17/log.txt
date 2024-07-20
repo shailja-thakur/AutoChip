@@ -1,0 +1,48 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This module is a part of the FSM for controlling the shift register, we want the ability to enable the shift register for exactly 4 clock cycles whenever the proper bit pattern is detected. Whenever the FSM is reset, assert shift_ena for 4 cycles, then 0 forever (until reset). Reset should be active high synchronous.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput shift_ena);'}
+{'assistant': '```verilog
+module top_module(
+	input clk,
+	input reset,
+	output reg shift_ena);
+
+	reg [1:0] state, next_state;
+	reg [2:0] count;
+
+	// State parameters
+	localparam IDLE = 2'b00;
+	localparam SHIFT = 2'b01;
+	
+	// State transition logic
+	always @ (posedge clk) begin
+		if (reset) begin
+			state <= IDLE;
+			count <= 3'b000;
+		end else begin
+			state <= next_state;
+			if(state == SHIFT) count <= count + 1;
+		end
+	end
+	
+	// Next state logic
+	always @(*) begin
+		case(state)
+			IDLE: next_state = reset ? SHIFT : IDLE;
+			SHIFT: next_state = (count == 3'b100) ? IDLE : SHIFT;
+			default: next_state = IDLE;
+		endcase
+	end
+	
+	// Output logic
+	always @(*) begin
+		case(state)
+			IDLE: shift_ena = 1'b0;
+			SHIFT: shift_ena = 1'b1;
+			default: shift_ena = 1'b0;
+		endcase
+	end
+	
+endmodule
+```'}
+
+ Iteration rank: 0.95

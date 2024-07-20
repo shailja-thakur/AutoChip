@@ -1,0 +1,20 @@
+module top_module (
+	input a,
+	input b,
+	input sel_b1,
+	input sel_b2,
+	output out_assign,
+	output wire out_always
+);
+  
+  // 2-to-1 Mux using assign statements
+  assign out_assign = (sel_b1 && sel_b2) ? b : a;
+
+  // 2-to-1 Mux using a procedural if statement
+  always @*
+    if (sel_b1 && sel_b2)
+      out_always = b;
+    else
+      out_always = a;
+
+endmodule

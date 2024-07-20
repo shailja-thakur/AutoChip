@@ -1,0 +1,58 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, one input, and one output. Implement this state machine in Verilog. The reset state is B and reset is active-high synchronous.\n\n// B (out=1) --in=0--> A\n// B (out=1) --in=1--> B\n// A (out=0) --in=0--> B\n// A (out=0) --in=1--> A\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output out
+);
+
+reg state;
+parameter A = 1'b0, B = 1'b1;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= B;
+    end
+    else begin
+        case (state)
+            B: begin
+                if (in) begin
+                    state <= B;
+                end
+                else begin
+                    state <= A;
+                end
+            end
+            A: begin
+                if (in) begin
+                    state <= A;
+                end
+                else begin
+                    state <= B;
+                end
+            end
+        endcase
+    end
+end
+
+assign out = (state == B) ? 1'b1 : 1'b0;
+
+endmodule
+```
+
+The provided Verilog module specification is correct and can be implemented as shown above. The module has the following features:
+
+1. Two states: A and B, with B being the reset state.
+2. One input: `in`.
+3. One output: `out`.
+4. The reset is active-high synchronous.
+5. The state transitions are as follows:
+   - From state B, if `in` is 0, the next state is A, and if `in` is 1, the next state remains B.
+   - From state A, if `in` is 0, the next state is B, and if `in` is 1, the next state remains A.
+6. The output `out` is 1 when the state is B, and 0 when the state is A.
+
+The Verilog code above implements the given state machine specification correctly.'}
+
+ Iteration rank: 1.0

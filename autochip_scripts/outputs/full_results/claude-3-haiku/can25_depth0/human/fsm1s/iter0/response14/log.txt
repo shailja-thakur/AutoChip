@@ -1,0 +1,54 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, one input, and one output. Implement this state machine in Verilog. The reset state is B and reset is active-high synchronous.\n\n// B (out=1) --in=0--> A\n// B (out=1) --in=1--> B\n// A (out=0) --in=0--> B\n// A (out=0) --in=1--> A\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg out
+);
+
+reg state;
+parameter A = 1'b0, B = 1'b1;
+
+always @(posedge clk) begin
+    if (reset)
+        state <= B;
+    else begin
+        case (state)
+            B: begin
+                out <= 1'b1;
+                if (in)
+                    state <= B;
+                else
+                    state <= A;
+            end
+            A: begin
+                out <= 1'b0;
+                if (in)
+                    state <= A;
+                else
+                    state <= B;
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+This Verilog module implements a Moore state machine with two states, one input, and one output. The reset state is B and reset is active-high synchronous.
+
+The module has the following functionality:
+
+1. The state register `state` is used to keep track of the current state, with `A` representing state A and `B` representing state B.
+2. The `out` output is assigned the appropriate value based on the current state.
+3. On each positive edge of the clock signal `clk`:
+   - If `reset` is high, the state is set to `B`.
+   - Otherwise, the next state is determined based on the current state and the input `in`:
+     - If the current state is `B`, and `in` is 0, the next state is `A`; if `in` is 1, the next state remains `B`.
+     - If the current state is `A`, and `in` is 0, the next state is `B`; if `in` is 1, the next state remains `A`.
+
+The completed Verilog module correctly implements the given state machine specification.'}
+
+ Iteration rank: 0.5521739130434783

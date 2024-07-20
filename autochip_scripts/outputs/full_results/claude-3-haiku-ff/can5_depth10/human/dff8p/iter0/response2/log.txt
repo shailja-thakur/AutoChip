@@ -1,0 +1,32 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Create 8 D flip-flops with active high synchronous reset. The flip-flops must be reset to 0x34 rather than zero. All DFFs should be triggered by the negative edge of clk.\n\nmodule top_module(\n\tinput clk,\n\tinput [7:0] d,\n\tinput reset,\n\toutput reg [7:0] q);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input [7:0] d,
+    input reset,
+    output reg [7:0] q
+);
+
+always @(negedge clk) begin
+    if (reset)
+        q <= 8'h34;
+    else
+        q <= d;
+end
+
+endmodule
+```
+
+The corrected Verilog module creates 8 D flip-flops with active high synchronous reset. The flip-flops are reset to 0x34 rather than zero, and they are triggered by the negative edge of the clock signal.
+
+The key changes are:
+
+1. The `q` output is declared as a `reg` type to allow it to be assigned a value in the `always` block.
+2. The `always` block is sensitive to the negative edge of the clock signal (`@(negedge clk)`).
+3. Inside the `always` block, the `if (reset)` condition checks for the active high reset signal, and assigns the value `8'h34` to the `q` output.
+4. If the reset signal is not active, the `q` output is assigned the value of the `d` input.
+
+This implementation ensures that the 8 D flip-flops are correctly reset to the desired value of 0x34 on the negative edge of the clock signal.'}
+
+ Iteration rank: 1.0

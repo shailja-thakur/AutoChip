@@ -1,0 +1,80 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'role': 'assistant', 'content': 'module top_module (\n    input clk,\n    input in,\n    input reset,\n    output done\n);\n\nreg [2:0] state;\nreg previous_bit;\nreg start_bit_detected;\nreg [7:0] data;\nreg stop_bit_detected;\n\nparameter IDLE = 0;\nparameter START_BIT = 1;\nparameter DATA_BITS = 2;\nparameter STOP_BIT = 3;\n\nalways @(posedge clk or posedge reset) begin\n    if (reset) begin\n        state <= IDLE;\n        previous_bit <= 1; // set previous_bit to 1 when the FSM is reset\n    end else begin\n        case (state)\n            IDLE: begin\n                if (in == 0 && previous_bit == 1) begin\n                    state <= START_BIT;\n                    start_bit_detected <= 1;\n                    data <= 0;\n                end else begin\n                    state <= IDLE;\n                    start_bit_detected <= 0;\n                    data <= 0;\n                end\n            end\n            START_BIT: begin\n                if (in == 0 && previous_bit == 0) begin\n                    state <= DATA_BITS;\n                    data <= {data[6:0], in};\n                end else begin\n                    state <= IDLE;\n                    start_bit_detected <= 0;\n                    data <= 0;\n                end\n            end\n            DATA_BITS: begin\n                if (in == 0 && previous_bit == 0) begin\n                    state <= DATA_BITS;\n                    data <= {data[6:0], in};\n                end else begin\n                    state <= STOP_BIT;\n                end\n            end\n            STOP_BIT: begin\n                if (in == 1 && previous_bit == 0) begin\n                    state <= IDLE;\n                    stop_bit_detected <= 1;\n                end else begin\n                    state <= IDLE;\n                    stop_bit_detected <= 0;\n                    data <= 0;\n                end\n            end\n        endcase\n        previous_bit <= in;\n    end\nend\n\nassign done = (start_bit_detected && stop_bit_detected);\n\nendmodule\n\n'}
+{'role': 'user', 'content': "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\nVCD info: dumpfile wave.vcd opened for output.\n/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)\nHint: Output 'done' has 58 mismatches. First mismatch occurred at time 10.\nHint: Total mismatched samples is 58 out of 905 samples\n\nSimulation finished at 4526 ps\nMismatches: 58 in 905 samples\n"}
+{'assistant': 'module top_module (
+    input clk,
+    input in,
+    input reset,
+    output done
+);
+
+reg [2:0] state;
+reg previous_bit;
+reg start_bit_detected;
+reg [7:0] data;
+reg stop_bit_detected;
+
+parameter IDLE = 0;
+parameter START_BIT = 1;
+parameter DATA_BITS = 2;
+parameter STOP_BIT = 3;
+
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        state <= IDLE;
+        previous_bit <= 1; // set previous_bit to 1 when the FSM is reset
+        start_bit_detected <= 0; // reset start_bit_detected when FSM is reset
+        stop_bit_detected <= 0; // reset stop_bit_detected when FSM is reset
+        data <= 0; // reset data when FSM is reset
+    end else begin
+        case (state)
+            IDLE: begin
+                if (in == 0 && previous_bit == 1) begin
+                    state <= START_BIT;
+                    start_bit_detected <= 1;
+                    data <= 0;
+                end else begin
+                    state <= IDLE;
+                    start_bit_detected <= 0;
+                    data <= 0;
+                end
+            end
+            START_BIT: begin
+                if (in == 0 && previous_bit == 0) begin
+                    state <= DATA_BITS;
+                    data <= {data[6:0], in};
+                end else begin
+                    state <= IDLE;
+                    start_bit_detected <= 0;
+                    data <= 0;
+                end
+            end
+            DATA_BITS: begin
+                if (in == 0 && previous_bit == 0) begin
+                    state <= DATA_BITS;
+                    data <= {data[6:0], in};
+                end else begin
+                    state <= STOP_BIT;
+                end
+            end
+            STOP_BIT: begin
+                if (in == 1 && previous_bit == 0) begin
+                    state <= IDLE;
+                    stop_bit_detected <= 1;
+                end else begin
+                    state <= IDLE;
+                    stop_bit_detected <= 0;
+                    data <= 0;
+                end
+            end
+        endcase
+        previous_bit <= in;
+    end
+end
+
+assign done = (start_bit_detected && stop_bit_detected);
+
+endmodule'}
+
+ Iteration rank: 0.958011049723757

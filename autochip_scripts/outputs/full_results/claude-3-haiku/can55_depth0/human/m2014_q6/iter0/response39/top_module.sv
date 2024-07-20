@@ -1,0 +1,83 @@
+module top_module (
+    input clk,
+    input reset,
+    input w,
+    output reg z
+);
+
+reg [3:0] state, next_state;
+parameter A = 4'b0000, B = 4'b0001, C = 4'b0010, D = 4'b0011, E = 4'b0100, F = 4'b0101;
+
+always @(posedge clk or negedge reset) begin
+    if (!reset) begin
+        state <= A;
+    end
+    else begin
+        state <= next_state;
+    end
+end
+
+always @(*) begin
+    case (state)
+        A: begin
+            if (w) begin
+                next_state = A;
+            end
+            else begin
+                next_state = B;
+            end
+            z = 0;
+        end
+        B: begin
+            if (w) begin
+                next_state = D;
+            end
+            else begin
+                next_state = C;
+            end
+            z = 0;
+        end
+        C: begin
+            if (w) begin
+                next_state = D;
+            end
+            else begin
+                next_state = E;
+            end
+            z = 0;
+        end
+        D: begin
+            if (w) begin
+                next_state = A;
+            end
+            else begin
+                next_state = F;
+            end
+            z = 0;
+        end
+        E: begin
+            if (w) begin
+                next_state = D;
+            end
+            else begin
+                next_state = E;
+            end
+            z = 1;
+        end
+        F: begin
+            if (w) begin
+                next_state = D;
+            end
+            else begin
+                next_state = C;
+            end
+            z = 1;
+        end
+        default: begin
+            next_state = A;
+            z = 0;
+        end
+    endcase
+end
+
+endmodule

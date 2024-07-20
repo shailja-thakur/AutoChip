@@ -1,0 +1,54 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// Rule 90 is a one-dimensional cellular automaton with interesting properties. The rules are simple. There is a one-dimensional array of cells (on or off). At each time step, the next state of each cell is the XOR of the cell's two current neighbours:\n// Left | Center | Right | Center's next state\n// 1 | 1 | 1 | 0\n// 1 | 1 | 0 | 1\n// 1 | 0 | 1 | 0\n// 1 | 0 | 0 | 1\n// 0 | 1 | 1 | 1\n// 0 | 1 | 0 | 0 \n// 0 | 0 | 1 | 1\n// 0 | 0 | 0 | 0\n// In this circuit, create a 512-cell system (q[511:0]), and advance by one time step each clock cycle. The load input indicates the state of the system should be loaded with data[511:0]. Assume the boundaries (q[-1] and q[512]) are both zero (off).\n\nmodule top_module(\n\tinput clk,\n\tinput load,\n\tinput [511:0] data,\n\toutput reg [511:0] q);"}
+{'assistant': 'module top_module(
+	input clk,
+	input load,
+	input [511:0] data,
+	output reg [511:0] q);
+
+  // Create a 512-cell system
+  reg [511:0] q_next;
+  integer idx;
+  
+  always @(posedge clk) begin
+    if (load) begin
+      q <= data;
+    end else begin
+      q <= q_next;
+    end
+  end
+  
+  always @* begin
+    for (idx = 0; idx < 512; idx = idx + 1) begin
+      if (idx == 0) begin
+        // Handle left-most boundary
+        if (q[1] == 1) begin
+          q_next[idx] = ~q[idx];
+        end else begin
+          q_next[idx] = q[idx];
+        end
+      end else if (idx == 511) begin
+        // Handle right-most boundary
+        if (q[510] == 1) begin
+          q_next[idx] = ~q[idx];
+        end else begin
+          q_next[idx] = q[idx];
+        end
+      end else begin
+        // All other cells
+        if ((q[idx-1] == 1) && (q[idx+1] == 1)) begin
+          q_next[idx] = 0;
+        end else if ((q[idx-1] == 1) && (q[idx+1] == 0)) begin
+          q_next[idx] = 1;
+        end else if ((q[idx-1] == 0) && (q[idx+1] == 1)) begin
+          q_next[idx] = 0;
+        end else if ((q[idx-1] == 0) && (q[idx+1] == 0)) begin
+          q_next[idx] = 1;
+        end
+      end
+    end
+  end
+  
+endmodule'}
+
+ Iteration rank: 0.008847072040443759

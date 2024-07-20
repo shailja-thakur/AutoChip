@@ -1,0 +1,77 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider a finite state machine with inputs s and w. Assume that the FSM begins in a reset state called A, as depicted below. The FSM remains in state A as long as s = 0, and it moves to state B when s = 1. Once in state B the FSM examines the value of the input w in the next three clock cycles. If w = 1 in exactly two of these clock cycles, then the FSM has to set an output z to 1 in the following clock cycle. Otherwise z has to be 0. The FSM continues checking w for the next three clock cycles, and so on. Use as few states as possible. Note that the s input is used only in state A, so you need to consider just the w input. Assume reset is active high synchronous.\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput s,\n\tinput w,\n\toutput reg z\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+reg [1:0] state;
+parameter A = 2'b00, B = 2'b01, C = 2'b10;
+
+reg [1:0] count;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= A;
+        count <= 0;
+        z <= 0;
+    end
+    else begin
+        case (state)
+            A: begin
+                if (s) begin
+                    state <= B;
+                    count <= 0;
+                end
+            end
+            B: begin
+                if (w) begin
+                    count <= count + 1;
+                end
+                if (count == 2) begin
+                    z <= 1;
+                end
+                else begin
+                    z <= 0;
+                end
+                state <= C;
+            end
+            C: begin
+                if (w) begin
+                    count <= count + 1;
+                end
+                else begin
+                    count <= 0;
+                end
+                if (count == 2) begin
+                    z <= 1;
+                end
+                else begin
+                    z <= 0;
+                end
+                state <= B;
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+This Verilog module implements the finite state machine described in the problem statement. It has three states: A, B, and C. 
+
+The module starts in state A, where it waits for the input `s` to become 1. When `s` becomes 1, the module transitions to state B.
+
+In state B, the module starts counting the number of clock cycles where `w` is 1. It does this by using the `count` register. If `w` is 1 in exactly two of the next three clock cycles, the module sets the output `z` to 1 in the following clock cycle. Otherwise, `z` is set to 0.
+
+After the three clock cycles in state B, the module transitions to state C. In state C, the module continues to count the number of clock cycles where `w` is 1, using the same logic as in state B.
+
+The module then alternates between states B and C, continuing to monitor the `w` input and set the `z` output accordingly.
+
+The module also includes synchronous reset functionality, where the state is reset to A and the `z` output is set to 0 when the `reset` input is high.'}
+
+ Iteration rank: 0.7694483734087695

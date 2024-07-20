@@ -1,0 +1,27 @@
+module top_module (
+	input clk,
+	input x,
+	output reg z
+);
+
+reg [2:0] s;
+
+initial begin
+    s = 3'b000;
+end
+
+always @(posedge clk) begin
+	// Statement 1
+	s[2] = x ^ s[2];
+	s[0] = x;
+	
+	// Statement 2
+	s[1] = s[1] ~& x; // Equivalent to (~s[1]) & x
+	
+	// Statement 3
+	s[0] = s[0] ~| x; // Equivalent to (~s[0]) | x
+end
+
+assign z = ~(s[2] | s[1] | s[0]);
+
+endmodule

@@ -1,0 +1,60 @@
+module dff_mux (
+    input clk,
+    input L,
+    input d,
+    input r,
+    output reg q
+);
+
+always @(posedge clk) begin
+    if (L) begin
+        q <= r;
+    end else begin
+        q <= d;
+    end
+end
+
+endmodule
+module top_module (
+    input clk,
+    input L,
+    input [2:0] r,
+    output [2:0] q
+);
+
+wire q0, q1, q2;
+wire q0_next, q1_next, q2_next;
+
+// Calculate next state values
+assign q2_next = q1;
+assign q1_next = q0;
+assign q0_next = q1 ^ q2;
+
+// First instance
+dff_mux dff0 (
+    .clk(clk),
+    .L(L),
+    .d(q0_next),
+    .r(r[0]),
+    .q(q[0])
+);
+
+// Second instance
+dff_mux dff1 (
+    .clk(clk),
+    .L(L),
+    .d(q1_next),
+    .r(r[1]),
+    .q(q[1])
+);
+
+// Third instance
+dff_mux dff2 (
+    .clk(clk),
+    .L(L),
+    .d(q2_next),
+    .r(r[2]),
+    .q(q[2])
+);
+
+endmodule

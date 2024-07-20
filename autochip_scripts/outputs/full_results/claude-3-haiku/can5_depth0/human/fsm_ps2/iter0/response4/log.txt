@@ -1,0 +1,74 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The PS/2 mouse protocol sends messages that are three bytes long. However, within a continuous byte stream, it's not obvious where messages start and end. The only indication is that the first byte of each three byte message always has in[3]=1 (but in[3] of the other two bytes may be 1 or 0 depending on data). We want a finite state machine that will search for message boundaries when given an input byte stream. The algorithm we'll use is to discard bytes until we see one with in[3]=1. We then assume that this is byte 1 of a message, and signal the receipt of a message once all 3 bytes have been received (done). The FSM should signal done in the cycle immediately after the third byte of each message was successfully received. Reset should be active high synchronous.\n\nmodule top_module (\n\tinput clk,\n\tinput [7:0] in,\n\tinput reset,\n\toutput done\n);"}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input [7:0] in,
+    input reset,
+    output reg done
+);
+
+localparam [1:0] STATE_WAIT = 2'b00,
+                 STATE_BYTE1 = 2'b01,
+                 STATE_BYTE2 = 2'b10,
+                 STATE_BYTE3 = 2'b11;
+
+reg [1:0] state, next_state;
+reg [2:0] byte_count;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= STATE_WAIT;
+        byte_count <= 0;
+        done <= 0;
+    end
+    else begin
+        state <= next_state;
+        case (state)
+            STATE_WAIT: begin
+                if (in[3]) begin
+                    next_state <= STATE_BYTE1;
+                    byte_count <= 1;
+                end
+                else begin
+                    next_state <= STATE_WAIT;
+                    byte_count <= 0;
+                end
+                done <= 0;
+            end
+            STATE_BYTE1: begin
+                next_state <= STATE_BYTE2;
+                byte_count <= 2;
+                done <= 0;
+            end
+            STATE_BYTE2: begin
+                next_state <= STATE_BYTE3;
+                byte_count <= 3;
+                done <= 0;
+            end
+            STATE_BYTE3: begin
+                next_state <= STATE_WAIT;
+                byte_count <= 0;
+                done <= 1;
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+The Verilog code above implements a finite state machine that searches for the start of a PS/2 mouse protocol message and signals when a complete 3-byte message has been received.
+
+The key features of the implementation are:
+
+1. The FSM has four states: `STATE_WAIT`, `STATE_BYTE1`, `STATE_BYTE2`, and `STATE_BYTE3`.
+2. In the `STATE_WAIT` state, the FSM discards bytes until it sees one with `in[3]` set, indicating the start of a new message.
+3. Once the first byte is detected, the FSM transitions to `STATE_BYTE1` and starts counting the number of bytes received.
+4. In the `STATE_BYTE1`, `STATE_BYTE2`, and `STATE_BYTE3` states, the FSM simply increments the byte count.
+5. When the third byte is received (i.e., `byte_count` reaches 3), the FSM sets the `done` output high and transitions back to the `STATE_WAIT` state.
+6. The `reset` input is used to synchronously reset the FSM to the `STATE_WAIT` state and clear the `byte_count` and `done` outputs.
+
+This implementation should correctly detect and signal the reception of complete 3-byte PS/2 mouse protocol messages.'}
+
+ Iteration rank: 0.655

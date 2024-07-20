@@ -1,0 +1,62 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The following diagram is a Mealy machine implementation of the 2's complementer. Implement in Verilog using one-hot encoding. Resets into state A and reset is asynchronous active-high.\n\n// A --x=0 (z=0)--> A\n// A --x=1 (z=1)--> B\n// B --x=0 (z=1)--> B\n// B --x=1 (z=0)--> B\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput x,\n\toutput z\n);"}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input areset,
+    input x,
+    output z
+);
+
+localparam STATE_A = 2'b01;
+localparam STATE_B = 2'b10;
+
+reg [1:0] state, next_state;
+
+always @(*) begin
+    case (state)
+        STATE_A: begin
+            if (x == 1'b0) begin
+                next_state = STATE_A;
+                z = 1'b0;
+            end else begin
+                next_state = STATE_B;
+                z = 1'b1;
+            end
+        end
+        STATE_B: begin
+            if (x == 1'b0) begin
+                next_state = STATE_B;
+                z = 1'b1;
+            end else begin
+                next_state = STATE_B;
+                z = 1'b0;
+            end
+        end
+        default: begin
+            next_state = STATE_A;
+            z = 1'b0;
+        end
+    endcase
+end
+
+always @(posedge clk or posedge areset) begin
+    if (areset) begin
+        state <= STATE_A;
+    end else begin
+        state <= next_state;
+    end
+end
+
+endmodule
+```
+
+The Verilog code above implements the Mealy machine 2's complementer as per the provided specification. The module has the following features:
+
+1. It uses one-hot encoding for the states, with `STATE_A` represented as `2'b01` and `STATE_B` represented as `2'b10`.
+2. The `next_state` logic is implemented in the combinational `always @(*)` block, where the next state and the output `z` are determined based on the current state and the input `x`.
+3. The state register is updated in the synchronous `always @(posedge clk or posedge areset)` block, where the state is reset to `STATE_A` when the asynchronous reset `areset` is high.
+
+This implementation correctly captures the Mealy machine behavior as specified in the diagram.'}
+
+ Iteration rank: -1

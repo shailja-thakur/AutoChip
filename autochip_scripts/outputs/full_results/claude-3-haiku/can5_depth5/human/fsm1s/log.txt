@@ -1,0 +1,108 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // This is a Moore state machine with two states, one input, and one output. Implement this state machine in Verilog. The reset state is B and reset is active-high synchronous.
+
+// B (out=1) --in=0--> A
+// B (out=1) --in=1--> B
+// A (out=0) --in=0--> B
+// A (out=0) --in=1--> A
+
+module top_module (
+	input clk,
+	input in,
+	input reset,
+	output out
+);
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg out
+);
+
+localparam STATE_A = 1'b0;
+localparam STATE_B = 1'b1;
+
+reg current_state, next_state;
+
+always @(posedge clk) begin
+    if (reset)
+        current_state <= STATE_B;
+    else
+        current_state <= next_state;
+end
+
+always @(*) begin
+    case (current_state)
+        STATE_A: begin
+            out = 1'b0;
+            if (in)
+                next_state = STATE_A;
+            else
+                next_state = STATE_B;
+        end
+        STATE_B: begin
+            out = 1'b1;
+            if (in)
+                next_state = STATE_B;
+            else
+                next_state = STATE_A;
+        end
+        default: begin
+            out = 1'b0;
+            next_state = STATE_B;
+        end
+    endcase
+end
+
+endmodule
+
+
+Time to Generate: 14.801199197769165
+Best ranked response at iteration 0 with response number 0
+Rank of best response: 1.0
+Best response module:
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg out
+);
+
+localparam STATE_A = 1'b0;
+localparam STATE_B = 1'b1;
+
+reg current_state, next_state;
+
+always @(posedge clk) begin
+    if (reset)
+        current_state <= STATE_B;
+    else
+        current_state <= next_state;
+end
+
+always @(*) begin
+    case (current_state)
+        STATE_A: begin
+            out = 1'b0;
+            if (in)
+                next_state = STATE_A;
+            else
+                next_state = STATE_B;
+        end
+        STATE_B: begin
+            out = 1'b1;
+            if (in)
+                next_state = STATE_B;
+            else
+                next_state = STATE_A;
+        end
+        default: begin
+            out = 1'b0;
+            next_state = STATE_B;
+        end
+    endcase
+end
+
+endmodule
+
+

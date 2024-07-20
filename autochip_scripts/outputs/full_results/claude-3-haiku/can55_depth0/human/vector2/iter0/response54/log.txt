@@ -1,0 +1,21 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a circuit that reverses the byte order of a 32-bit vector.\n\nmodule top_module (\n\tinput [31:0] in,\n\toutput [31:0] out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input [31:0] in,
+    output [31:0] out
+);
+
+    assign out[7:0]   = in[31:24];
+    assign out[15:8]  = in[23:16];
+    assign out[23:16] = in[15:8];
+    assign out[31:24] = in[7:0];
+
+endmodule
+```
+
+The provided Verilog module correctly reverses the byte order of a 32-bit vector. The input `in` is a 32-bit vector, and the output `out` is also a 32-bit vector with the bytes reversed.
+
+The module uses the `assign` statements to connect the individual bytes of the `in` vector to the corresponding bytes of the `out` vector in reverse order.'}
+
+ Iteration rank: 1.0

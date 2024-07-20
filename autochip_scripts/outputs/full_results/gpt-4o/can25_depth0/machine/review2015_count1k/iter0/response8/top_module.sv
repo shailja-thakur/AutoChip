@@ -1,0 +1,21 @@
+module top_module(
+    input clk,
+    input reset,
+    output reg [9:0] q);
+    
+    // Initial block to set the initial value of q to 0
+    initial begin
+        q = 10'b0;
+    end
+    
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            q <= 10'd0;
+        end else if (q == 10'd999) begin
+            q <= 10'd0;
+        end else begin
+            q <= q + 10'd1;
+        end
+    end
+    
+endmodule

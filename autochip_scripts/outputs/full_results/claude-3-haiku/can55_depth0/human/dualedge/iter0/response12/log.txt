@@ -1,0 +1,37 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// A dual-edge triggered flip-flop is triggered on both edges of the clock. However, FPGAs don't have dual-edge triggered flip-flops, and always @(posedge clk or negedge clk) is not accepted as a legal sensitivity list. Build a circuit that functionally behaves like a dual-edge triggered flip-flop.\n\nmodule top_module(\n\tinput clk,\n\tinput d,\n\toutput reg q);"}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input d,
+    output reg q
+);
+
+reg q_pos, q_neg;
+
+always @(posedge clk) begin
+    q_pos <= d;
+end
+
+always @(negedge clk) begin
+    q_neg <= d;
+end
+
+always @(*) begin
+    q = (clk) ? q_pos : q_neg;
+end
+
+endmodule
+```
+
+The provided module implements a dual-edge triggered flip-flop using two separate flip-flops, one triggered on the positive edge of the clock and one triggered on the negative edge of the clock. The final output `q` is then selected based on the current state of the clock signal, effectively creating a dual-edge triggered behavior.
+
+The key components are:
+
+1. `q_pos` and `q_neg` registers to hold the state of the flip-flops triggered on the positive and negative clock edges, respectively.
+2. Two separate `always` blocks, one for the positive edge and one for the negative edge, to update the respective flip-flop states.
+3. A final `always` block that selects the appropriate flip-flop state based on the current clock value, effectively creating the dual-edge triggered behavior.
+
+This solution addresses the issue that FPGAs do not have native support for dual-edge triggered flip-flops, and provides a functional equivalent using the available Verilog constructs.'}
+
+ Iteration rank: 1.0

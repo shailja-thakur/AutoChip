@@ -1,0 +1,60 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The PS/2 mouse protocol sends messages that are three bytes long. However, within a continuous byte stream, it's not obvious where messages start and end. The only indication is that the first byte of each three byte message always has in[3]=1 (but in[3] of the other two bytes may be 1 or 0 depending on data). We want a finite state machine that will search for message boundaries when given an input byte stream. The algorithm we'll use is to discard bytes until we see one with in[3]=1. We then assume that this is byte 1 of a message, and signal the receipt of a message once all 3 bytes have been received (done). The FSM should signal done in the cycle immediately after the third byte of each message was successfully received. Reset should be active high synchronous.\n\nmodule top_module (\n\tinput clk,\n\tinput [7:0] in,\n\tinput reset,\n\toutput done\n);"}
+{'role': 'assistant', 'content': "module top_module (\n    input clk,\n    input [7:0] in,\n    input reset,\n    output done\n);\n\nreg [7:0] in_reg1;\nreg [7:0] in_reg2;\nreg [7:0] in_reg3;\nreg done_reg;\n\nalways @(posedge clk) begin\n    if (reset)\n        in_reg1 <= 8'b0;\n    else\n        in_reg1 <= in;\nend\n\nalways @(posedge clk) begin\n    in_reg2 <= in_reg1;\n    in_reg3 <= in_reg2;\nend\n\nalways @(posedge clk) begin\n    if (reset)\n        done_reg <= 1'b0;\n    else if (in_reg1[3] && !in_reg2[3] && !in_reg3[3])\n        done_reg <= 1'b1;\n    else\n        done_reg <= 1'b0;\nend\n\nassign done = done_reg;\n\nendmodule\n\n"}
+{'role': 'user', 'content': "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\nVCD info: dumpfile wave.vcd opened for output.\n/home/jason/documents/research/llm_hardware_design/autochip/AutoChip/greedy-tree/autochip_scripts/../verilogeval_prompts_tbs/validation_set/fsm_ps2/fsm_ps2_tb.sv:47: $finish called at 2001 (1ps)\nHint: Output 'done' has 138 mismatches. First mismatch occurred at time 200.\nHint: Total mismatched samples is 138 out of 400 samples\n\nSimulation finished at 2001 ps\nMismatches: 138 in 400 samples\n"}
+{'assistant': 'module top_module (
+    input clk,
+    input [7:0] in,
+    input reset,
+    output done
+);
+
+reg [7:0] in_reg1;
+reg [7:0] in_reg2;
+reg [7:0] in_reg3;
+reg done_reg;
+reg start_reg;
+
+always @(posedge clk) begin
+    if (reset)
+        in_reg1 <= 8'b0;
+    else
+        in_reg1 <= in;
+end
+
+always @(posedge clk) begin
+    if (reset)
+        in_reg2 <= 8'b0;
+    else
+        in_reg2 <= in_reg1;
+end
+
+always @(posedge clk) begin
+    if (reset)
+        in_reg3 <= 8'b0;
+    else
+        in_reg3 <= in_reg2;
+end
+
+always @(posedge clk) begin
+    if (reset)
+        done_reg <= 1'b0;
+    else if (in_reg1[3] && !in_reg2[3] && !in_reg3[3])
+        done_reg <= 1'b1;
+    else
+        done_reg <= 1'b0;
+end
+
+always @(posedge clk) begin
+    if (reset)
+        start_reg <= 1'b0;
+    else if (in_reg1[3])
+        start_reg <= 1'b1;
+end
+
+assign done = done_reg;
+
+endmodule
+'}
+
+ Iteration rank: 0.655

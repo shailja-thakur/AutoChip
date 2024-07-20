@@ -1,0 +1,48 @@
+module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+reg [1:0] state;
+parameter A = 2'b00, B = 2'b01, C = 2'b10;
+
+reg [1:0] count;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= A;
+        count <= 0;
+        z <= 0;
+    end
+    else begin
+        case (state)
+            A:
+                if (s) begin
+                    state <= B;
+                    count <= 0;
+                end
+            B:
+                if (count == 3) begin
+                    if (count == 2) begin
+                        z <= 1;
+                    end
+                    else begin
+                        z <= 0;
+                    end
+                    state <= B;
+                    count <= 0;
+                end
+                else begin
+                    count <= count + 1;
+                    if (w) begin
+                        count <= count + 1;
+                    end
+                end
+        endcase
+    end
+end
+
+endmodule

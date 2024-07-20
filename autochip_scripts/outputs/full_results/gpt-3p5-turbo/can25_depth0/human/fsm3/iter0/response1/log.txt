@@ -1,0 +1,40 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The following is the state transition table for a Moore state machine with one input, one output, and four states. Implement this state machine. Include a positive edge triggered asynchronous reset that resets the FSM to state A.\n \n// state | next state in=0, next state in=1 | output\n// A | A, B | 0\n// B | C, B | 0\n// C | A, D | 0\n// D | C, B | 1\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': 'module top_module (
+	input clk,
+	input in,
+	input areset,
+	output out
+);
+
+reg [1:0] state;
+reg out;
+
+always_ff @(posedge clk or posedge areset)
+begin
+    if (areset)
+        state <= 2'b00;
+    else
+    begin
+        case (state)
+            2'b00: state <= (in) ? 2'b01 : 2'b00; // A -> A if in=0, A -> B if in=1
+            2'b01: state <= (in) ? 2'b01 : 2'b10; // B -> C if in=0, B -> B if in=1
+            2'b10: state <= (in) ? 2'b00 : 2'b11; // C -> A if in=0, C -> D if in=1
+            2'b11: state <= (in) ? 2'b10 : 2'b01; // D -> C if in=0, D -> B if in=1
+        endcase
+    end
+end
+
+always_comb
+begin
+    case (state)
+        2'b00: out = 1'b0; // A
+        2'b01: out = 1'b0; // B
+        2'b10: out = 1'b0; // C
+        2'b11: out = 1'b1; // D
+    endcase
+end
+
+endmodule'}
+
+ Iteration rank: -1

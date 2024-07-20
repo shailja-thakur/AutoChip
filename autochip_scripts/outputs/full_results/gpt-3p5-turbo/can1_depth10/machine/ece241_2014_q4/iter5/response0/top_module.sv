@@ -1,0 +1,23 @@
+module top_module (
+    input clk,
+    input x,
+    output reg z
+);
+
+    reg [2:0] s = 3'b000;
+
+    always @(posedge clk) begin
+        // Statement 1
+        s[2] <= s[1] ^ x;
+        // Assign value to s[1] before using it in next statement
+        s[1] <= ~s[1] & x;
+        s[0] <= ~s[0] | x;
+    end
+
+    always @* begin
+        // Assign output z
+        // Use bitwise AND instead of logical AND
+        z = ~(s[2] & s[1] & s[0]);
+    end
+    
+endmodule

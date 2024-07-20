@@ -1,0 +1,29 @@
+module top_module (
+    input clk,
+    input a, 
+    output reg [2:0] q
+);
+
+always @(posedge clk) begin
+    if (a) begin
+        if (q == 3'd4) begin
+            q <= 3'd5;
+        end
+        else if (q == 3'd5) begin
+            q <= 3'd6;
+        end
+        else begin
+            q <= q + 3'd1;
+        end
+    end
+    else begin
+        if (q == 3'd4) begin
+            q <= 3'd0;
+        end
+        else begin
+            q <= q;
+        end
+    end
+end
+
+endmodule

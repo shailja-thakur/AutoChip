@@ -1,0 +1,30 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// A linear feedback shift register is a shift register usually with a few XOR gates to produce the next state of the shift register. A Galois LFSR is one particular arrangement where bit positions with a "tap" are XORed with the output bit to produce its next value, while bit positions without a tap shift. If the taps positions are carefully chosen, the LFSR can be made to be "maximum-length". A maximum-length LFSR of n bits cycles through 2**n-1 states before repeating (the all-zero state is never reached). Build a 5-bit maximal-length Galois LFSR with taps at bit positions 5 and 3. The active-high synchronous reset should reset the LFSR output to 1.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput reg [4:0] q);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    output reg [4:0] q
+);
+
+always @(posedge clk) begin
+    if (reset) begin
+        q <= 5'b00001; // Reset to 1
+    end else begin
+        q[4] <= q[3] ^ q[0]; // Compute next bit
+        q[3:0] <= q[4:1]; // Shift register
+    end
+end
+
+endmodule
+```
+
+This Verilog module implements a 5-bit maximum-length Galois LFSR with taps at bit positions 5 and 3. The LFSR output `q` is a 5-bit register that is updated on every clock cycle.
+
+When the `reset` input is high, the LFSR output `q` is reset to `5'b00001`, which is the initial state.
+
+On every clock cycle, the next state of the LFSR is computed by XORing the bits at positions 3 and 0 (the taps), and shifting the entire register one position to the right, effectively shifting in the new computed bit at the MSB position.
+
+This configuration of the LFSR ensures that it cycles through all possible 2^5 - 1 = 31 non-zero states before repeating, which is the maximum-length property.'}
+
+ Iteration rank: 0.16317803286067972

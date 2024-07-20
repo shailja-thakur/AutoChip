@@ -1,0 +1,27 @@
+module top_module (
+    input clk,
+    input x,
+    output z
+);
+
+    // D flip-flops
+    reg q1, q2, q3;
+
+    // Combinational logic
+    wire xor_out, and_out, or_out;
+
+    assign xor_out = x ^ q1;
+    assign and_out = x & ~q2;
+    assign or_out = x | q3;
+
+    // Sequential logic
+    always @(posedge clk) begin
+        q1 <= x;
+        q2 <= x;
+        q3 <= x;
+    end
+
+    // Output
+    assign z = ~(xor_out ^ and_out ^ or_out);
+
+endmodule

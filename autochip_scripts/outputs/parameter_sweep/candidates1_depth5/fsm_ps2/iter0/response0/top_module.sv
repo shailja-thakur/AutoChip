@@ -1,0 +1,37 @@
+module top_module (
+    input clk,
+    input [7:0] in,
+    input reset,
+    output done
+);
+
+reg [7:0] in_reg;
+reg [2:0] state;
+
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        state <= 0;
+        in_reg <= 0;
+        done <= 0;
+    end else begin
+        case (state)
+            0: begin
+                if (in[3] == 1) begin
+                    state <= 1;
+                    in_reg <= in;
+                end
+            end
+            1: begin
+                state <= 2;
+                in_reg <= {in_reg[6:0], in};
+            end
+            2: begin
+                state <= 0;
+                done <= 1;
+                in_reg <= {in_reg[6:0], in};
+            end
+        endcase
+    end
+end
+
+endmodule

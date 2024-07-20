@@ -1,0 +1,33 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// A linear feedback shift register is a shift register usually with a few XOR gates to produce the next state of the shift register. A Galois LFSR is one particular arrangement where bit positions with a "tap" are XORed with the output bit to produce its next value, while bit positions without a tap shift. If the taps positions are carefully chosen, the LFSR can be made to be "maximum-length". A maximum-length LFSR of n bits cycles through 2**n-1 states before repeating (the all-zero state is never reached). Build a 5-bit maximal-length Galois LFSR with taps at bit positions 5 and 3. The active-high synchronous reset should reset the LFSR output to 1.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput reg [4:0] q);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    output reg [4:0] q
+);
+
+always @(posedge clk) begin
+    if (reset) begin
+        q <= 5'b00001;
+    end
+    else begin
+        q <= {q[3:0], q[4] ^ q[2]};
+    end
+end
+
+endmodule
+```
+
+The provided Verilog module specification describes a 5-bit maximal-length Galois LFSR (Linear Feedback Shift Register) with taps at bit positions 5 and 3. The LFSR should have an active-high synchronous reset that resets the LFSR output to 1.
+
+The corrected Verilog module implements this functionality as follows:
+
+1. The `q` register is declared as a 5-bit wide register to hold the LFSR state.
+2. In the `always` block triggered by the positive edge of the `clk` signal:
+   - If the `reset` signal is high, the `q` register is assigned the value `5'b00001`, which sets the initial state of the LFSR to 1.
+   - If the `reset` signal is low, the LFSR is updated by shifting the current state one bit to the left and XORing the most significant bit (`q[4]`) with the bit at position 2 (`q[2]`) to produce the new least significant bit.
+
+This implementation ensures that the 5-bit LFSR cycles through 2^5 - 1 = 31 unique states before repeating, as required for a maximal-length LFSR.'}
+
+ Iteration rank: 0.03758721584514967

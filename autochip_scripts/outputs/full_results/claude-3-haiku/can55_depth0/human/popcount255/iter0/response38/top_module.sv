@@ -1,0 +1,59 @@
+module top_module (
+    input [254:0] in,
+    output reg [7:0] out
+);
+
+// Create a 256-bit wide vector to store the intermediate population counts
+reg [7:0] count [0:254];
+
+integer i;
+
+always @(*) begin
+    // Initialize the intermediate population counts to 0
+    for (i = 0; i < 255; i = i + 1) begin
+        count[i] = 0;
+    end
+
+    // Count the number of '1's in each bit position
+    for (i = 0; i < 255; i = i + 1) begin
+        if (in[i]) begin
+            count[i] = 1;
+        end
+    end
+
+    // Combine the intermediate counts to get the final 8-bit output
+    out = count[0] + count[1] + count[2] + count[3] + count[4] + count[5] + count[6] + count[7] +
+          count[8] + count[9] + count[10] + count[11] + count[12] + count[13] + count[14] + count[15] +
+          count[16] + count[17] + count[18] + count[19] + count[20] + count[21] + count[22] + count[23] +
+          count[24] + count[25] + count[26] + count[27] + count[28] + count[29] + count[30] + count[31] +
+          count[32] + count[33] + count[34] + count[35] + count[36] + count[37] + count[38] + count[39] +
+          count[40] + count[41] + count[42] + count[43] + count[44] + count[45] + count[46] + count[47] +
+          count[48] + count[49] + count[50] + count[51] + count[52] + count[53] + count[54] + count[55] +
+          count[56] + count[57] + count[58] + count[59] + count[60] + count[61] + count[62] + count[63] +
+          count[64] + count[65] + count[66] + count[67] + count[68] + count[69] + count[70] + count[71] +
+          count[72] + count[73] + count[74] + count[75] + count[76] + count[77] + count[78] + count[79] +
+          count[80] + count[81] + count[82] + count[83] + count[84] + count[85] + count[86] + count[87] +
+          count[88] + count[89] + count[90] + count[91] + count[92] + count[93] + count[94] + count[95] +
+          count[96] + count[97] + count[98] + count[99] + count[100] + count[101] + count[102] + count[103] +
+          count[104] + count[105] + count[106] + count[107] + count[108] + count[109] + count[110] + count[111] +
+          count[112] + count[113] + count[114] + count[115] + count[116] + count[117] + count[118] + count[119] +
+          count[120] + count[121] + count[122] + count[123] + count[124] + count[125] + count[126] + count[127] +
+          count[128] + count[129] + count[130] + count[131] + count[132] + count[133] + count[134] + count[135] +
+          count[136] + count[137] + count[138] + count[139] + count[140] + count[141] + count[142] + count[143] +
+          count[144] + count[145] + count[146] + count[147] + count[148] + count[149] + count[150] + count[151] +
+          count[152] + count[153] + count[154] + count[155] + count[156] + count[157] + count[158] + count[159] +
+          count[160] + count[161] + count[162] + count[163] + count[164] + count[165] + count[166] + count[167] +
+          count[168] + count[169] + count[170] + count[171] + count[172] + count[173] + count[174] + count[175] +
+          count[176] + count[177] + count[178] + count[179] + count[180] + count[181] + count[182] + count[183] +
+          count[184] + count[185] + count[186] + count[187] + count[188] + count[189] + count[190] + count[191] +
+          count[192] + count[193] + count[194] + count[195] + count[196] + count[197] + count[198] + count[199] +
+          count[200] + count[201] + count[202] + count[203] + count[204] + count[205] + count[206] + count[207] +
+          count[208] + count[209] + count[210] + count[211] + count[212] + count[213] + count[214] + count[215] +
+          count[216] + count[217] + count[218] + count[219] + count[220] + count[221] + count[222] + count[223] +
+          count[224] + count[225] + count[226] + count[227] + count[228] + count[229] + count[230] + count[231] +
+          count[232] + count[233] + count[234] + count[235] + count[236] + count[237] + count[238] + count[239] +
+          count[240] + count[241] + count[242] + count[243] + count[244] + count[245] + count[246] + count[247] +
+          count[248] + count[249] + count[250] + count[251] + count[252] + count[253] + count[254];
+end
+
+endmodule

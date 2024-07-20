@@ -1,0 +1,81 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The game Lemmings involves critters with fairly simple brains. So simple that we are going to model it using a finite state machine. In the Lemmings\' 2D world, Lemmings can be in one of two states: walking left (walk_left is 1) or walking right (walk_right is 1). It will switch directions if it hits an obstacle. In particular, if a Lemming is bumped on the left (by receiving a 1 on bump_left), it will walk right. If it\'s bumped on the right (by receiving a 1 on bump_right), it will walk left. If it\'s bumped on both sides at the same time, it will still switch directions. \n// In addition to walking left and right and changing direction when bumped, when ground=0, the Lemming will fall and say "aaah!". When the ground reappears (ground=1), the Lemming will resume walking in the same direction as before the fall. Being bumped while falling does not affect the walking direction, and being bumped in the same cycle as ground disappears (but not yet falling), or when the ground reappears while still falling, also does not affect the walking direction.\n// Implement a Moore state machine that models this behaviour. areset is positive edge triggered asynchronous reseting the Lemming machine to walk left.\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput bump_left,\n\tinput bump_right,\n\tinput ground,\n\toutput walk_left,\n\toutput walk_right,\n\toutput aaah\n);'}
+{'role': 'assistant', 'content': 'module top_module (\n\tinput clk,\n\tinput areset,\n\tinput bump_left,\n\tinput bump_right,\n\tinput ground,\n\toutput reg walk_left,\n\toutput reg walk_right,\n\toutput reg aaah\n);\n\t\n\t// Define the states\n\ttypedef enum logic [1:0] {WALK_LEFT, WALK_RIGHT, FALL} State;\n\treg [1:0] current_state, next_state;\n\t\n\t// Define the outputs\n\tassign walk_left = (current_state == WALK_LEFT);\n\tassign walk_right = (current_state == WALK_RIGHT);\n\tassign aaah = (current_state == FALL);\n\t\n\talways_ff @(posedge clk, posedge areset) begin\n\t\tif (areset) begin\n\t\t\tcurrent_state <= WALK_LEFT;\n\t\tend else begin\n\t\t\tcurrent_state <= next_state;\n\t\tend\n\tend\n\t\n\talways_comb begin\n\t\tcase (current_state)\n\t\t\tWALK_LEFT: begin\n\t\t\t\tif (bump_right) begin\n\t\t\t\t\tnext_state = WALK_RIGHT;\n\t\t\t\tend else if (bump_left) begin\n\t\t\t\t\tnext_state = WALK_LEFT;\n\t\t\t\tend else begin\n\t\t\t\t\tnext_state = WALK_LEFT;\n\t\t\t\tend\n\t\t\tend\n\t\t\tWALK_RIGHT: begin\n\t\t\t\tif (bump_left) begin\n\t\t\t\t\tnext_state = WALK_LEFT;\n\t\t\t\tend else if (bump_right) begin\n\t\t\t\t\tnext_state = WALK_RIGHT;\n\t\t\t\tend else begin\n\t\t\t\t\tnext_state = WALK_RIGHT;\n\t\t\t\tend\n\t\t\tend\n\t\t\tFALL: begin\n\t\t\t\tif (ground) begin\n\t\t\t\t\tif (current_state == WALK_LEFT) begin\n\t\t\t\t\t\tnext_state = WALK_LEFT;\n\t\t\t\t\tend else if (current_state == WALK_RIGHT) begin\n\t\t\t\t\t\tnext_state = WALK_RIGHT;\n\t\t\t\t\tend else begin\n\t\t\t\t\t\tnext_state = WALK_LEFT;\n\t\t\t\t\tend\n\t\t\t\tend else begin\n\t\t\t\t\tnext_state = FALL;\n\t\t\t\tend\n\t\t\tend\n\t\t\tdefault: begin\n\t\t\t\tnext_state = current_state;\n\t\t\tend\n\t\tendcase\n\tend\nendmodule\n\n'}
+{'role': 'user', 'content': "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\nVCD info: dumpfile wave.vcd opened for output.\n/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/lemmings2/lemmings2_tb.sv:113: $finish called at 2206 (1ps)\nHint: Output 'walk_left' has 323 mismatches. First mismatch occurred at time 110.\nHint: Output 'walk_right' has 321 mismatches. First mismatch occurred at time 150.\nHint: Output 'aaah' has 34 mismatches. First mismatch occurred at time 110.\nHint: Total mismatched samples is 339 out of 441 samples\n\nSimulation finished at 2206 ps\nMismatches: 339 in 441 samples\n"}
+{'assistant': 'module top_module (
+	input clk,
+	input areset,
+	input bump_left,
+	input bump_right,
+	input ground,
+	output reg walk_left,
+	output reg walk_right,
+	output reg aaah
+);
+	
+	// Define the states
+	typedef enum logic [1:0] {WALK_LEFT, WALK_RIGHT, FALL} State;
+	reg [1:0] current_state, next_state;
+	
+	// Define the outputs
+	assign walk_left = (current_state == WALK_LEFT);
+	assign walk_right = (current_state == WALK_RIGHT);
+	assign aaah = (current_state == FALL);
+	
+	always_ff @(posedge clk, posedge areset) begin
+		if (areset) begin
+			current_state <= WALK_LEFT;
+		end else begin
+			current_state <= next_state;
+		end
+	end
+	
+	always_comb begin
+		case (current_state)
+			WALK_LEFT: begin
+				if (bump_right) begin
+					next_state = WALK_RIGHT;
+				end else if (bump_left) begin
+					next_state = WALK_LEFT;
+				end else begin
+                                        // We need to add a condition to check if 'ground' is zero
+                                        if (ground == 0)
+					   next_state = FALL;
+                                        else
+                                           next_state = WALK_LEFT;
+				end
+			end
+			WALK_RIGHT: begin
+				if (bump_left) begin
+					next_state = WALK_LEFT;
+				end else if (bump_right) begin
+					next_state = WALK_RIGHT;
+				end else begin
+                                        // We need to add a condition to check if 'ground' is zero
+                                        if (ground == 0)
+					   next_state = FALL;
+                                        else
+					   next_state = WALK_RIGHT;
+				end
+			end
+			FALL: begin
+				if (ground) begin
+					if (current_state == WALK_LEFT) begin
+						next_state = WALK_LEFT;
+					end else if (current_state == WALK_RIGHT) begin
+						next_state = WALK_RIGHT;
+					end else begin
+						next_state = WALK_LEFT;
+					end
+				end else begin
+					next_state = FALL;
+				end
+			end
+			default: begin
+				next_state = current_state;
+			end
+		endcase
+	end
+endmodule'}
+
+ Iteration rank: 0.32653061224489793

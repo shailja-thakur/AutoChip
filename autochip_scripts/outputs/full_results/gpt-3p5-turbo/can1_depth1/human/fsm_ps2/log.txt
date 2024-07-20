@@ -1,0 +1,137 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // The PS/2 mouse protocol sends messages that are three bytes long. However, within a continuous byte stream, it's not obvious where messages start and end. The only indication is that the first byte of each three byte message always has in[3]=1 (but in[3] of the other two bytes may be 1 or 0 depending on data). We want a finite state machine that will search for message boundaries when given an input byte stream. The algorithm we'll use is to discard bytes until we see one with in[3]=1. We then assume that this is byte 1 of a message, and signal the receipt of a message once all 3 bytes have been received (done). The FSM should signal done in the cycle immediately after the third byte of each message was successfully received. Reset should be active high synchronous.
+
+module top_module (
+	input clk,
+	input [7:0] in,
+	input reset,
+	output done
+);
+assistant: module top_module (
+    input clk,
+    input [7:0] in,
+    input reset,
+    output done
+);
+
+reg [7:0] byte1_reg;
+reg [7:0] byte2_reg;
+reg [7:0] byte3_reg;
+reg done_reg;
+
+always @(posedge clk) begin
+    if (reset) begin
+        byte1_reg <= 8'b0;
+        byte2_reg <= 8'b0;
+        byte3_reg <= 8'b0;
+        done_reg <= 1'b0;
+    end else begin
+        byte1_reg <= in;
+        byte2_reg <= byte1_reg;
+        byte3_reg <= byte2_reg;
+        done_reg <= (byte3_reg[3] == 1'b1) ? 1'b1 : 1'b0;
+    end
+end
+
+assign done = done_reg;
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_ps2/fsm_ps2_tb.sv:47: $finish called at 2001 (1ps)
+Hint: Output 'done' has 207 mismatches. First mismatch occurred at time 210.
+Hint: Total mismatched samples is 207 out of 400 samples
+
+Simulation finished at 2001 ps
+Mismatches: 207 in 400 samples
+
+assistant: module top_module (
+    input clk,
+    input [7:0] in,
+    input reset,
+    output done
+);
+
+reg [7:0] byte1_reg;
+reg [7:0] byte2_reg;
+reg [7:0] byte3_reg;
+reg done_reg;
+reg start;
+
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        byte1_reg <= 8'b0;
+        byte2_reg <= 8'b0;
+        byte3_reg <= 8'b0;
+        done_reg <= 1'b0;
+        start <= 1'b0;
+    end else begin
+        byte1_reg <= in;
+        byte2_reg <= byte1_reg;
+        byte3_reg <= byte2_reg;
+        if (start) begin
+            if (byte3_reg[3] == 1'b1) begin
+                done_reg <= 1'b1;
+                start <= 1'b0;
+            end else begin
+                done_reg <= 1'b0;
+            end
+        end else begin
+            if (byte1_reg[3] == 1'b1) begin
+                start <= 1'b1;
+            end
+        end
+    end
+end
+
+assign done = done_reg;
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_ps2/fsm_ps2_tb.sv:47: $finish called at 2001 (1ps)
+Hint: Output 'done' has 284 mismatches. First mismatch occurred at time 210.
+Hint: Total mismatched samples is 284 out of 400 samples
+
+Simulation finished at 2001 ps
+Mismatches: 284 in 400 samples
+
+Time to Generate: 8.823059797286987
+Best ranked response at iteration 0 with response number 0
+Rank of best response: 0.4825
+Best response module:
+module top_module (
+    input clk,
+    input [7:0] in,
+    input reset,
+    output done
+);
+
+reg [7:0] byte1_reg;
+reg [7:0] byte2_reg;
+reg [7:0] byte3_reg;
+reg done_reg;
+
+always @(posedge clk) begin
+    if (reset) begin
+        byte1_reg <= 8'b0;
+        byte2_reg <= 8'b0;
+        byte3_reg <= 8'b0;
+        done_reg <= 1'b0;
+    end else begin
+        byte1_reg <= in;
+        byte2_reg <= byte1_reg;
+        byte3_reg <= byte2_reg;
+        done_reg <= (byte3_reg[3] == 1'b1) ? 1'b1 : 1'b0;
+    end
+end
+
+assign done = done_reg;
+
+endmodule
+
+

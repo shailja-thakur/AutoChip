@@ -1,0 +1,33 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, one input, and one output. Implement this state machine in Verilog. The reset state is B and reset is active-high synchronous.\n\n// B (out=1) --in=0--> A\n// B (out=1) --in=1--> B\n// A (out=0) --in=0--> B\n// A (out=0) --in=1--> A\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': 'module top_module (
+  input clk,
+  input in,
+  input reset,
+  output out
+);
+
+  reg [1:0] state;
+  
+  always @(posedge clk or posedge reset) begin
+    if (reset)
+      state <= 2'b0;
+    else begin
+      case (state)
+        2'b00: if (in) state <= 2'b00; else state <= 2'b01;
+        2'b01: if (in) state <= 2'b00; else state <= 2'b01;
+      endcase
+    end
+  end
+  
+  always @(state) begin
+    case (state)
+      2'b00: out = 1'b1;
+      2'b01: out = 1'b0;
+    endcase
+  end
+  
+endmodule
+'}
+
+ Iteration rank: -1

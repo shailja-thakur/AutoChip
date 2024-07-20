@@ -1,0 +1,32 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Create 8 D flip-flops with active high synchronous reset. The flip-flops must be reset to 0x34 rather than zero. All DFFs should be triggered by the negative edge of clk.\n\nmodule top_module(\n\tinput clk,\n\tinput [7:0] d,\n\tinput reset,\n\toutput reg [7:0] q);'}
+{'assistant': 'module top_module(
+  input clk,
+  input [7:0] d,
+  input reset,
+  output reg [7:0] q
+);
+
+  reg [7:0] d_ff [0:7];
+  
+  always @(posedge clk or negedge reset) begin
+    if (reset == 0) begin
+      for (integer i = 0; i < 8; i = i + 1) begin
+        d_ff[i] <= 8'h34;
+      end
+    end else begin
+      for (integer i = 0; i < 8; i = i + 1) begin
+        d_ff[i] <= d[i];
+      end
+    end
+  end
+  
+  always @(negedge clk) begin
+    for (integer i = 0; i < 8; i = i + 1) begin
+      q[i] <= d_ff[i];
+    end
+  end
+  
+endmodule'}
+
+ Iteration rank: 0.0045871559633027525

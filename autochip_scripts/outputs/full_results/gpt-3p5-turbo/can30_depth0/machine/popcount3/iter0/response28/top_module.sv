@@ -1,0 +1,9 @@
+module top_module (
+    input [2:0] in,
+    output [1:0] out
+);
+
+    assign out[1] = in[2] + in[1] + in[0];  // calculate the most significant bit of the result
+    assign out[0] = in[1] + in[0];          // calculate the least significant bit of the result
+
+endmodule

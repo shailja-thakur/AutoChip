@@ -1,0 +1,21 @@
+module top_module (
+	input a,
+	input b,
+	input c,
+	input d,
+	input e,
+	output [24:0] out
+);
+
+	// The first vector consists of 25 bits with value 1 if the corresponding input signal is 0,
+	// and consists of 25 bits with value 0 if the corresponding input signal is 1.
+	wire [24:0] first_vector = ~{ {5{a}}, {5{b}}, {5{c}}, {5{d}}, {5{e}} };
+
+	// The second vector consists of 25 bits with value 1 if the corresponding input signal is 1,
+	// and consists of 25 bits with value 0 if the corresponding input signal is 0.
+	wire [24:0] second_vector = {5{a, b, c, d, e} };
+
+	// The output is the bitwise exclusive-or of the two vectors
+	assign out = first_vector ^ second_vector;
+
+endmodule

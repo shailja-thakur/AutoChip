@@ -1,0 +1,53 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the follow Moore machine with the diagram described below:\n\n// B (1) --0--> A\n// B (1) --1--> B\n// A (0) --0--> B\n// A (0) --1--> A\n\n// Write Verilog implementing this state machine. It should asynchronously reset into state B if reset if high.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+reg state;
+always @(posedge clk or posedge areset) begin
+    if (areset) begin
+        state <= 1'b1; // Asynchronously reset to state B
+        out <= 1'b1;
+    end
+    else begin
+        case (state)
+            1'b0: // State A
+                if (in) begin
+                    state <= 1'b0; // Transition from A to A
+                    out <= 1'b0;
+                end
+                else begin
+                    state <= 1'b1; // Transition from A to B
+                    out <= 1'b1;
+                end
+            1'b1: // State B
+                if (in) begin
+                    state <= 1'b1; // Transition from B to B
+                    out <= 1'b1;
+                end
+                else begin
+                    state <= 1'b0; // Transition from B to A
+                    out <= 1'b0;
+                end
+        endcase
+    end
+end
+
+endmodule
+```
+
+The provided Verilog code implements the Moore state machine described in the problem statement. The key aspects are:
+
+1. The state register `state` is used to keep track of the current state (A or B).
+2. The `out` signal is assigned based on the current state and the input `in`.
+3. The asynchronous reset `areset` sets the state to B and the output `out` to 1 when it is high.
+4. The state transitions are implemented using a case statement, where the next state and output are determined based on the current state and the input `in`.
+
+This Verilog code should correctly implement the specified Moore state machine.'}
+
+ Iteration rank: 1.0

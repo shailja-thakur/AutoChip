@@ -1,0 +1,59 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the follow Moore machine with the diagram described below:\n\n// B (1) --0--> A\n// B (1) --1--> B\n// A (0) --0--> B\n// A (0) --1--> A\n\n// Write Verilog implementing this state machine. It should asynchronously reset into state B if reset if high.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+reg state;
+parameter A = 1'b0, B = 1'b1;
+
+always @(posedge clk, posedge areset) begin
+    if (areset) begin
+        state <= B;
+        out <= 1'b1;
+    end
+    else begin
+        case (state)
+            B: begin
+                if (in == 1'b0) begin
+                    state <= A;
+                    out <= 1'b0;
+                end
+                else begin
+                    state <= B;
+                    out <= 1'b1;
+                end
+            end
+            A: begin
+                if (in == 1'b0) begin
+                    state <= B;
+                    out <= 1'b1;
+                end
+                else begin
+                    state <= A;
+                    out <= 1'b0;
+                end
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+The Verilog code implements the given Moore state machine. The state is represented by the `state` register, which can be either `A` or `B`. The `out` output is assigned based on the current state and the input `in`.
+
+The state transitions are as follows:
+
+- If the state is `B` and the input `in` is `0`, the next state becomes `A` and the output `out` is `0`.
+- If the state is `B` and the input `in` is `1`, the next state remains `B` and the output `out` is `1`.
+- If the state is `A` and the input `in` is `0`, the next state becomes `B` and the output `out` is `1`.
+- If the state is `A` and the input `in` is `1`, the next state remains `A` and the output `out` is `0`.
+
+The module also includes an asynchronous reset, where the state is set to `B` and the output `out` is set to `1`.'}
+
+ Iteration rank: 1.0

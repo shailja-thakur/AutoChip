@@ -1,0 +1,57 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// Build a gshare branch predictor with 7-bit pc and 7-bit global history, hashed (using xor) into a 7-bit index. This index accesses a 128-entry table of two-bit saturating counters. The branch predictor should contain a 7-bit global branch history register. The branch predictor has two sets of interfaces: One for doing predictions and one for doing training. The prediction interface is used in the processor's Fetch stage to ask the branch predictor for branch direction predictions for the instructions being fetched. Once these branches proceed down the pipeline and are executed, the true outcomes of the branches become known. The branch predictor is then trained using the actual branch direction outcomes. \n// When a branch prediction is requested (predict_valid = 1) for a given pc, the branch predictor produces the predicted branch direction and state of the branch history register used to make the prediction. The branch history register is then updated (at the next positive clock edge) for the predicted branch. \n// When training for a branch is requested (train_valid = 1), the branch predictor is told the pc and branch history register value for the branch that is being trained, as well as the actual branch outcome and whether the branch was a misprediction (needing a pipeline flush). Update the pattern history table (PHT) to train the branch predictor to predict this branch more accurately next time. In addition, if the branch being trained is mispredicted, also recover the branch history register to the state immediately after the mispredicting branch completes execution.\n// If training for a misprediction and a prediction (for a different, younger instruction) occurs in the same cycle, both operations will want to modify the branch history register. When this happens, training takes precedence, because the branch being predicted will be discarded anyway. If training and prediction of the same PHT entry happen at the same time, the prediction sees the PHT state before training because training only modifies the PHT at the next positive clock edge. The following timing diagram shows the timing when training and predicting PHT entry 0 at the same time. The training request at cycle 4 changes the PHT entry state in cycle 5, but the prediction request in cycle 4 outputs the PHT state at cycle 4, without considering the effect of the training request in cycle 4. Reset is asynchronous active-high.\n\nmodule top_module(\n\tinput clk,\n\tinput areset, \n\n\tinput predict_valid,\n\tinput [6:0] predict_pc,\n\toutput predict_taken, \n\toutput [6:0] predict_history,\n\n\tinput train_valid,\n\tinput train_taken,\n\tinput train_mispredicted,\n\tinput [6:0] train_history, \n\tinput [6:0] train_pc\n);"}
+{'role': 'assistant', 'content': "module top_module(\n\tinput clk,\n\tinput areset, \n\n\tinput predict_valid,\n\tinput [6:0] predict_pc,\n\toutput predict_taken, \n\toutput [6:0] predict_history,\n\n\tinput train_valid,\n\tinput train_taken,\n\tinput train_mispredicted,\n\tinput [6:0] train_history, \n\tinput [6:0] train_pc\n);\n\n\treg [6:0] index;\n\treg [1:0] pht [127:0]; // pattern history table\n\n\treg [6:0] ghr;\n\treg [1:0] prediction;\n\t\n\t// Prediction interface\n\talways @(posedge clk or posedge areset) begin\n\t\tif(areset)\n\t\t\tghr <= 0;\n\t\telse if(predict_valid) begin\n\t\t\tghr <= {ghr[5:0], prediction};\n\t\t\tindex <= {predict_pc[6:0]} ^ {ghr[6:0]};\n\t\tend\n\tend\n\t\n\t// Training interface\n\talways @(posedge clk or posedge areset) begin\n\t\tif(areset) begin\n\t\t\tfor (int i=0; i<128; i=i+1)\n\t\t\t\tpht[i] <= 2'b0;\n\t\tend else if(train_valid) begin\n\t\t\tif(train_mispredicted) begin\n\t\t\t\tpht[{train_history[6:0]} ^ {train_pc[6:0]}] <= 2'b0;\n\t\t\t\tghr <= train_history;\n\t\t\tend else begin\n\t\t\t\tpht[index] <= train_taken ? pht[index] == 2'b11 ? 2'b11 : pht[index] + 2'b01 \n\t\t\t\t: pht[index] == 2'b00 ? 2'b00 : pht[index] - 2'b01;\n\t\t\t\tghr <= {ghr[5:0], train_taken};\n\t\t\tend\n\t\tend\n\tend\n\t\n\t// Prediction output\n\tassign predict_taken = pht[index][1];\n\tassign predict_history = ghr;\n\t\nendmodule\n\n"}
+{'role': 'user', 'content': "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\nVCD info: dumpfile wave.vcd opened for output.\n/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/gshare/gshare_tb.sv:206: $finish called at 5416 (1ps)\nHint: Output 'predict_taken' has 584 mismatches. First mismatch occurred at time 20.\nHint: Output 'predict_history' has 593 mismatches. First mismatch occurred at time 30.\nHint: Total mismatched samples is 603 out of 1083 samples\n\nSimulation finished at 5416 ps\nMismatches: 603 in 1083 samples\n"}
+{'role': 'assistant', 'content': "module top_module(\n\tinput clk,\n\tinput areset, \n\n\tinput predict_valid,\n\tinput [6:0] predict_pc,\n\toutput predict_taken, \n\toutput [6:0] predict_history,\n\n\tinput train_valid,\n\tinput train_taken,\n\tinput train_mispredicted,\n\tinput [6:0] train_history, \n\tinput [6:0] train_pc\n);\n\n\treg [6:0] index;\n\treg [1:0] pht [127:0]; // pattern history table\n\n\treg [6:0] ghr;\n\treg [1:0] prediction;\n\t\n\t// Prediction interface\n\talways @(posedge clk or posedge areset) begin\n\t\tif(areset)\n\t\t\tghr <= 0;\n\t\telse if(predict_valid) begin\n\t\t\tghr <= {ghr[5:0], prediction};\n\t\t\tindex <= {predict_pc[6:0]} ^ {ghr[6:0]};\n\t\t\tprediction <= pht[index];\n\t\tend\n\tend\n\t\n\t// Training interface\n\talways @(posedge clk or posedge areset) begin\n\t\tif(areset) begin\n\t\t\tfor (int i=0; i<128; i=i+1)\n\t\t\t\tpht[i] <= 2'b0;\n\t\tend else if(train_valid) begin\n\t\t\tif(train_mispredicted) begin\n\t\t\t\tpht[{train_history[6:0]} ^ {train_pc[6:0]}] <= 2'b0;\n\t\t\t\tghr <= train_history;\n\t\t\tend else begin\n\t\t\t\tpht[index] <= train_taken ? \n\t\t\t\t\t(pht[index] == 2'b11 ? 2'b11 : pht[index] + 2'b01) \n\t\t\t\t\t: (pht[index] == 2'b00 ? 2'b00 : pht[index] - 2'b01);\n\t\t\t\tghr <= {ghr[5:0], train_taken};\n\t\t\tend\n\t\tend\n\tend\n\t\n\t// Prediction output\n\tassign predict_taken = prediction[1];\n\tassign predict_history = ghr;\n\t\nendmodule\n\n"}
+{'role': 'user', 'content': "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\nVCD info: dumpfile wave.vcd opened for output.\n/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/gshare/gshare_tb.sv:206: $finish called at 5416 (1ps)\nHint: Output 'predict_taken' has 137 mismatches. First mismatch occurred at time 20.\nHint: Output 'predict_history' has 549 mismatches. First mismatch occurred at time 30.\nHint: Total mismatched samples is 560 out of 1083 samples\n\nSimulation finished at 5416 ps\nMismatches: 560 in 1083 samples\n"}
+{'role': 'assistant', 'content': "module top_module(\n\tinput clk,\n\tinput areset, \n\n\tinput predict_valid,\n\tinput [6:0] predict_pc,\n\toutput predict_taken, \n\toutput [6:0] predict_history,\n\n\tinput train_valid,\n\tinput train_taken,\n\tinput train_mispredicted,\n\tinput [6:0] train_history, \n\tinput [6:0] train_pc\n);\n\n\treg [6:0] index;\n\treg [1:0] pht [127:0]; // pattern history table\n\n\treg [6:0] ghr;\n\treg [1:0] prediction;\n\t\n\t// Prediction interface\n\talways @(posedge clk or posedge areset) begin\n\t\tif(areset)\n\t\t\tghr <= 0;\n\t\telse if(predict_valid) begin\n\t\t\tghr <= {ghr[5:0], prediction[0]};\n\t\t\tindex <= {predict_pc[6:0]} ^ {ghr[6:0]};\n\t\t\tprediction <= pht[index];\n\t\tend\n\tend\n\t\n\t// Training interface\n\talways @(posedge clk or posedge areset) begin\n\t\tif(areset) begin\n\t\t\tfor (int i=0; i<128; i=i+1)\n\t\t\t\tpht[i] <= 2'b0;\n\t\tend else if(train_valid) begin\n\t\t\tif(train_mispredicted) begin\n\t\t\t\tpht[{train_history[6:0]} ^ {train_pc[6:0]}] <= 2'b0;\n\t\t\t\tghr <= train_history;\n\t\t\tend else begin\n\t\t\t\tpht[index] <= train_taken ? \n\t\t\t\t\t(pht[index] == 2'b11 ? 2'b11 : pht[index] + 2'b01) \n\t\t\t\t\t: (pht[index] == 2'b00 ? 2'b00 : pht[index] - 2'b01);\n\t\t\t\tghr <= {ghr[5:0], train_taken};\n\t\t\tend\n\t\tend\n\tend\n\t\n\t// Prediction output\n\tassign predict_taken = prediction[1];\n\tassign predict_history = ghr;\n\t\nendmodule\n\n"}
+{'role': 'user', 'content': "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\nVCD info: dumpfile wave.vcd opened for output.\n/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/gshare/gshare_tb.sv:206: $finish called at 5416 (1ps)\nHint: Output 'predict_taken' has 153 mismatches. First mismatch occurred at time 20.\nHint: Output 'predict_history' has 544 mismatches. First mismatch occurred at time 30.\nHint: Total mismatched samples is 565 out of 1083 samples\n\nSimulation finished at 5416 ps\nMismatches: 565 in 1083 samples\n"}
+{'assistant': 'module top_module(
+	input clk,
+	input areset, 
+
+	input predict_valid,
+	input [6:0] predict_pc,
+	output predict_taken, 
+	output [6:0] predict_history,
+
+	input train_valid,
+	input train_taken,
+	input train_mispredicted,
+	input [6:0] train_history, 
+	input [6:0] train_pc
+);
+
+	reg [6:0] index;
+	reg [1:0] pht [127:0]; // pattern history table
+
+	reg [6:0] ghr;
+	reg [1:0] prediction;
+	
+	always @(posedge clk or posedge areset) begin
+		if(areset)
+			ghr <= 0;
+		else if(predict_valid) begin
+			ghr <= {ghr[5:0], prediction[0]};
+			index <= {predict_pc[6:0]} ^ {ghr[6:0]};
+			prediction <= pht[index];
+		end else begin
+			ghr <= train_history;
+			index <= {train_pc[6:0]} ^ {ghr[6:0]};
+			if(train_valid && train_mispredicted) begin
+				pht[index] <= 2'b00;
+			end else begin
+				ghr <= {ghr[5:0], train_taken};
+				pht[index] <= train_taken ? 
+					(pht[index] == 2'b11 ? 2'b11 : pht[index] + 2'b01) 
+					: (pht[index] == 2'b00 ? 2'b00 : pht[index] - 2'b01);
+			end
+		end
+	end
+	
+	assign predict_taken = prediction[1];
+	assign predict_history = ghr;
+	
+endmodule'}
+
+ Iteration rank: 0.43674976915974145

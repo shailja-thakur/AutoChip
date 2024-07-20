@@ -1,0 +1,50 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The top module contains a 3 bit state register with the following state transition:\n\nB0 -> B1 -> B2 -> B3 -> Done\n\nB0 indicates that it is the first shift cycle.\nB1 indicates that it is the second shift cycle.\nB2 indicates that it is the third shift cycle.\nB3 indicates that it is the fourth shift cycle.\nDone indicates that it has completed the fourth shift cycle.\n\nWhen the reset is 1, it will always go to state B0.\nWhen the reset is 0, and state is not B0, B1, B2, or B3, it is in state Done.\nshift_ena will be 1 if state is B0, B1, B2, or B3.\n\n\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput shift_ena);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    output reg shift_ena
+);
+
+    reg [2:0] state, next_state;
+
+    // State encoding
+    localparam B0 = 3'b000;
+    localparam B1 = 3'b001;
+    localparam B2 = 3'b010;
+    localparam B3 = 3'b011;
+    localparam DONE = 3'b100;
+
+    // State transition logic
+    always @(*) begin
+        case (state)
+            B0: next_state = B1;
+            B1: next_state = B2;
+            B2: next_state = B3;
+            B3: next_state = DONE;
+            default: next_state = DONE;
+        endcase
+    end
+
+    // Sequential logic (state register)
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= B0;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    // Output logic
+    always @(*) begin
+        case (state)
+            B0, B1, B2, B3: shift_ena = 1'b1;
+            default: shift_ena = 1'b0;
+        endcase
+    end
+
+endmodule
+```'}
+
+ Iteration rank: 1.0

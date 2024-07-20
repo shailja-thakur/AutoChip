@@ -1,0 +1,8 @@
+//  This Verilog module is used to add two 8-bit numbers, a and b, and output the 8-bit sum, s, and an overflow bit. The module has four ports: two 8-bit inputs, a and b, an 8-bit output, s, and an overflow output.  The module first creates an 8-bit wire, sum, which is the sum of the two inputs, a and b. It then assigns the 8-bit output, s, to the 8 least significant bits of the sum. Finally, it assigns the overflow output to a logical expression which checks if the two inputs have the same sign and if the sign of the output is different from the sign of the inputs. If both of these conditions are true, then the overflow bit is set to 1, otherwise it is set to 0.
+
+module top_module (
+	input [7:0] a,
+	input [7:0] b,
+	output [7:0] s,
+	output overflow
+);

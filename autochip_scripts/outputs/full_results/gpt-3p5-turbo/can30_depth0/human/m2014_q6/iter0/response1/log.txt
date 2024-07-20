@@ -1,0 +1,104 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the state machine shown below:\n\n// A (0) --0--> B\n// A (0) --1--> A\n// B (0) --0--> C\n// B (0) --1--> D\n// C (0) --0--> E\n// C (0) --1--> D\n// D (0) --0--> F\n// D (0) --1--> A\n// E (1) --0--> E\n// E (1) --1--> D\n// F (1) --0--> C\n// F (1) --1--> D\n\n// Implement this state machine in Verilog.\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput w,\n\toutput z\n);'}
+{'assistant': 'module top_module (
+  input clk,
+  input reset,
+  input w,
+  output z
+);
+
+// Define state machine states
+parameter A = 2'b00;
+parameter B = 2'b01;
+parameter C = 2'b10;
+parameter D = 2'b11;
+parameter E = 2'b100;
+parameter F = 2'b101;
+
+// Define state register
+reg [2:0] state;
+// Define next state register
+reg [2:0] next_state;
+
+// Define output register
+reg z;
+
+always @(posedge clk or posedge reset) begin
+  if (reset) begin
+    // Reset state to A
+    state <= A;
+  end else begin
+    // Update state based on current state and input w
+    case (state)
+      A: begin
+        if (w) begin
+          next_state <= A;
+        end else begin
+          next_state <= B;
+        end
+      end
+      B: begin
+        if (w) begin
+          next_state <= D;
+        end else begin
+          next_state <= C;
+        end
+      end
+      C: begin
+        if (w) begin
+          next_state <= D;
+        end else begin
+          next_state <= E;
+        end
+      end
+      D: begin
+        if (w) begin
+          next_state <= A;
+        end else begin
+          next_state <= F;
+        end
+      end
+      E: begin
+        if (w) begin
+          next_state <= D;
+        end else begin
+          next_state <= E;
+        end
+      end
+      F: begin
+        if (w) begin
+          next_state <= D;
+        end else begin
+          next_state <= C;
+        end
+      end
+    endcase
+  end
+end
+
+always @(posedge clk) begin
+  // Update state with next_state
+  state <= next_state;
+end
+
+// Output logic
+always @(state) begin
+  case (state)
+    A, B: begin
+      // Output z is 0
+      z <= 0;
+    end
+    C, D, E: begin
+      // Output z is 1
+      z <= 1;
+    end
+    F: begin
+      // Output z is 0 if w is 0, else 1
+      z <= w;
+    end
+  endcase
+end
+
+endmodule'}
+
+ Iteration rank: -1

@@ -1,0 +1,47 @@
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+// State variables
+reg state;
+localparam A = 1'b0, B = 1'b1;
+
+always @(posedge clk or posedge areset) begin
+    if (areset) begin
+        state <= B;
+        out <= 1'b0;
+    end
+    else begin
+        case (state)
+            B: begin
+                if (in == 1'b0) begin
+                    state <= A;
+                    out <= 1'b0;
+                end
+                else begin
+                    state <= B;
+                    out <= 1'b1;
+                end
+            end
+            A: begin
+                if (in == 1'b0) begin
+                    state <= B;
+                    out <= 1'b0;
+                end
+                else begin
+                    state <= A;
+                    out <= 1'b0;
+                end
+            end
+            default: begin
+                state <= B;
+                out <= 1'b0;
+            end
+        endcase
+    end
+end
+
+endmodule

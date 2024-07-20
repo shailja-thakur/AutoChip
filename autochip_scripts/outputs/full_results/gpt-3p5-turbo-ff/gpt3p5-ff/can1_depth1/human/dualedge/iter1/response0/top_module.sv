@@ -1,0 +1,14 @@
+module top_module (
+  input clk,
+  input d,
+  output reg q
+);
+
+  reg q_temp;
+
+  always @(posedge clk) begin
+    q_temp <= d;
+    q <= q_temp;
+  end
+
+endmodule

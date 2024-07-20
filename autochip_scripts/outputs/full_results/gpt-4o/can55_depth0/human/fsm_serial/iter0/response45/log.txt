@@ -1,0 +1,93 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    // State encoding
+    typedef enum logic [2:0] {
+        IDLE   = 3'b000,
+        START  = 3'b001,
+        DATA   = 3'b010,
+        STOP   = 3'b011,
+        ERROR  = 3'b100
+    } state_t;
+
+    state_t state, next_state;
+    reg [2:0] bit_counter;
+    reg [7:0] data_byte;
+    
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_counter <= 3'd0;
+            data_byte <= 8'd0;
+            done <= 1'b0;
+        end
+        else begin
+            state <= next_state;
+            if (state == DATA) begin
+                data_byte[bit_counter] <= in;
+                bit_counter <= bit_counter + 1;
+            end
+            else if (state == IDLE || state == STOP || state == ERROR) begin
+                bit_counter <= 3'd0;
+            end
+            
+            if (state == STOP && in) begin
+                done <= 1'b1; // Successfully received byte
+            end
+            else if (state != STOP) begin
+                done <= 1'b0; // Reset done flag
+            end
+        end
+    end
+
+    always_comb begin
+        next_state = state;
+        case (state)
+            IDLE: begin
+                if (!in) begin
+                    next_state = START; // Start bit detected
+                end
+            end
+            
+            START: begin
+                if (in) begin
+                    next_state = IDLE; // False start bit detected, return to IDLE
+                end
+                else if (bit_counter == 3'd0) begin
+                    next_state = DATA; // Valid start bit, proceed to receive data bits
+                end
+            end
+            
+            DATA: begin
+                if (bit_counter == 3'd8) begin
+                    next_state = STOP; // All 8 data bits received, proceed to check stop bit
+                end
+            end
+            
+            STOP: begin
+                if (in) begin
+                    next_state = IDLE; // Valid stop bit, return to IDLE for next byte
+                end
+                else begin
+                    next_state = ERROR; // Invalid stop bit, enter ERROR state
+                end
+            end
+            
+            ERROR: begin
+                if (in) begin
+                    next_state = IDLE; // Stop bit detected, return to IDLE for next byte
+                end
+            end
+        endcase
+    end
+endmodule
+```'}
+
+ Iteration rank: -0.5

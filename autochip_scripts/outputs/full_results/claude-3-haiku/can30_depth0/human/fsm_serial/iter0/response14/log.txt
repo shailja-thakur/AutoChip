@@ -1,0 +1,85 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+localparam IDLE = 2'b00;
+localparam START_BIT = 2'b01;
+localparam DATA_BITS = 2'b10;
+localparam STOP_BIT = 2'b11;
+
+reg [1:0] state;
+reg [3:0] bit_count;
+reg [7:0] data_buffer;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= IDLE;
+        bit_count <= 0;
+        data_buffer <= 0;
+        done <= 0;
+    end else begin
+        case (state)
+            IDLE: begin
+                if (in == 1'b0) begin
+                    state <= START_BIT;
+                    bit_count <= 0;
+                end
+            end
+            START_BIT: begin
+                if (bit_count == 4'd0) begin
+                    if (in == 1'b0) begin
+                        state <= DATA_BITS;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                bit_count <= bit_count + 1;
+            end
+            DATA_BITS: begin
+                data_buffer[bit_count] <= in;
+                if (bit_count == 4'd7) begin
+                    state <= STOP_BIT;
+                    bit_count <= 0;
+                end else begin
+                    bit_count <= bit_count + 1;
+                end
+            end
+            STOP_BIT: begin
+                if (bit_count == 4'd0) begin
+                    if (in == 1'b1) begin
+                        done <= 1'b1;
+                    end else begin
+                        state <= IDLE;
+                    end
+                end
+                bit_count <= bit_count + 1;
+            end
+            default: begin
+                state <= IDLE;
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+The Verilog module above implements a finite state machine that can identify when bytes have been correctly received in a serial communication protocol with one start bit, 8 data bits, and one stop bit.
+
+The module has the following states:
+1. `IDLE`: Waits for the start bit (0) to be detected.
+2. `START_BIT`: Verifies the start bit is valid.
+3. `DATA_BITS`: Samples the 8 data bits, least significant bit first.
+4. `STOP_BIT`: Verifies the stop bit (1) is present.
+
+The module also includes a synchronous reset that clears the state machine and resets the internal variables.
+
+When a complete byte is successfully received, the `done` output is set high to indicate the data is available. The `data_buffer` variable stores the received 8-bit data.'}
+
+ Iteration rank: 0.4320441988950276

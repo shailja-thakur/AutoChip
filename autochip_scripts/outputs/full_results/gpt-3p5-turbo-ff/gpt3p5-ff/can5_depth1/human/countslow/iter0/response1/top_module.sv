@@ -1,0 +1,19 @@
+module top_module(
+    input wire clk,
+    input wire slowena,
+    input wire reset,
+    output reg [3:0] q);
+	
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            q <= 0;
+        end else if (slowena) begin
+            if (q == 9) begin
+                q <= 0;
+            end else begin
+                q <= q + 1;
+            end
+        end
+    end
+
+endmodule

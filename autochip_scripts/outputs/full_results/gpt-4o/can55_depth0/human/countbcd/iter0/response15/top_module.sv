@@ -1,0 +1,60 @@
+module top_module(
+    input clk,
+    input reset,
+    output [3:1] ena,
+    output reg [15:0] q);
+
+    // Internal signals for carry propagation
+    reg carry0, carry1, carry2, carry3;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            q <= 16'b0;  // Reset all digits to 0
+        end
+        else begin
+            // Increment the ones digit
+            carry0 = (q[3:0] == 4'd9);  // Check if the ones digit needs a carry
+            if (carry0) begin
+                q[3:0] <= 4'd0;  // Reset ones digit to 0 on carry
+            end else begin
+                q[3:0] <= q[3:0] + 1'b1;  // Otherwise, just increment
+            end
+
+            // Increment the tens digit if there is a carry from the ones digit
+            carry1 = (q[7:4] == 4'd9) && carry0;  // Check if the tens digit needs a carry
+            if (carry0) begin
+                if (carry1) begin
+                    q[7:4] <= 4'd0;  // Reset tens digit to 0 on carry
+                end else begin
+                    q[7:4] <= q[7:4] + 1'b1;  // Otherwise, just increment
+                end
+            end
+
+            // Increment the hundreds digit if there is a carry from the tens digit
+            carry2 = (q[11:8] == 4'd9) && carry1;  // Check if the hundreds digit needs a carry
+            if (carry1) begin
+                if (carry2) begin
+                    q[11:8] <= 4'd0;  // Reset hundreds digit to 0 on carry
+                end else begin
+                    q[11:8] <= q[11:8] + 1'b1;  // Otherwise, just increment
+                end
+            end
+
+            // Increment the thousands digit if there is a carry from the hundreds digit
+            carry3 = (q[15:12] == 4'd9) && carry2;  // Check if the thousands digit needs a carry
+            if (carry2) begin
+                if (carry3) begin
+                    q[15:12] <= 4'd0;  // Reset thousands digit to 0 on carry
+                end else begin
+                    q[15:12] <= q[15:12] + 1'b1;  // Otherwise, just increment
+                end
+            end
+        end
+    end
+
+    // Generate enable signals
+    assign ena[1] = carry0;
+    assign ena[2] = carry1;
+    assign ena[3] = carry2;
+
+endmodule

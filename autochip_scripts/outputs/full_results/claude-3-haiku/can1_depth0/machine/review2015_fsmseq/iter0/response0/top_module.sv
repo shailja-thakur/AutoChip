@@ -1,0 +1,54 @@
+module top_module(
+    input clk,
+    input reset,
+    input data,
+    output reg start_shifting
+);
+
+    // State register
+    reg [2:0] state;
+    
+    // State definitions
+    localparam S = 3'b000,
+              S1 = 3'b001,
+              S11 = 3'b010,
+              S110 = 3'b011,
+              Done = 3'b100;
+
+    // State update logic
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= S;
+        end
+        else begin
+            case (state)
+                S: begin
+                    if (data) state <= S1;
+                    else state <= S;
+                end
+                S1: begin
+                    if (data) state <= S11;
+                    else state <= S;
+                end
+                S11: begin
+                    if (data) state <= S11;
+                    else state <= S110;
+                end
+                S110: begin
+                    if (data) state <= Done;
+                    else state <= S;
+                end
+                Done: begin
+                    state <= Done;
+                end
+                default: state <= S;
+            endcase
+        end
+    end
+
+    // Output logic
+    always @(*) begin
+        start_shifting = (state == Done);
+    end
+
+endmodule

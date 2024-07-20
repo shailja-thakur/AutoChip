@@ -1,0 +1,40 @@
+module top_module (
+    input in,
+    input [1:0] state,
+    output reg [1:0] next_state,
+    output out
+);
+
+    // State Encoding
+    localparam A = 2'b00,
+               B = 2'b01,
+               C = 2'b10,
+               D = 2'b11;
+
+    // Next State Logic
+    always @(*) begin
+        case (state)
+            A: if (in)
+                   next_state = B;
+               else
+                   next_state = A;
+            B: if (in)
+                   next_state = B;
+               else
+                   next_state = C;
+            C: if (in)
+                   next_state = D;
+               else
+                   next_state = A;
+            D: if (in)
+                   next_state = B;
+               else
+                   next_state = C;
+            default: next_state = A;
+        endcase
+    end
+
+    // Output Logic
+    assign out = (state == D);
+
+endmodule

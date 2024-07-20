@@ -1,0 +1,58 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The game Lemmings involves critters with fairly simple brains. So simple that we are going to model it using a finite state machine. In the Lemmings' 2D world, Lemmings can be in one of two states: walking left (walk_left is 1) or walking right (walk_right is 1). It will switch directions if it hits an obstacle. In particular, if a Lemming is bumped on the left (by receiving a 1 on bump_left), it will walk right. If it's bumped on the right (by receiving a 1 on bump_right), it will walk left. If it's bumped on both sides at the same time, it will still switch directions. Implement a Moore state machine with two states, two inputs, and one output (internal to the module) that models this behaviour. areset is positive edge triggered asynchronous reseting the Lemming machine to walk left.\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput bump_left,\n\tinput bump_right,\n\toutput walk_left,\n\toutput walk_right\n);"}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    output reg walk_left,
+    output reg walk_right
+);
+
+localparam WALK_LEFT = 1'b0, WALK_RIGHT = 1'b1;
+reg state, next_state;
+
+always @(posedge clk, posedge areset) begin
+    if (areset)
+        state <= WALK_LEFT;
+    else
+        state <= next_state;
+end
+
+always @(*) begin
+    // Update next state based on current state and inputs
+    case (state)
+        WALK_LEFT: begin
+            if (bump_right)
+                next_state = WALK_RIGHT;
+            else
+                next_state = WALK_LEFT;
+        end
+        WALK_RIGHT: begin
+            if (bump_left)
+                next_state = WALK_LEFT;
+            else
+                next_state = WALK_RIGHT;
+        end
+        default:
+            next_state = WALK_LEFT;
+    endcase
+end
+
+// Output logic
+always @(*) begin
+    walk_left = (state == WALK_LEFT);
+    walk_right = (state == WALK_RIGHT);
+end
+
+endmodule
+```
+
+This Verilog module implements the Lemmings finite state machine behavior as described in the problem statement. The module has two states, `WALK_LEFT` and `WALK_RIGHT`, which represent the Lemming's direction of movement. The state is updated on the positive edge of the clock signal, with an asynchronous reset signal `areset` that sets the state to `WALK_LEFT`.
+
+The `next_state` logic updates the state based on the current state and the `bump_left` and `bump_right` inputs. If the Lemming is walking left and is bumped on the right, it will switch to walking right. If the Lemming is walking right and is bumped on the left, it will switch to walking left.
+
+The output logic simply sets the `walk_left` and `walk_right` signals based on the current state.'}
+
+ Iteration rank: 0.18777292576419213

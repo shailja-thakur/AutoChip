@@ -1,0 +1,52 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This module is a part of the FSM for controlling the shift register, we want the ability to enable the shift register for exactly 4 clock cycles whenever the proper bit pattern is detected. Whenever the FSM is reset, assert shift_ena for 4 cycles, then 0 forever (until reset). Reset should be active high synchronous.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput shift_ena);'}
+{'assistant': 'module top_module(
+	input clk,
+	input reset,
+	output shift_ena);
+	
+	// Define state enum for FSM
+	typedef enum logic [1:0] {
+		IDLE,
+		ENABLE,
+		DISABLE
+	} state_t;
+	
+	// Declare FSM signals
+	state_t current_state;
+	state_t next_state;
+	
+	reg shift_ena;
+	
+	// FSM process
+	always_ff @(posedge clk, posedge reset) begin
+		if (reset) begin
+			current_state <= IDLE;
+			shift_ena <= 1'b0;
+		end else begin
+			current_state <= next_state;
+			shift_ena <= (current_state == ENABLE) ? 1'b1 : 1'b0;
+		end
+	end
+	
+	// Next state logic
+	always_comb begin
+		case (current_state)
+			IDLE: begin
+				if (reset)
+					next_state = ENABLE;
+				else
+					next_state = IDLE;
+			end
+			ENABLE: next_state = DISABLE;
+			DISABLE: begin
+				if (reset)
+					next_state = ENABLE;
+				else
+					next_state = DISABLE;
+			end
+		endcase
+	end
+endmodule'}
+
+ Iteration rank: -1

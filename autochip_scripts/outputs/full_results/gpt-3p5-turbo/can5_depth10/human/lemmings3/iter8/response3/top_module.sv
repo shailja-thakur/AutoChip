@@ -1,0 +1,161 @@
+module top_module (
+  input clk,
+  input areset,
+  input bump_left,
+  input bump_right,
+  input ground,
+  input dig,
+  output reg walk_left,
+  output reg walk_right,
+  output reg aaah,
+  output reg digging
+);
+
+  reg [1:0] state;
+  reg prev_state;
+  reg [1:0] next_state;
+
+  parameter IDLE = 2'b00;
+  parameter WALK_LEFT = 2'b01;
+  parameter WALK_RIGHT = 2'b10;
+  
+  always @(posedge clk or posedge areset) begin
+    if (areset) begin
+      state <= IDLE;
+      walk_left <= 1'b1;
+      walk_right <= 1'b0;
+      aaah <= 1'b0;
+      digging <= 1'b0;
+    end else begin
+      state <= next_state;
+      case (state)
+        IDLE: begin
+          if (bump_left && !bump_right) begin
+            next_state = WALK_RIGHT;
+            walk_left <= 1'b0;
+            walk_right <= 1'b1;
+            aaah <= 1'b0;
+            digging <= 1'b0;
+          end else if (!bump_left && bump_right) begin
+            next_state = WALK_LEFT;
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+            aaah <= 1'b0;
+            digging <= 1'b0;
+          end else if (!ground && prev_state != IDLE) begin
+            next_state = IDLE;
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+            aaah <= 1'b0;
+            digging <= 1'b0;
+          end else if (!ground && prev_state == IDLE) begin
+            aaah <= 1'b1;
+            next_state = IDLE;
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+            digging <= 1'b0;
+          end else if (ground && dig && prev_state != IDLE) begin
+            next_state = IDLE;
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+            aaah <= 1'b0;
+            digging <= 1'b0;
+          end else if (ground && dig && prev_state == IDLE) begin
+            next_state = IDLE;
+            walk_left <= 1'b0;
+            walk_right <= 1'b0;
+            aaah <= 1'b0;
+            digging <= 1'b1;
+          end else if (!ground && !dig && prev_state == WALK_LEFT) begin
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+            aaah <= 1'b0;
+            digging <= 1'b0;
+          end else if (!ground && !dig && prev_state == WALK_RIGHT) begin
+            walk_left <= 1'b0;
+            walk_right <= 1'b1;
+            aaah <= 1'b0;
+            digging <= 1'b0;
+          end
+        end
+        
+        WALK_LEFT: begin
+          if (bump_right) begin
+            next_state = IDLE;
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+            aaah <= 1'b0;
+            digging <= 1'b0;
+          end else if (!ground && prev_state != WALK_LEFT) begin
+            next_state = IDLE;
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+            aaah <= 1'b0;
+            digging <= 1'b0;
+          end else if (!ground && prev_state == WALK_LEFT) begin
+            aaah <= 1'b1;
+            next_state = IDLE;
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+            digging <= 1'b0;
+          end else if (ground && dig && prev_state != WALK_LEFT) begin
+            next_state = IDLE;
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+            aaah <= 1'b0;
+            digging <= 1'b0;
+          end else if (ground && dig && prev_state == WALK_LEFT) begin
+            next_state = IDLE;
+            walk_left <= 1'b0;
+            walk_right <= 1'b0;
+            aaah <= 1'b0;
+            digging <= 1'b1;
+          end
+        end
+        
+        WALK_RIGHT: begin
+          if (bump_left) begin
+            next_state = IDLE;
+            walk_left <= 1'b0;
+            walk_right <= 1'b1;
+            aaah <= 1'b0;
+            digging <= 1'b0;
+          end else if (!ground && prev_state != WALK_RIGHT) begin
+            next_state = IDLE;
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+            aaah <= 1'b0;
+            digging <= 1'b0;
+          end else if (!ground && prev_state == WALK_RIGHT) begin
+            aaah <= 1'b1;
+            next_state = IDLE;
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+            digging <= 1'b0;
+          end else if (ground && dig && prev_state != WALK_RIGHT) begin
+            next_state = IDLE;
+            walk_left <= 1'b1;
+            walk_right <= 1'b0;
+            aaah <= 1'b0;
+            digging <= 1'b0;
+          end else if (ground && dig && prev_state == WALK_RIGHT) begin
+            next_state = IDLE;
+            walk_left <= 1'b0;
+            walk_right <= 1'b0;
+            aaah <= 1'b0;
+            digging <= 1'b1;
+          end
+        end
+      endcase
+    end
+  end
+  
+  always @(negedge clk or posedge areset) begin
+    if (areset) begin
+      prev_state <= IDLE;
+    end else begin
+      prev_state <= state;
+    end
+  end
+  
+endmodule

@@ -1,0 +1,54 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the follow Moore machine with the diagram described below:\n\n// B (1) --0--> A\n// B (1) --1--> B\n// A (0) --0--> B\n// A (0) --1--> A\n\n// Write Verilog implementing this state machine. It should asynchronously reset into state B if reset if high.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+reg state;
+parameter A = 1'b0, B = 1'b1;
+
+always @(posedge clk or posedge areset) begin
+    if (areset) begin
+        state <= B;
+        out <= 1'b1;
+    end
+    else begin
+        case (state)
+            A: begin
+                if (in) begin
+                    state <= A;
+                    out <= 1'b0;
+                end
+                else begin
+                    state <= B;
+                    out <= 1'b0;
+                end
+            end
+            B: begin
+                if (in) begin
+                    state <= B;
+                    out <= 1'b1;
+                end
+                else begin
+                    state <= A;
+                    out <= 1'b1;
+                end
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+The Verilog code above implements the Moore state machine described in the problem statement. The key points are:
+
+1. The state of the machine is represented by the `state` register, which can take two values: `A` (0) and `B` (1).
+2. The `always` block handles the state transition and output logic. It checks the current state and the input `in` to determine the next state and output `out`.
+3. The state machine asynchronously resets to state `B` and sets the output `out` to 1 when the `areset` signal is high.'}
+
+ Iteration rank: 0.7149122807017544

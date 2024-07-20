@@ -1,0 +1,58 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The following diagram is a Mealy machine implementation of the 2's complementer. Implement in Verilog using one-hot encoding. Resets into state A and reset is asynchronous active-high.\n\n// A --x=0 (z=0)--> A\n// A --x=1 (z=1)--> B\n// B --x=0 (z=1)--> B\n// B --x=1 (z=0)--> B\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput x,\n\toutput z\n);"}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input areset,
+    input x,
+    output reg z
+);
+
+// One-hot encoding for the states
+parameter A = 2'b01, B = 2'b10;
+reg [1:0] state, next_state;
+
+always @(posedge clk, posedge areset) begin
+    if (areset)
+        state <= A;
+    else
+        state <= next_state;
+end
+
+always @(*) begin
+    // Default next state and output
+    next_state = state;
+    z = 0;
+
+    case (state)
+        A: begin
+            if (x) begin
+                next_state = B;
+                z = 1;
+            end
+        end
+        B: begin
+            if (~x) begin
+                z = 1;
+            end else begin
+                z = 0;
+            end
+        end
+    endcase
+end
+
+endmodule
+```
+
+This Verilog module implements the 2's complementer Mealy machine using one-hot encoding for the states. The module has the following features:
+
+1. The module has four ports: `clk` (clock), `areset` (asynchronous active-high reset), `x` (input), and `z` (output).
+2. The states are represented using one-hot encoding, with `A` being `2'b01` and `B` being `2'b10`.
+3. The `state` register holds the current state, and the `next_state` register holds the next state.
+4. The `always` block for the state update uses the `posedge` of `clk` and `areset` to update the `state` register.
+5. The `always` block for the next state and output logic uses combinational logic to determine the next state and output `z` based on the current state and input `x`.
+6. The module resets to state `A` when `areset` is high.
+
+This implementation correctly implements the 2's complementer Mealy machine as specified in the problem statement.'}
+
+ Iteration rank: 1.0

@@ -1,0 +1,57 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a finite-state machine that searches for the sequence 1101 in an input bit stream. When the sequence is found, it should set start_shifting to 1, forever, until reset. Reset is active high synchronous.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\tinput data,\n\toutput start_shifting);'}
+{'assistant': '// Corrected module:
+
+module top_module(
+    input clk,
+    input reset,
+    input data,
+    output reg start_shifting);
+
+    reg [3:0] state;
+    reg [3:0] next_state;
+
+    // Declare internal signals
+    wire data_match;
+    wire reset_sync;
+
+    // Synchronous reset
+    always @(posedge clk) begin
+        if (reset)
+            state <= 4'b0000;
+        else
+            state <= next_state;
+    end
+
+    // Synchronous reset generation
+    always @(posedge clk or negedge reset) begin
+        reset_sync <= reset;
+    end
+
+    // Combinational logic for state transitions and data matching
+    always @* begin
+        next_state = state;
+        data_match = (state == 4'b1100 && data) || (state == 4'b1101 && !data);
+
+        case (state)
+            4'b0000: if (data == 1) next_state = 4'b0001;
+            4'b0001: if (data == 1) next_state = 4'b0010;
+            4'b0010: if (data == 0) next_state = 4'b0011;
+            4'b0011: if (data == 1) next_state = 4'b1100;
+            4'b1100: if (data == 1) next_state = 4'b1101;
+            default: next_state = 4'b0000;
+        endcase
+    end
+
+    // Assign output based on matching state
+    always @* begin
+        if (state == 4'b1101)
+            start_shifting = 1'b1;
+        else
+            start_shifting = 1'b0;
+    end
+
+endmodule
+'}
+
+ Iteration rank: -1

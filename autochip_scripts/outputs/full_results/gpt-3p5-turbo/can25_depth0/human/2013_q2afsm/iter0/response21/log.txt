@@ -1,0 +1,59 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// Consider the FSM described by the state diagram shown below:\n\n// A --r1=0,r2=0,r3=0--> A\n// A --r1=1--> B\n// A --r1=0,r2=1--> C\n// A --r1=0,r2=0,r3=0--> D\n// B (g1=1) --r1=1--> B\n// B (g1=1) --r1=0--> A\n// C (g2=1) --r2=1--> C\n// C (g2=1) --r2=0--> A\n\n// Resetn is an active-low synchronous reset that resets into state A. This FSM acts as an arbiter circuit, which controls access to some type of resource by three requesting devices. Each device makes its request for the resource by setting a signal _r[i]_ = 1, where _r[i]_ is either _r[1]_, _r[2]_, or _r[3]_. Each r[i] is an input signal to the FSM, and represents one of the three devices. The FSM stays in state _A_ as long as there are no requests. When one or more request occurs, then the FSM decides which device receives a grant to use the resource and changes to a state that sets that device's _g[i]_ signal to 1. Each _g[i]_ is an output from the FSM. There is a priority system, in that device 1 has a higher priority than device 2, and device 3 has the lowest priority. Hence, for example, device 3 will only receive a grant if it is the only device making a request when the FSM is in state _A_. Once a device, _i_, is given a grant by the FSM, that device continues to receive the grant as long as its request, _r[i]_ = 1.\n\n// Write complete Verilog code that represents this FSM. Use separate always blocks for the state table and the state flip-flops, as done in lectures. Describe the FSM outputs, _g[i]_, using either continuous assignment statement(s) or an always block (at your discretion). Assign any state codes that you wish to use.\n\nmodule top_module (\n\tinput clk,\n\tinput resetn,\n\tinput [3:1] r,\n\toutput [3:1] g\n);"}
+{'assistant': 'module top_module (
+   input clk,
+   input resetn,
+   input [3:1] r,
+   output [3:1] g
+);
+
+   reg [3:1] state;
+   reg [3:1] next_state;
+
+   always @(posedge clk or negedge resetn)
+      if (~resetn)
+         state <= 3'b000;
+      else
+         state <= next_state;
+
+   always @(state or r)
+      case (state)
+         3'b000: begin
+            if (r[1]) next_state = 3'b001;
+            else if (r[2]) next_state = 3'b010;
+            else if (r[3]) next_state = 3'b100;
+            else next_state = 3'b000;
+         end
+         3'b001: begin
+            if (r[1]) next_state = 3'b001;
+            else if (r[2]) next_state = 3'b010;
+            else if (r[3]) next_state = 3'b100;
+            else next_state = 3'b000;
+         end
+         3'b010: begin
+            if (r[1]) next_state = 3'b001;
+            else if (r[2]) next_state = 3'b010;
+            else if (r[3]) next_state = 3'b100;
+            else next_state = 3'b000;
+         end
+         3'b100: begin
+            if (r[1]) next_state = 3'b001;
+            else if (r[2]) next_state = 3'b010;
+            else if (r[3]) next_state = 3'b100;
+            else next_state = 3'b000;
+         end
+         default: next_state = 3'b000;
+      endcase
+
+   always @(state)
+      case (state)
+         3'b000: g = 3'b000;
+         3'b001: g = 3'b001;
+         3'b010: g = 3'b010;
+         3'b100: g = 3'b100;
+         default: g = 3'b000;
+      endcase
+
+endmodule'}
+
+ Iteration rank: -1

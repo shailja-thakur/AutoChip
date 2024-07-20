@@ -1,0 +1,79 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The following is the state transition table for a Moore state machine with one input, one output, and four states. Implement this state machine. Include a synchronous active high reset that resets the FSM to state A. \n// State | Next state in=0, Next state in=1 | Output\n// A | A, B | 0\n// B | C, B | 0\n// C | A, D | 0\n// D | C, B | 1\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+	input clk,
+	input in,
+	input reset,
+	output out
+);
+
+	// Define states
+	typedef enum logic [1:0] {
+		A,
+		B,
+		C,
+		D
+	} state_type;
+
+	// Define state register
+	reg state_type current_state, next_state;
+
+	// Define outputs
+	reg out_reg;
+
+	// Sequential logic process
+	always @(posedge clk or posedge reset)
+	begin
+		if (reset)
+			current_state <= A;
+		else
+			current_state <= next_state;
+	end
+
+	// Combinatorial logic process
+	always @*
+	begin
+		case (current_state)
+			A: begin
+				if (in)
+					next_state = B;
+				else
+					next_state = A;
+				out_reg = 0;
+			end
+
+			B: begin
+				if (in)
+					next_state = C;
+				else
+					next_state = B;
+				out_reg = 0;
+			end
+
+			C: begin
+				if (in)
+					next_state = A;
+				else
+					next_state = D;
+				out_reg = 0;
+			end
+
+			D: begin
+				if (in)
+					next_state = C;
+				else
+					next_state = B;
+				out_reg = 1;
+			end
+		endcase
+	end
+
+	// Assign output
+	assign out = out_reg;
+
+endmodule
+```
+'}
+
+ Iteration rank: 0.7652173913043478

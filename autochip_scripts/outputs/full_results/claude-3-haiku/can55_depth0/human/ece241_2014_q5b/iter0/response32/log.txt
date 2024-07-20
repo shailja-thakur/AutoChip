@@ -1,0 +1,59 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The following diagram is a Mealy machine implementation of the 2's complementer. Implement in Verilog using one-hot encoding. Resets into state A and reset is asynchronous active-high.\n\n// A --x=0 (z=0)--> A\n// A --x=1 (z=1)--> B\n// B --x=0 (z=1)--> B\n// B --x=1 (z=0)--> B\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput x,\n\toutput z\n);"}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input areset,
+    input x,
+    output z
+);
+
+reg [1:0] state;
+parameter A = 2'b01, B = 2'b10;
+
+always @(posedge clk or posedge areset) begin
+    if (areset) begin
+        state <= A;
+    end
+    else begin
+        case (state)
+            A: begin
+                if (x) begin
+                    state <= B;
+                end
+                else begin
+                    state <= A;
+                end
+            end
+            B: begin
+                if (x) begin
+                    state <= B;
+                end
+                else begin
+                    state <= B;
+                end
+            end
+            default: begin
+                state <= A;
+            end
+        endcase
+    end
+end
+
+assign z = (state == B) ? x : ~x;
+
+endmodule
+```
+
+The provided Verilog module implements the 2's complementer Mealy machine using one-hot encoding. The module has the following features:
+
+1. It has four states: A, B, and a default state.
+2. The module resets to state A on asynchronous active-high reset (areset).
+3. The state transitions are as follows:
+   - From state A, if x is 0, it stays in state A, and if x is 1, it transitions to state B.
+   - From state B, if x is 0, it stays in state B, and if x is 1, it also stays in state B.
+4. The output z is assigned based on the current state:
+   - If the state is B, z is assigned the value of x.
+   - If the state is not B, z is assigned the complement of x.'}
+
+ Iteration rank: 0.0

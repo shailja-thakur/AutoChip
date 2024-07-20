@@ -1,0 +1,68 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The following is the state transition table for a Moore state machine with one input, one output, and four states. Implement this state machine. Include a positive edge triggered asynchronous reset that resets the FSM to state A.\n \n// state | next state in=0, next state in=1 | output\n// A | A, B | 0\n// B | C, B | 0\n// C | A, D | 0\n// D | C, B | 1\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+reg [1:0] state, next_state;
+
+// State assignments
+localparam A = 2'b00;
+localparam B = 2'b01;
+localparam C = 2'b10;
+localparam D = 2'b11;
+
+// Next state logic
+always @(*) begin
+    case (state)
+        A: begin
+            if (in) next_state = B;
+            else next_state = A;
+        end
+        B: begin
+            if (in) next_state = B;
+            else next_state = C;
+        end
+        C: begin
+            if (in) next_state = D;
+            else next_state = A;
+        end
+        D: begin
+            if (in) next_state = B;
+            else next_state = C;
+        end
+        default: next_state = A;
+    endcase
+end
+
+// Output logic
+always @(*) begin
+    case (state)
+        D: out = 1;
+        default: out = 0;
+    endcase
+end
+
+// State register
+always @(posedge clk, posedge areset) begin
+    if (areset) state <= A;
+    else state <= next_state;
+end
+
+endmodule
+```
+
+The provided Verilog code implements the given state transition table for a Moore state machine with the following features:
+
+1. The state machine has four states: A, B, C, and D.
+2. The next state logic is defined in the `always @(*)` block, which uses a `case` statement to determine the next state based on the current state and the input `in`.
+3. The output logic is defined in the `always @(*)` block, which sets the output `out` to 1 when the state is D, and 0 otherwise.
+4. The state register is updated on the positive edge of the clock, and the state is reset to A when the asynchronous reset signal `areset` is high.
+
+The implemented Verilog code should correctly implement the given state transition table and provide the desired behavior.'}
+
+ Iteration rank: 1.0

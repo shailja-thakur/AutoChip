@@ -1,0 +1,184 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// \tThe top module is a state machine. There are 10 states in this state machine, which are S, S1, S11, S110, B0, B1, B2, B3, Count and Wait.\n\tThe done signal is 1 in the state Wait.\n\tThe counting signal is 1 in the state Count.\n\tThe shift_ena signal is 1 if any of the states B3, B2, B1 and B0 is active.\n\tThe output of the top module B3_next is 1 when the state B2 is active.\n\tThe output of the top module S_next is 1 when the state S and d is 0, or the state S1 and d is 0, or the state S110 and d is 0, or the state Wait and ack is 1.\n\tThe output of the top module S1_next is 1 when the state S and d is 1.\n\tThe output of the top module Count_next is 1 when the state B3 is active, or the state Count and done_counting is 0.\n\tThe output of the top module Wait_next is 1 when the state Count and done_counting is 1, or the state Wait and ack is 0.\n\t\n\nmodule top_module(\n    input d,\n    input done_counting,\n    input ack,\n    input [9:0] state,    // 10-bit one-hot current state\n    output B3_next,\n    output S_next,\n    output S1_next,\n    output Count_next,\n    output Wait_next,\n    output done,\n    output counting,\n    output shift_ena\n );'}
+{'assistant': 'module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+);
+
+    reg B3;
+    reg S, S1, S11, S110;
+    reg B0, B1, B2;
+    reg Count, Wait;
+
+    assign done = (state == 10'h7);
+    assign counting = (state == 10'h8);
+    assign shift_ena = (B3 || B2 || B1 || B0);
+
+    always @(state) begin
+        B3_next = (state == 10'h6);
+        S_next = ((state == 10'h0 && !d) || (state == 10'h1 && !d) || (state == 10'h3 && !d) || (state == 10'h7 && ack));
+        S1_next = (state == 10'h0 && d);
+        Count_next = (state == 10'h6 || (state == 10'h8 && !done_counting));
+        Wait_next = ((state == 10'h8 && done_counting) || (state == 10'h7 && !ack));
+    end
+
+    always @(posedge clock) begin
+        case (state)
+            10'h0: begin
+                S = 1;
+                S1 = 0;
+                S11 = 0;
+                S110 = 0;
+                B0 = 0;
+                B1 = 0;
+                B2 = 0;
+                B3 = 0;
+                Count = 0;
+                Wait = 0;
+            end
+
+            10'h1: begin
+                S = 0;
+                S1 = 1;
+                S11 = 0;
+                S110 = 0;
+                B0 = 0;
+                B1 = 0;
+                B2 = 0;
+                B3 = 0;
+                Count = 0;
+                Wait = 0;
+            end
+
+            10'h2: begin
+                S = 0;
+                S1 = 0;
+                S11 = 1;
+                S110 = 0;
+                B0 = 0;
+                B1 = 0;
+                B2 = 0;
+                B3 = 0;
+                Count = 0;
+                Wait = 0;
+            end
+
+            10'h3: begin
+                S = 0;
+                S1 = 0;
+                S11 = 0;
+                S110 = 1;
+                B0 = 0;
+                B1 = 0;
+                B2 = 0;
+                B3 = 0;
+                Count = 0;
+                Wait = 0;
+            end
+
+            10'h4: begin
+                S = 0;
+                S1 = 0;
+                S11 = 0;
+                S110 = 0;
+                B0 = 1;
+                B1 = 0;
+                B2 = 0;
+                B3 = 0;
+                Count = 0;
+                Wait = 0;
+            end
+
+            10'h5: begin
+                S = 0;
+                S1 = 0;
+                S11 = 0;
+                S110 = 0;
+                B0 = 0;
+                B1 = 1;
+                B2 = 0;
+                B3 = 0;
+                Count = 0;
+                Wait = 0;
+            end
+
+            10'h6: begin
+                S = 0;
+                S1 = 0;
+                S11 = 0;
+                S110 = 0;
+                B0 = 0;
+                B1 = 0;
+                B2 = 1;
+                B3 = 0;
+                Count = 0;
+                Wait = 0;
+            end
+
+            10'h7: begin
+                S = 0;
+                S1 = 0;
+                S11 = 0;
+                S110 = 0;
+                B0 = 0;
+                B1 = 0;
+                B2 = 0;
+                B3 = 1;
+                Count = 0;
+                Wait = 0;
+            end
+
+            10'h8: begin
+                S = 0;
+                S1 = 0;
+                S11 = 0;
+                S110 = 0;
+                B0 = 0;
+                B1 = 0;
+                B2 = 0;
+                B3 = 0;
+                Count = 1;
+                Wait = 0;
+            end
+
+            10'h9: begin
+                S = 0;
+                S1 = 0;
+                S11 = 0;
+                S110 = 0;
+                B0 = 0;
+                B1 = 0;
+                B2 = 0;
+                B3 = 0;
+                Count = 0;
+                Wait = 1;
+            end
+
+            default: begin
+                S = 0;
+                S1 = 0;
+                S11 = 0;
+                S110 = 0;
+                B0 = 0;
+                B1 = 0;
+                B2 = 0;
+                B3 = 0;
+                Count = 0;
+                Wait = 0;
+            end
+        endcase
+    end
+
+endmodule'}
+
+ Iteration rank: -1

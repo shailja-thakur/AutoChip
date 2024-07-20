@@ -1,0 +1,73 @@
+module mux_2to1(
+    input sel,
+    input d0,
+    input d1,
+    output y
+);
+    assign y = sel ? d1 : d0;
+endmodule
+module d_flipflop(
+    input clk,
+    input d,
+    output reg q
+);
+    always @(posedge clk) begin
+        q <= d;
+    end
+endmodule
+module top_submodule(
+    input clk,
+    input L,
+    input q_in,
+    input r_in,
+    output q_out
+);
+    wire mux_out;
+    mux_2to1 u_mux(
+        .sel(L),
+        .d0(q_in),
+        .d1(r_in),
+        .y(mux_out)
+    );
+
+    d_flipflop u_ff(
+        .clk(clk),
+        .d(mux_out),
+        .q(q_out)
+    );
+endmodule
+module top_module(
+    input clk,
+    input L,
+    input [2:0] r,
+    output [2:0] q
+);
+    wire [2:0] mux_out;
+    wire [2:0] q_int;
+
+    top_submodule u0(
+        .clk(clk),
+        .L(L),
+        .q_in(q_int[0]),
+        .r_in(r[0]),
+        .q_out(q_int[0])
+    );
+
+    top_submodule u1(
+        .clk(clk),
+        .L(L),
+        .q_in(q_int[1]),
+        .r_in(r[1]),
+        .q_out(q_int[1])
+    );
+
+    top_submodule u2(
+        .clk(clk),
+        .L(L),
+        .q_in(q_int[2]),
+        .r_in(r[2]),
+        .q_out(q_int[2])
+    );
+
+    assign q = q_int;
+endmodule

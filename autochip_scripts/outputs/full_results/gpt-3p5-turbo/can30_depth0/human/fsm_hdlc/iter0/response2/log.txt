@@ -1,0 +1,154 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Synchronous HDLC framing involves decoding a continuous bit stream of data to look for bit patterns that indicate the beginning and end of frames (packets). Seeing exactly 6 consecutive 1s (i.e., 01111110) is a "flag" that indicate frame boundaries. To avoid the data stream from accidentally containing "flags", the sender inserts a zero after every 5 consecutive 1s which the receiver must detect and discard. We also need to signal an error if there are 7 or more consecutive 1s. Create a Moore-type finite state machine to recognize these three sequences:\n\n// (1) 0111110: Signal a bit needs to be discarded (disc).\n// (2) 01111110: Flag the beginning/end of a frame (flag).\n// (3) 01111111...: Error (7 or more 1s) (err).\n\n// When the FSM is reset, it should be in a state that behaves as though the previous input were 0. The reset signal is active high synchronous. The output signals should be asserted for a complete cycle beginning on the clock cycle after the condition occurs.\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput in,\n\toutput disc,\n\toutput flag,\n\toutput err);'}
+{'assistant': 'module top_module (
+    input clk,
+    input reset,
+    input in,
+    output disc,
+    output flag,
+    output err);
+
+    reg [2:0] state, next_state;
+    reg disc_reg, flag_reg, err_reg;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= 3'b001; // Initialize state
+        end else begin
+            state <= next_state; // Update state
+        end
+    end
+
+    always @(state or in) begin
+        disc_reg = 1'b0; // Initialize outputs
+        flag_reg = 1'b0;
+        err_reg = 1'b0;
+
+        case (state)
+            3'b000: begin // State 0
+                if (in) begin
+                    next_state = 3'b001; // Transition to State 1
+                end else begin
+                    next_state = 3'b000; // Remain in State 0
+                end
+            end
+
+            3'b001: begin // State 1
+                if (in) begin
+                    next_state = 3'b010; // Transition to State 2
+                end else begin
+                    next_state = 3'b000; // Transition to State 0
+                end
+            end
+
+            3'b010: begin // State 2
+                if (in) begin
+                    next_state = 3'b011; // Transition to State 3
+                end else begin
+                    next_state = 3'b000; // Transition to State 0
+                end
+            end
+
+            3'b011: begin // State 3
+                if (in) begin
+                    next_state = 3'b100; // Transition to State 4
+                end else begin
+                    next_state = 3'b000; // Transition to State 0
+                end
+            end
+
+            3'b100: begin // State 4
+                if (in) begin
+                    next_state = 3'b101; // Transition to State 5
+                end else begin
+                    next_state = 3'b000; // Transition to State 0
+                end
+            end
+
+            3'b101: begin // State 5
+                if (in) begin
+                    next_state = 3'b110; // Transition to State 6
+                end else begin
+                    next_state = 3'b000; // Transition to State 0
+                end
+            end
+
+            3'b110: begin // State 6
+                if (in) begin
+                    next_state = 3'b111; // Transition to State 7
+                end else begin
+                    next_state = 3'b000; // Transition to State 0
+                end
+            end
+
+            3'b111: begin // State 7
+                if (in) begin
+                    next_state = 3'b111; // Remain in State 7
+                end else begin
+                    next_state = 3'b000; // Transition to State 0
+                end
+            end
+        endcase
+    end
+
+    always @(posedge clk) begin
+        if (reset) begin
+            disc <= 1'b0; // Reset outputs
+            flag <= 1'b0;
+            err <= 1'b0;
+        end else begin
+            case (state)
+                3'b000: begin
+                    disc <= 1'b0; // Output values are determined by next_state transition
+                    flag <= 1'b0;
+                    err <= 1'b0;
+                end
+
+                3'b001: begin
+                    disc <= 1'b0;
+                    flag <= 1'b0;
+                    err <= 1'b0;
+                end
+
+                3'b010: begin
+                    disc <= 1'b0;
+                    flag <= 1'b0;
+                    err <= 1'b0;
+                end
+
+                3'b011: begin
+                    disc <= 1'b0;
+                    flag <= 1'b0;
+                    err <= 1'b0;
+                end
+
+                3'b100: begin
+                    disc <= 1'b0;
+                    flag <= 1'b0;
+                    err <= 1'b0;
+                end
+
+                3'b101: begin
+                    disc <= 1'b0;
+                    flag <= 1'b0;
+                    err <= 1'b0;
+                end
+
+                3'b110: begin
+                    disc <= 1'b1; // Output values determined by FSM specification
+                    flag <= 1'b0;
+                    err <= 1'b0;
+                end
+
+                3'b111: begin
+                    disc <= 1'b0;
+                    flag <= 1'b1;
+                    err <= 1'b1;
+                end
+            endcase
+        end
+    end
+
+endmodule'}
+
+ Iteration rank: -1

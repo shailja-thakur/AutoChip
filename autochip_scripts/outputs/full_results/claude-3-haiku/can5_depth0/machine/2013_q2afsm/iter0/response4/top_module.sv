@@ -1,0 +1,62 @@
+module top_module (
+    input clk,
+    input resetn,
+    input [2:0] r,
+    output reg [2:0] g
+);
+
+reg [1:0] state, next;
+
+always @(posedge clk) begin
+    if (!resetn)
+        state <= 2'b00;
+    else
+        state <= next;
+end
+
+always @(*) begin
+    case (state)
+        2'b00: // state A
+            if (r[0]) // r[1] is high
+                next = 2'b01;
+            else if (r[1]) // r[2] is high
+                next = 2'b10;
+            else if (r[2]) // r[3] is high
+                next = 2'b11;
+            else
+                next = 2'b00;
+        2'b01: // state B
+            if (r[0]) // r[1] is high
+                next = 2'b01;
+            else
+                next = 2'b00;
+        2'b10: // state C
+            if (r[1]) // r[2] is high
+                next = 2'b10;
+            else
+                next = 2'b00;
+        2'b11: // state D
+            if (r[2]) // r[3] is high
+                next = 2'b11;
+            else
+                next = 2'b00;
+        default:
+            next = 2'b00;
+    endcase
+end
+
+always @(*) begin
+    g = 3'b000;
+    case (state)
+        2'b01: // state B
+            g[1] = 1'b1;
+        2'b10: // state C
+            g[2] = 1'b1;
+        2'b11: // state D
+            g[3] = 1'b1;
+        default:
+            g = 3'b000;
+    endcase
+end
+
+endmodule

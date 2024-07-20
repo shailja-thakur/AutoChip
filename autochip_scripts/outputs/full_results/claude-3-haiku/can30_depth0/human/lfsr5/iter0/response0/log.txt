@@ -1,0 +1,40 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// A linear feedback shift register is a shift register usually with a few XOR gates to produce the next state of the shift register. A Galois LFSR is one particular arrangement where bit positions with a "tap" are XORed with the output bit to produce its next value, while bit positions without a tap shift. If the taps positions are carefully chosen, the LFSR can be made to be "maximum-length". A maximum-length LFSR of n bits cycles through 2**n-1 states before repeating (the all-zero state is never reached). Build a 5-bit maximal-length Galois LFSR with taps at bit positions 5 and 3. The active-high synchronous reset should reset the LFSR output to 1.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput reg [4:0] q);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    output reg [4:0] q
+);
+
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        q <= 5'b00001;
+    end else begin
+        q[4] <= q[3];
+        q[3] <= q[2];
+        q[2] <= q[1];
+        q[1] <= q[0] ^ q[2];
+        q[0] <= q[4] ^ q[2];
+    end
+end
+
+endmodule
+```
+
+The provided Verilog module specification describes a 5-bit maximal-length Galois LFSR (Linear Feedback Shift Register) with taps at bit positions 5 and 3. The module has a synchronous reset that sets the LFSR output to 1.
+
+The corrected Verilog module is as follows:
+
+1. The `always` block is triggered on the positive edge of the `clk` input or the positive edge of the `reset` input.
+2. If the `reset` input is high, the LFSR output `q` is set to `5'b00001`.
+3. If the `reset` input is low, the LFSR is updated as follows:
+   - `q[4]` is assigned the value of `q[3]`.
+   - `q[3]` is assigned the value of `q[2]`.
+   - `q[2]` is assigned the value of `q[1]`.
+   - `q[1]` is assigned the result of `q[0] ^ q[2]`, which corresponds to the tap at bit position 3.
+   - `q[0]` is assigned the result of `q[4] ^ q[2]`, which corresponds to the tap at bit position 5.
+
+This Verilog module implements the 5-bit maximal-length Galois LFSR as specified in the problem statement.'}
+
+ Iteration rank: 0.04343911771325681

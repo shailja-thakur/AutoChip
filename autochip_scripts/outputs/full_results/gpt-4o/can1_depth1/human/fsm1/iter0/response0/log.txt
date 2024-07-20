@@ -1,0 +1,49 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the follow Moore machine with the diagram described below:\n\n// B (1) --0--> A\n// B (1) --1--> B\n// A (0) --0--> B\n// A (0) --1--> A\n\n// Write Verilog implementing this state machine. It should asynchronously reset into state B if reset if high.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output out
+);
+
+    typedef enum logic [1:0] {
+        STATE_A = 2'b00,
+        STATE_B = 2'b01
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge areset) begin
+        if (areset)
+            state <= STATE_B;
+        else
+            state <= next_state;
+    end
+
+    always_comb begin
+        case (state)
+            STATE_A: 
+                if (in)
+                    next_state = STATE_A;
+                else
+                    next_state = STATE_B;
+            
+            STATE_B: 
+                if (in)
+                    next_state = STATE_B;
+                else
+                    next_state = STATE_A;
+
+            default: 
+                next_state = STATE_B;
+        endcase
+    end
+
+    assign out = (state == STATE_A) ? 1'b0 : 1'b1;
+
+endmodule
+```'}
+
+ Iteration rank: 1.0

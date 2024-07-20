@@ -1,0 +1,61 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Create a set of counters suitable for use as a 12-hour clock (with am/pm indicator). Your counters are clocked by a fast-running clk, with a pulse on ena whenever your clock should increment (i.e., once per second, while "clk" is much faster than once per second). The signal "pm" is asserted if the clock is PM, or is otherwise AM. hh, mm, and ss are two BCD (Binary-Coded Decimal) digits each for hours (01-12), minutes (00-59), and seconds (00-59). Reset is the active high synchronous signal that resets the clock to "12:00 AM." Reset has higher priority than enable and can occur even when not enabled.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\tinput ena,\n\toutput reg pm,\n\toutput reg [7:0] hh,\n\toutput reg [7:0] mm,\n\toutput reg [7:0] ss);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    input ena,
+    output reg pm,
+    output reg [7:0] hh,
+    output reg [7:0] mm,
+    output reg [7:0] ss);
+
+    // Initialize hours, minutes, seconds and pm
+    initial begin
+        hh = 8'b00010010; // 12
+        mm = 8'b00000000; // 00
+        ss = 8'b00000000; // 00
+        pm = 1'b0; // AM
+    end
+
+    always @(posedge clk) begin
+        if (reset) begin
+            // Reset to 12:00:00 AM
+            hh <= 8'b00010010; // 12
+            mm <= 8'b00000000; // 00
+            ss <= 8'b00000000; // 00
+            pm <= 1'b0; // AM
+        end else if (ena) begin
+            // Increment seconds
+            if (ss == 8'b01011001) begin // 59
+                ss <= 8'b00000000; // 00
+                // Increment minutes
+                if (mm == 8'b01011001) begin // 59
+                    mm <= 8'b00000000; // 00
+                    // Increment hours
+                    if (hh == 8'b00010010) begin // 12
+                        hh <= 8'b00000001; // 01
+                        pm <= ~pm; // Toggle AM/PM
+                    end else if (hh == 8'b00010001) begin // 11
+                        hh <= 8'b00010010; // 12
+                    end else begin
+                        hh[3:0] <= hh[3:0] + 4'b0001;
+                    end
+                end else if (mm[3:0] == 4'b1001) begin // _9 
+                    mm[7:4] <= mm[7:4] + 4'b0001;
+                    mm[3:0] <= 4'b0000;
+                end else begin
+                    mm[3:0] <= mm[3:0] + 4'b0001;
+                end
+            end else if (ss[3:0] == 4'b1001) begin // _9
+                ss[7:4] <= ss[7:4] + 4'b0001;
+                ss[3:0] <= 4'b0000;
+            end else begin
+                ss[3:0] <= ss[3:0] + 4'b0001;
+            end
+        end
+    end
+endmodule
+```'}
+
+ Iteration rank: 0.021738698629165214

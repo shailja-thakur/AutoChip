@@ -1,0 +1,38 @@
+module top_module (
+	input clk,
+	input [7:0] in,
+	input reset,
+	output done
+);
+  
+reg [2:0] state;
+reg done_reg;
+
+always @(posedge clk or posedge reset) begin
+	if (reset) begin
+		state <= 0;
+		done_reg <= 0;
+	end else begin
+		case (state)
+			0: begin // Wait for the first byte with in[3]=1
+				if (in[3]) begin
+					state <= 1;
+				end
+			end
+			1: begin // Wait for the second byte
+				state <= 2;
+			end
+			2: begin // Wait for the third byte
+				state <= 3;
+			end
+			3: begin // Done receiving three bytes
+				state <= 0;
+				done_reg <= 1;
+			end
+		endcase
+	end
+end
+
+assign done = done_reg;
+
+endmodule

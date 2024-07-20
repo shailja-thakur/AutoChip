@@ -1,0 +1,129 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': 'module top_module (
+	input clk,
+	input in,
+	input reset,
+	output done
+);
+
+// State definitions
+typedef enum logic [2:0] {
+	IDLE,
+	WAIT_START_BIT,
+	RECEIVE_DATA_BITS,
+	WAIT_STOP_BIT
+} state_t;
+
+// Register for state storage
+reg [2:0] current_state = IDLE;
+
+// Register for data bit counter
+reg [2:0] data_bit_counter = 0;
+
+// Register for received data bits
+reg [7:0] received_data;
+
+// Register for start bit detection
+reg start_bit_detected = 0;
+
+// Register for stop bit detection
+reg stop_bit_detected = 0;
+
+// Counter for detecting stop bit position
+reg [2:0] stop_bit_counter;
+
+// Output register for done signal
+reg done_reg;
+
+// Synchronous reset
+always_ff @(posedge clk, posedge reset) begin
+	if (reset)
+		current_state <= IDLE;
+	else
+		current_state <= next_state;
+end
+
+// Next state logic and data bit processing
+always_comb begin
+	case (current_state)
+		IDLE: begin
+			if (reset)
+				next_state = IDLE;
+			else if (start_bit_detected)
+				next_state = WAIT_START_BIT;
+			else
+				next_state = IDLE;
+
+			// Reset control signals and counters
+			data_bit_counter = 0;
+			received_data = 0;
+			stop_bit_detected = 0;
+			stop_bit_counter = 0;
+			done_reg = 0;
+		end
+
+		WAIT_START_BIT: begin
+			if (reset)
+				next_state = IDLE;
+			else if (in == 0)
+				next_state = RECEIVE_DATA_BITS;
+			else
+				next_state = WAIT_START_BIT;
+
+			// Check for start bit detection
+			if (in == 0)
+				start_bit_detected = 1;
+			else
+				start_bit_detected = 0;
+		end
+
+		RECEIVE_DATA_BITS: begin
+			if (reset)
+				next_state = IDLE;
+			else if (data_bit_counter == 7)
+				next_state = WAIT_STOP_BIT;
+			else
+				next_state = RECEIVE_DATA_BITS;
+
+			// Shift in received data bit
+			received_data[data_bit_counter] = in;
+
+			// Increment data bit counter
+			data_bit_counter = data_bit_counter + 1;
+		end
+
+		WAIT_STOP_BIT: begin
+			if (reset)
+				next_state = IDLE;
+			else if (in == 1 && stop_bit_counter == 3)
+				next_state = IDLE;
+			else
+				next_state = WAIT_STOP_BIT;
+
+			// Check for stop bit detection
+			if (in == 1)
+				stop_bit_detected = 1;
+			else
+				stop_bit_detected = 0;
+
+			// Increment stop bit counter
+			stop_bit_counter = stop_bit_counter + 1;
+		end
+	endcase
+end
+
+// Output signal assignment
+assign done = done_reg;
+
+// Done signal generation
+always_comb begin
+	if (current_state == IDLE && start_bit_detected && stop_bit_detected)
+		done_reg = 1;
+	else
+		done_reg = 0;
+end
+
+endmodule'}
+
+ Iteration rank: -1

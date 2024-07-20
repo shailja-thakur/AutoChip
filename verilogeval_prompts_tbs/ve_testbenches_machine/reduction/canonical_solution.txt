@@ -1,0 +1,4 @@
+
+	assign parity = ^in;
+	
+endmodule

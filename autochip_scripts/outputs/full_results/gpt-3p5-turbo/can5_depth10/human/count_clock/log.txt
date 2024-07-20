@@ -1,0 +1,595 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // Create a set of counters suitable for use as a 12-hour clock (with am/pm indicator). Your counters are clocked by a fast-running clk, with a pulse on ena whenever your clock should increment (i.e., once per second, while "clk" is much faster than once per second). The signal "pm" is asserted if the clock is PM, or is otherwise AM. hh, mm, and ss are two BCD (Binary-Coded Decimal) digits each for hours (01-12), minutes (00-59), and seconds (00-59). Reset is the active high synchronous signal that resets the clock to "12:00 AM." Reset has higher priority than enable and can occur even when not enabled.
+
+module top_module(
+	input clk,
+	input reset,
+	input ena,
+	output reg pm,
+	output reg [7:0] hh,
+	output reg [7:0] mm,
+	output reg [7:0] ss);
+assistant: module top_module(
+	input clk,
+	input reset,
+	input ena,
+	output reg pm,
+	output reg [7:0] hh,
+	output reg [7:0] mm,
+	output reg [7:0] ss);
+
+	always @(posedge clk) begin
+		if (reset) begin
+			hh <= 8'b00010010; // 12
+			mm <= 8'b00000000; // 00
+			ss <= 8'b00000000; // 00
+			pm <= 1'b0; // AM
+		end else if (ena) begin
+			ss <= ss + 1;
+			if (ss == 8'b01101000) begin // 59
+				ss <= 8'b00000000; // reset seconds
+				mm <= mm + 1;
+				if (mm == 8'b01111010) begin // 59
+					mm <= 8'b00000000; // reset minutes
+					hh <= hh + 1;
+					if (hh == 8'b00011010) begin // 12
+						hh <= 8'b00010010; // reset hours
+						pm <= ~pm; // toggle AM/PM indicator
+					end
+				end
+			end
+		end
+	end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Non-BCD values detected. Are you sure you're using two-digit BCD representation for hh, mm, and ss?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/count_clock/count_clock_tb.sv:173: $finish called at 1762066 (1ps)
+Hint: Output 'pm' has 119482 mismatches. First mismatch occurred at time 434270.
+Hint: Output 'hh' has 344752 mismatches. First mismatch occurred at time 38270.
+Hint: Output 'mm' has 348532 mismatches. First mismatch occurred at time 2870.
+Hint: Output 'ss' has 335278 mismatches. First mismatch occurred at time 170.
+Hint: Total mismatched samples is 352018 out of 352413 samples
+
+Simulation finished at 1762066 ps
+Mismatches: 352018 in 352413 samples
+
+assistant: module top_module(
+    input clk,
+    input reset,
+    input ena,
+    output reg pm,
+    output reg [7:0] hh,
+    output reg [7:0] mm,
+    output reg [7:0] ss);
+       
+    always @(posedge clk) begin
+        if (reset) begin
+            hh <= 8'b00010010; // 12
+            mm <= 8'b00000000; // 00
+            ss <= 8'b00000000; // 00
+            pm <= 1'b0; // AM
+        end else if (ena) begin
+            ss <= ss + 1;
+            if (ss == 8'b01110100) begin // 59
+                ss <= 8'b00000000; // reset seconds
+                mm <= mm + 1;
+                if (mm == 8'b01111010) begin // 59
+                    mm <= 8'b00000000; // reset minutes
+                    hh <= hh + 1;
+                    if (hh == 8'b00011010) begin // 12
+                        hh <= 8'b00010010; // reset hours
+                        pm <= ~pm; // toggle AM/PM indicator
+                    end
+                end
+            end
+        end
+    end
+       
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Non-BCD values detected. Are you sure you're using two-digit BCD representation for hh, mm, and ss?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/count_clock/count_clock_tb.sv:173: $finish called at 1762066 (1ps)
+Hint: Output 'pm' has 92914 mismatches. First mismatch occurred at time 434270.
+Hint: Output 'hh' has 337552 mismatches. First mismatch occurred at time 38270.
+Hint: Output 'mm' has 349216 mismatches. First mismatch occurred at time 2870.
+Hint: Output 'ss' has 342998 mismatches. First mismatch occurred at time 170.
+Hint: Total mismatched samples is 351998 out of 352413 samples
+
+Simulation finished at 1762066 ps
+Mismatches: 351998 in 352413 samples
+
+assistant: module top_module(
+    input clk,
+    input reset,
+    input ena,
+    output reg pm,
+    output reg [7:0] hh,
+    output reg [7:0] mm,
+    output reg [7:0] ss);
+       
+    always @(posedge clk) begin
+        if (reset) begin
+            hh <= 8'b00010010; // 12
+            mm <= 8'b00000000; // 00
+            ss <= 8'b00000000; // 00
+            pm <= 1'b0; // AM
+        end else if (ena) begin
+            ss <= ss + 1;
+            if (ss >= 8'b01101111) begin // 59
+                ss <= 8'b00000000; // reset seconds
+                mm <= mm + 1;
+                if (mm >= 8'b01111010) begin // 59
+                    mm <= 8'b00000000; // reset minutes
+                    hh <= hh + 1;
+                    if (hh >= 8'b00011010) begin // 12
+                        hh <= 8'b00010010; // reset hours
+                        pm <= ~pm; // toggle AM/PM indicator
+                    end
+                end
+            end
+        end
+    end
+       
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Non-BCD values detected. Are you sure you're using two-digit BCD representation for hh, mm, and ss?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/count_clock/count_clock_tb.sv:173: $finish called at 1762066 (1ps)
+Hint: Output 'pm' has 103984 mismatches. First mismatch occurred at time 434270.
+Hint: Output 'hh' has 337552 mismatches. First mismatch occurred at time 38270.
+Hint: Output 'mm' has 348536 mismatches. First mismatch occurred at time 2870.
+Hint: Output 'ss' has 345738 mismatches. First mismatch occurred at time 170.
+Hint: Total mismatched samples is 352018 out of 352413 samples
+
+Simulation finished at 1762066 ps
+Mismatches: 352018 in 352413 samples
+
+assistant: module top_module(
+    input clk,
+    input reset,
+    input ena,
+    output reg pm,
+    output reg [7:0] hh,
+    output reg [7:0] mm,
+    output reg [7:0] ss);
+   
+    always @(posedge clk) begin
+        if (reset) begin
+            hh <= 8'b00010010; // 12
+            mm <= 8'b00000000; // 00
+            ss <= 8'b00000000; // 00
+            pm <= 1'b0; // AM
+        end else if (ena) begin
+            ss <= ss + 1;
+            if (ss >= 8'b01101000) begin // 59 in BCD
+                ss <= 8'b00000000; // reset seconds
+                mm <= mm + 1;
+                if (mm >= 8'b01111010) begin // 59 in BCD
+                    mm <= 8'b00000000; // reset minutes
+                    hh <= hh + 1;
+                    if (hh >= 8'b00010011) begin // 12 in BCD
+                        hh <= 8'b00000001; // reset hours
+                        pm <= ~pm; // toggle AM/PM indicator
+                    end
+                end
+            end
+        end
+    end
+   
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Non-BCD values detected. Are you sure you're using two-digit BCD representation for hh, mm, and ss?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/count_clock/count_clock_tb.sv:173: $finish called at 1762066 (1ps)
+Hint: Output 'pm' has 127492 mismatches. First mismatch occurred at time 260570.
+Hint: Output 'hh' has 322702 mismatches. First mismatch occurred at time 38270.
+Hint: Output 'mm' has 348532 mismatches. First mismatch occurred at time 2870.
+Hint: Output 'ss' has 335278 mismatches. First mismatch occurred at time 170.
+Hint: Total mismatched samples is 351998 out of 352413 samples
+
+Simulation finished at 1762066 ps
+Mismatches: 351998 in 352413 samples
+
+assistant: module top_module(
+    input clk,
+    input reset,
+    input ena,
+    output reg pm,
+    output reg [7:0] hh,
+    output reg [7:0] mm,
+    output reg [7:0] ss);
+
+    always @(posedge clk) begin
+        if (reset) begin
+            hh <= 8'b00010010; // 12
+            mm <= 8'b00000000; // 00
+            ss <= 8'b00000000; // 00
+            pm <= 1'b0; // AM
+        end else if (ena) begin
+            if (ss >= 8'b00110000) begin
+                ss <= 8'b00000000; // reset seconds
+                mm <= mm + 1;
+                if (mm >= 8'b01100000) begin
+                    mm <= 8'b00000000; // reset minutes
+                    hh <= hh + 1;
+                    if (hh >= 8'b00011000) begin
+                        hh <= 8'b00000001; // reset hours
+                        pm <= ~pm; // toggle AM/PM indicator
+                    end
+                end
+            end else begin
+                ss <= ss + 1;
+            end
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Non-BCD values detected. Are you sure you're using two-digit BCD representation for hh, mm, and ss?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/count_clock/count_clock_tb.sv:173: $finish called at 1762066 (1ps)
+Hint: Output 'pm' has 157172 mismatches. First mismatch occurred at time 334980.
+Hint: Output 'hh' has 343856 mismatches. First mismatch occurred at time 38270.
+Hint: Output 'mm' has 348134 mismatches. First mismatch occurred at time 2760.
+Hint: Output 'ss' has 348318 mismatches. First mismatch occurred at time 170.
+Hint: Total mismatched samples is 352018 out of 352413 samples
+
+Simulation finished at 1762066 ps
+Mismatches: 352018 in 352413 samples
+
+assistant: module top_module(
+    input clk,
+    input reset,
+    input ena,
+    output reg pm,
+    output reg [7:0] hh,
+    output reg [7:0] mm,
+    output reg [7:0] ss);
+
+    always @(posedge clk) begin
+        if (reset) begin
+            hh <= 8'b00010010; // 12
+            mm <= 8'b00000000; // 00
+            ss <= 8'b00000000; // 00
+            pm <= 1'b0; // AM
+        end else if (ena) begin
+            if (ss >= 8'b00110000) begin
+                ss <= 8'b00000000; // reset seconds
+                mm <= mm + 1;
+                if (mm >= 8'b01101100) begin // adjust BCD representation for minutes to 59 (decimal value)
+                    mm <= 8'b00000000; // reset minutes
+                    hh <= hh + 1;
+                    if (hh >= 8'b00011010) begin // adjust BCD representation for hours to 12 (decimal value)
+                        hh <= 8'b00000001; // reset hours
+                        pm <= ~pm; // toggle AM/PM indicator
+                    end
+                end
+            end else begin
+                ss <= ss + 1;
+            end
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Non-BCD values detected. Are you sure you're using two-digit BCD representation for hh, mm, and ss?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/count_clock/count_clock_tb.sv:173: $finish called at 1762066 (1ps)
+Hint: Output 'pm' has 102490 mismatches. First mismatch occurred at time 434270.
+Hint: Output 'hh' has 338910 mismatches. First mismatch occurred at time 38270.
+Hint: Output 'mm' has 348686 mismatches. First mismatch occurred at time 2760.
+Hint: Output 'ss' has 348318 mismatches. First mismatch occurred at time 170.
+Hint: Total mismatched samples is 352018 out of 352413 samples
+
+Simulation finished at 1762066 ps
+Mismatches: 352018 in 352413 samples
+
+assistant: module top_module(
+    input clk,
+    input reset,
+    input ena,
+    output reg pm,
+    output reg [7:0] hh,
+    output reg [7:0] mm,
+    output reg [7:0] ss);
+
+    always @(posedge clk) begin
+        if (reset) begin
+            hh <= 8'b00010010; // 12
+            mm <= 8'b00000000; // 00
+            ss <= 8'b00000000; // 00
+            pm <= 1'b0; // AM
+        end else if (ena) begin
+            if (ss >= 8'b00111000) begin
+                ss <= 8'b00000000; // reset seconds
+                mm <= mm + 1;
+                if (mm >= 8'b01101100) begin // adjust BCD representation for minutes to 59 (decimal value)
+                    mm <= 8'b00000000; // reset minutes
+                    hh <= hh + 1;
+                    if (hh >= 8'b00011010) begin // adjust BCD representation for hours to 12 (decimal value)
+                        hh <= 8'b00000001; // reset hours
+                        pm <= ~pm; // toggle AM/PM indicator
+                    end
+                end
+            end else begin
+                ss <= ss + 1;
+            end
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Non-BCD values detected. Are you sure you're using two-digit BCD representation for hh, mm, and ss?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/count_clock/count_clock_tb.sv:173: $finish called at 1762066 (1ps)
+Hint: Output 'pm' has 118186 mismatches. First mismatch occurred at time 434270.
+Hint: Output 'hh' has 344752 mismatches. First mismatch occurred at time 38270.
+Hint: Output 'mm' has 350896 mismatches. First mismatch occurred at time 2840.
+Hint: Output 'ss' has 339914 mismatches. First mismatch occurred at time 170.
+Hint: Total mismatched samples is 351960 out of 352413 samples
+
+Simulation finished at 1762066 ps
+Mismatches: 351960 in 352413 samples
+
+assistant: module top_module(
+    input clk,
+    input reset,
+    input ena,
+    output reg pm,
+    output reg [7:0] hh,
+    output reg [7:0] mm,
+    output reg [7:0] ss);
+
+    always @(posedge clk) begin
+        if (reset) begin
+            hh <= 8'b00010010; // 12
+            mm <= 8'b00000000; // 00
+            ss <= 8'b00000000; // 00
+            pm <= 1'b0; // AM
+        end else if (ena) begin
+            if (ss == 8'b00111001) begin
+                ss <= 8'b00000000; // reset seconds
+                mm <= mm + 1;
+                if (mm == 8'b01101101) begin // adjust BCD representation for minutes to 59 (decimal value)
+                    mm <= 8'b00000000; // reset minutes
+                    hh <= hh + 1;
+                    if (hh == 8'b00011011) begin // adjust BCD representation for hours to 12 (decimal value)
+                        hh <= 8'b00000001; // reset hours
+                        pm <= ~pm; // toggle AM/PM indicator
+                    end
+                end
+            end else begin
+                ss <= ss + 1;
+            end
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Non-BCD values detected. Are you sure you're using two-digit BCD representation for hh, mm, and ss?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/count_clock/count_clock_tb.sv:173: $finish called at 1762066 (1ps)
+Hint: Output 'pm' has 133952 mismatches. First mismatch occurred at time 434270.
+Hint: Output 'hh' has 326880 mismatches. First mismatch occurred at time 38270.
+Hint: Output 'mm' has 347312 mismatches. First mismatch occurred at time 2850.
+Hint: Output 'ss' has 343918 mismatches. First mismatch occurred at time 170.
+Hint: Total mismatched samples is 351958 out of 352413 samples
+
+Simulation finished at 1762066 ps
+Mismatches: 351958 in 352413 samples
+
+assistant: module top_module(
+  input clk,
+  input reset,
+  input ena,
+  output reg pm,
+  output reg [7:0] hh,
+  output reg [7:0] mm,
+  output reg [7:0] ss
+);
+
+  always @(posedge clk) begin
+    if (reset) begin
+      hh <= 8'b00010010; // 12
+      mm <= 8'b00000000; // 00
+      ss <= 8'b00000000; // 00
+      pm <= 1'b0; // AM
+    end else if (ena) begin
+      if (ss == 8'b00111001) begin
+        ss <= 8'b00000000; // reset seconds
+        if (mm == 8'b01101101) begin // adjust BCD representation for minutes to 59 (decimal value)
+          mm <= 8'b00000000; // reset minutes
+          if (hh == 8'b00011011) begin // adjust BCD representation for hours to 12 (decimal value)
+            hh <= 8'b00000001; // reset hours
+            pm <= ~pm; // toggle AM/PM indicator
+          end else begin
+            hh <= hh + 1;
+          end
+        end else begin
+          mm <= mm + 1;
+        end
+      end else begin
+        ss <= ss + 1;
+      end
+    end
+  end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Non-BCD values detected. Are you sure you're using two-digit BCD representation for hh, mm, and ss?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/count_clock/count_clock_tb.sv:173: $finish called at 1762066 (1ps)
+Hint: Output 'pm' has 133952 mismatches. First mismatch occurred at time 434270.
+Hint: Output 'hh' has 326880 mismatches. First mismatch occurred at time 38270.
+Hint: Output 'mm' has 347312 mismatches. First mismatch occurred at time 2850.
+Hint: Output 'ss' has 343918 mismatches. First mismatch occurred at time 170.
+Hint: Total mismatched samples is 351958 out of 352413 samples
+
+Simulation finished at 1762066 ps
+Mismatches: 351958 in 352413 samples
+
+assistant: module top_module(
+  input clk,
+  input reset,
+  input ena,
+  output reg pm,
+  output reg [7:0] hh,
+  output reg [7:0] mm,
+  output reg [7:0] ss
+);
+
+  always @(posedge clk) begin
+    if (reset) begin
+      hh <= 8'b00010010; // 12
+      mm <= 8'b00000000; // 00
+      ss <= 8'b00000000; // 00
+      pm <= 1'b0; // AM
+    end else if (ena) begin
+      if (ss == 8'b00111001) begin
+        ss <= 8'b00000000; // reset seconds
+        if (mm == 8'b01101101) begin // adjust BCD representation for minutes to 59 (decimal value)
+          mm <= 8'b00000000; // reset minutes
+          if (hh == 8'b00011011) begin // adjust BCD representation for hours to 12 (decimal value)
+            hh <= 8'b00000001; // reset hours
+            pm <= ~pm; // toggle AM/PM indicator
+          end else begin
+            hh <= hh + 1;
+          end
+        end else begin
+          mm <= mm + 1;
+        end
+      end else begin
+        ss <= ss + 1;
+      end
+    end
+  end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Non-BCD values detected. Are you sure you're using two-digit BCD representation for hh, mm, and ss?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/count_clock/count_clock_tb.sv:173: $finish called at 1762066 (1ps)
+Hint: Output 'pm' has 133952 mismatches. First mismatch occurred at time 434270.
+Hint: Output 'hh' has 326880 mismatches. First mismatch occurred at time 38270.
+Hint: Output 'mm' has 347312 mismatches. First mismatch occurred at time 2850.
+Hint: Output 'ss' has 343918 mismatches. First mismatch occurred at time 170.
+Hint: Total mismatched samples is 351958 out of 352413 samples
+
+Simulation finished at 1762066 ps
+Mismatches: 351958 in 352413 samples
+
+assistant: module top_module(
+  input clk,
+  input reset,
+  input ena,
+  output reg pm,
+  output reg [7:0] hh,
+  output reg [7:0] mm,
+  output reg [7:0] ss
+);
+
+  always @(posedge clk) begin
+    if (reset) begin
+      hh <= 8'b00010010; // 12
+      mm <= 8'b00000000; // 00
+      ss <= 8'b00000000; // 00
+      pm <= 1'b0; // AM
+    end else if (ena) begin
+      if (ss == 8'b00111001) begin
+        ss <= 8'b00000000; // reset seconds
+        if (mm == 8'b00111001) begin // adjust BCD representation for minutes to 59 (decimal value)
+          mm <= 8'b00000000; // reset minutes
+          if (hh == 8'b00011011) begin // adjust BCD representation for hours to 12 (decimal value)
+            hh <= 8'b00000001; // reset hours
+            pm <= ~pm; // toggle AM/PM indicator
+          end else begin
+            hh <= hh + 1;
+          end
+        end else begin
+          mm <= mm + 1;
+        end
+      end else begin
+        ss <= ss + 1;
+      end
+    end
+  end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Non-BCD values detected. Are you sure you're using two-digit BCD representation for hh, mm, and ss?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/count_clock/count_clock_tb.sv:173: $finish called at 1762066 (1ps)
+Hint: Output 'pm' has 181656 mismatches. First mismatch occurred at time 338670.
+Hint: Output 'hh' has 345224 mismatches. First mismatch occurred at time 35910.
+Hint: Output 'mm' has 347228 mismatches. First mismatch occurred at time 2850.
+Hint: Output 'ss' has 343918 mismatches. First mismatch occurred at time 170.
+Hint: Total mismatched samples is 351958 out of 352413 samples
+
+Simulation finished at 1762066 ps
+Mismatches: 351958 in 352413 samples
+
+Time to Generate: 311.1426429748535
+Best ranked response at iteration 7 with response number 3
+Rank of best response: 0.001291098796014903
+Best response module:
+module top_module(
+    input clk,
+    input reset,
+    input ena,
+    output reg pm,
+    output reg [7:0] hh,
+    output reg [7:0] mm,
+    output reg [7:0] ss);
+
+    always @(posedge clk) begin
+        if (reset) begin
+            hh <= 8'b00010010; // 12
+            mm <= 8'b00000000; // 00
+            ss <= 8'b00000000; // 00
+            pm <= 1'b0; // AM
+        end else if (ena) begin
+            if (ss == 8'b00111001) begin
+                ss <= 8'b00000000; // reset seconds
+                mm <= mm + 1;
+                if (mm == 8'b01101101) begin // adjust BCD representation for minutes to 59 (decimal value)
+                    mm <= 8'b00000000; // reset minutes
+                    hh <= hh + 1;
+                    if (hh == 8'b00011011) begin // adjust BCD representation for hours to 12 (decimal value)
+                        hh <= 8'b00000001; // reset hours
+                        pm <= ~pm; // toggle AM/PM indicator
+                    end
+                end
+            end else begin
+                ss <= ss + 1;
+            end
+        end
+    end
+
+endmodule
+
+

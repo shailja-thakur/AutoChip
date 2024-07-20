@@ -1,0 +1,93 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// state A: If s is asserted, next state is B\nstate B: If w is asserted, next state is S11, otherwise next state is S10\nstate C: If w is asserted, next state is S11, otherwise next state is S10\nstate S10: If w is asserted, next state is S21, otherwise next state is S20\nstate S11: If w is asserted, next state is S22, otherwise next state is S21\nstate S20: next state is B\nstate S21: If w is asserted, next state is C, otherwise next state is B\nstate S22: If w is asserted, next state is B, otherwise next state is C\n\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput s,\n\tinput w,\n\toutput reg z\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+reg [2:0] state, next_state;
+
+always @(posedge clk, posedge reset) begin
+    if (reset) begin
+        state <= 'b0;
+    end
+    else begin
+        state <= next_state;
+    end
+end
+
+always @(*) begin
+    case (state)
+        'b000: // state A
+            if (s) begin
+                next_state = 'b001; // state B
+            end
+            else begin
+                next_state = state;
+            end
+        'b001: // state B
+            if (w) begin
+                next_state = 'b011; // state S11
+            end
+            else begin
+                next_state = 'b010; // state S10
+            end
+        'b010: // state S10
+            if (w) begin
+                next_state = 'b101; // state S21
+            end
+            else begin
+                next_state = 'b100; // state S20
+            end
+        'b011: // state S11
+            if (w) begin
+                next_state = 'b110; // state S22
+            end
+            else begin
+                next_state = 'b101; // state S21
+            end
+        'b100: // state S20
+            next_state = 'b001; // state B
+        'b101: // state S21
+            if (w) begin
+                next_state = 'b010; // state C
+            end
+            else begin
+                next_state = 'b001; // state B
+            end
+        'b110: // state S22
+            if (w) begin
+                next_state = 'b001; // state B
+            end
+            else begin
+                next_state = 'b010; // state C
+            end
+        default:
+            next_state = state;
+    endcase
+end
+
+always @(posedge clk, posedge reset) begin
+    if (reset) begin
+        z <= 1'b0;
+    end
+    else begin
+        case (state)
+            'b001: // state B
+            'b011: // state S11
+            'b110: // state S22
+                z <= 1'b1;
+            default:
+                z <= 1'b0;
+        endcase
+    end
+end
+
+endmodule
+```'}
+
+ Iteration rank: -1

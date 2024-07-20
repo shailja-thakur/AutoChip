@@ -1,0 +1,114 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    // State definitions
+    typedef enum reg [3:0] {
+        IDLE,
+        START,
+        BIT0,
+        BIT1,
+        BIT2,
+        BIT3,
+        BIT4,
+        BIT5,
+        BIT6,
+        BIT7,
+        STOP,
+        ERROR
+    } state_t;
+
+    state_t state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_byte;
+
+    // State transition logic
+    always @(*) begin
+        next_state = state;
+        done = 1'b0;
+        case (state)
+            IDLE: begin
+                if (!in) begin // Detect start bit
+                    next_state = START;
+                end
+            end
+            START: begin
+                next_state = BIT0;
+            end
+            BIT0: begin
+                data_byte[0] = in;
+                next_state = BIT1;
+            end
+            BIT1: begin
+                data_byte[1] = in;
+                next_state = BIT2;
+            end
+            BIT2: begin
+                data_byte[2] = in;
+                next_state = BIT3;
+            end
+            BIT3: begin
+                data_byte[3] = in;
+                next_state = BIT4;
+            end
+            BIT4: begin
+                data_byte[4] = in;
+                next_state = BIT5;
+            end
+            BIT5: begin
+                data_byte[5] = in;
+                next_state = BIT6;
+            end
+            BIT6: begin
+                data_byte[6] = in;
+                next_state = BIT7;
+            end
+            BIT7: begin
+                data_byte[7] = in;
+                next_state = STOP;
+            end
+            STOP: begin
+                if (in) begin // Verify stop bit
+                    done = 1'b1;
+                    next_state = IDLE;
+                end else begin
+                    next_state = ERROR;
+                end
+            end
+            ERROR: begin
+                if (in) begin // Wait for idle
+                    next_state = IDLE;
+                end
+            end
+            default: begin
+                next_state = IDLE;
+            end
+        endcase
+    end
+
+    // State and bit counting register update
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 3'b0;
+            data_byte <= 8'b0;
+        end else begin
+            state <= next_state;
+            if (state == IDLE && !in) begin
+                bit_count <= 3'b0;
+            end else if (state >= BIT0 && state <= BIT7) begin
+                bit_count <= bit_count + 1'b1;
+            end
+        end
+    end
+
+endmodule
+```'}
+
+ Iteration rank: 0.9469613259668508

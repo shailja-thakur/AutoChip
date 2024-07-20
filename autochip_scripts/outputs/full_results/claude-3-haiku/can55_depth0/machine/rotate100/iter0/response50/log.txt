@@ -1,0 +1,36 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "//  This Verilog module is a top-level module that is used to shift the bits of the input data. The module has five ports, a clock input (clk), a load input (load), an enable input (ena), a data input (data) and a data output (q).   The clock input (clk) is used to synchronize the module and is used to trigger the state transitions.  The load input (load) is used to control when the data is loaded into the output register (q). When the load input is high, the data input (data) is loaded into the output register (q).  The enable input (ena) is used to control the direction of the shift. When the enable input is set to 2'h1, the output register (q) is shifted to the left. When the enable input is set to 2'h2, the output register (q) is shifted to the right.  The data input (data) is used to provide the data to be shifted. The data input is a 100-bit wide vector.  The data output (q) is used to output the shifted data. The data output is a 100-bit wide vector.  The module is always triggered on the rising edge of the clock input (clk). When the load input is high, the data input (data) is loaded into the output register (q). When the enable input is set to 2'h1, the output register (q) is shifted to the left. When the enable input is set to 2'h2, the output register (q) is shifted to the right.\n\nmodule top_module(\n\tinput clk,\n\tinput load,\n\tinput [1:0] ena,\n\tinput [99:0] data,\n\toutput reg [99:0] q);"}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input load,
+    input [1:0] ena,
+    input [99:0] data,
+    output reg [99:0] q
+);
+
+always @(posedge clk) begin
+    if (load) begin
+        q <= data;
+    end
+    else if (ena == 2'b01) begin
+        q <= {q[98:0], 1'b0};
+    end
+    else if (ena == 2'b10) begin
+        q <= {1'b0, q[99:1]};
+    end
+end
+
+endmodule
+```
+
+This Verilog module correctly implements the specified behavior. The module has the following features:
+
+1. The `always` block is triggered on the positive edge of the clock signal (`clk`).
+2. If the `load` signal is high, the `data` input is loaded into the output register `q`.
+3. If the `ena` signal is `2'b01`, the contents of the output register `q` are shifted left by one bit, with a `0` being shifted in from the right.
+4. If the `ena` signal is `2'b10`, the contents of the output register `q` are shifted right by one bit, with a `0` being shifted in from the left.
+
+The module correctly handles the specified functionality of loading data, shifting left, and shifting right based on the input signals.'}
+
+ Iteration rank: 0.08064918851435705

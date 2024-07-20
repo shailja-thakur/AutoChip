@@ -1,0 +1,76 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a 4-digit BCD (binary-coded decimal) counter. Each decimal digit is encoded using 4 bits: q[3:0] is the ones digit, q[7:4] is the tens digit, etc. For digits [3:1], also output an enable signal indicating when each of the upper three digits should be incremented. Include a synchronous active-high reset.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput [3:1] ena,\n\toutput reg [15:0] q);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    output [3:1] ena,
+    output reg [15:0] q
+    );
+
+    wire [3:0] ones, tens, hundreds, thousands;
+    reg one_carry, ten_carry, hundred_carry, thousand_carry;
+    
+    assign ones     = q[3:0];
+    assign tens     = q[7:4];
+    assign hundreds = q[11:8];
+    assign thousands = q[15:12];
+    
+    assign ena[1] = (ones == 4'd9);
+    assign ena[2] = (tens == 4'd9) && ena[1];
+    assign ena[3] = (hundreds == 4'd9) && ena[2];
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            q <= 16'b0;
+        end
+        else begin
+            // Increment the ones place
+            if (ones == 4'd9) begin
+                q[3:0] <= 4'd0;
+                one_carry <= 1'b1;
+            end
+            else begin
+                q[3:0] <= ones + 4'd1;
+                one_carry <= 1'b0;
+            end
+            
+            // Increment the tens place
+            if (one_carry) begin
+                if (tens == 4'd9) begin
+                    q[7:4] <= 4'd0;
+                    ten_carry <= 1'b1;
+                end
+                else begin
+                    q[7:4] <= tens + 4'd1;
+                    ten_carry <= 1'b0;
+                end
+            end
+
+            // Increment the hundreds place
+            if (ten_carry) begin
+                if (hundreds == 4'd9) begin
+                    q[11:8] <= 4'd0;
+                    hundred_carry <= 1'b1;
+                end
+                else begin
+                    q[11:8] <= hundreds + 4'd1;
+                    hundred_carry <= 1'b0;
+                end
+            end
+
+            // Increment the thousands place
+            if (hundred_carry) begin
+                if (thousands == 4'd9) begin
+                    q[15:12] <= 4'd0;
+                end
+                else begin
+                    q[15:12] <= thousands + 4'd1;
+                end
+            end
+        end
+    end
+endmodule
+```'}
+
+ Iteration rank: 0.01437005401331491

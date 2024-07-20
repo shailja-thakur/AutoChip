@@ -1,0 +1,1428 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // A large reservior of water serves several users. In order to keep the level of water succificently high, three sensors are placed vertically at 5-inch intervals. When the water level is above the highest sensor s[3], the input flow rate should be zero. When the level is below the lowest sensor s[1], the flow rate should be at maximum (both Nominal flow valve and Supplemental flow valve opened). The flow rate when the level is between the upper and lower sensors is determined by two factors: the water level and the level previous to the last sensor change. Each water level has a nominal flow rate associated with it as show in the table below. If the sensor change indicates that the previous level was lower than the current level, the flow rate should be increased by opening the Supplemental flow valve (controlled by dfr). 
+// Water Level | Sensors Asserted | Nominal Flow Rate Inputs to be Asserted
+// Above s[3] | s[1], s[2], s[3] | None
+// Between s[3] and s[2] | s[1], s[2] | fr1
+// Between s[2] and s[1]  | s[1] | fr1, fr2
+// Below s[1] | None | fr1, fr2, fr3
+// Also include an active-high synchronous reset that resets the state machine to a state equivalent to if the water level had been low for a long time (no sensors asserted, and all four outputs asserted).
+
+module top_module (
+	input clk,
+	input reset,
+	input [3:1] s,
+	output reg fr3,
+	output reg fr2,
+	output reg fr1,
+	output reg dfr
+);
+assistant: module top_module (
+	input clk,
+	input reset,
+	input [3:1] s,
+	output reg fr3,
+	output reg fr2,
+	output reg fr1,
+	output reg dfr
+);
+
+	typedef enum logic [1:0] {
+		LOW = 2'b00,
+		MID = 2'b01,
+		HIGH = 2'b10,
+		ABOVE_HIGH = 2'b11
+	} state_t;
+
+	state_t state, next_state;
+
+	always_ff @(posedge clk) begin
+		if (reset) begin
+			state <= LOW;
+		end else begin
+			state <= next_state;
+		end
+	end
+
+	always_comb begin
+		// Default values
+		fr3 = 1'b0;
+		fr2 = 1'b0;
+		fr1 = 1'b0;
+		dfr = 1'b0;
+
+		case (state) 
+			LOW: begin
+				fr3 = 1;
+				fr2 = 1;
+				fr1 = 1;
+
+				if (s == 3'b001 || s == 3'b010 || s == 3'b011 || s == 3'b100 || s == 3'b101 || s == 3'b110 || s == 3'b111) begin
+					next_state = MID;
+				end else begin
+					next_state = LOW;
+				end
+			end
+			MID: begin
+				fr2 = 1;
+				fr1 = 1;
+
+				if (s == 3'b001 || s == 3'b010) begin
+					next_state = MID;
+				end else if (s == 3'b011 || s == 3'b100) begin
+					next_state = HIGH;
+				end else if (s == 3'b000) begin
+					next_state = LOW;
+				end else if (s == 3'b101 || s == 3'b110 || s == 3'b111) begin
+					next_state = ABOVE_HIGH;
+				end
+
+				if (reset == 1) begin
+					next_state = LOW;
+				end
+			end
+			HIGH: begin
+				fr1 = 1;
+
+				if (s == 3'b011 || s == 3'b100) begin
+					next_state = HIGH;
+				end else if (s == 3'b110 || s == 3'b111) begin
+					next_state = ABOVE_HIGH;
+				end else if (s == 3'b000 || s == 3'b001 || s == 3'b010) begin
+					next_state = MID;
+				end
+
+				if (reset == 1) begin
+					next_state = LOW;
+				end
+			end
+			ABOVE_HIGH: begin
+				if (s == 3'b111) begin
+					next_state = ABOVE_HIGH;
+				end else if (s == 3'b000 || s == 3'b001 || s == 3'b010 || s == 3'b011 || s == 3'b100 || s == 3'b101 || s == 3'b110) begin
+					next_state = MID;
+				end
+
+				if (reset == 1) begin
+					next_state = LOW;
+				end
+			end
+			default: begin
+				next_state = LOW;
+			end
+		endcase
+	end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your reset doesn't seem to be working.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/ece241_2013_q4/ece241_2013_q4_tb.sv:127: $finish called at 10200 (1ps)
+Hint: Output 'fr3' has no mismatches.
+Hint: Output 'fr2' has 128 mismatches. First mismatch occurred at time 160.
+Hint: Output 'fr1' has no mismatches.
+Hint: Output 'dfr' has 1240 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 1240 out of 2040 samples
+
+Simulation finished at 10200 ps
+Mismatches: 1240 in 2040 samples
+
+assistant: module top_module (
+	input clk,
+	input reset,
+	input [3:1] s,
+	output reg fr3,
+	output reg fr2,
+	output reg fr1,
+	output reg dfr
+);
+
+	typedef enum logic [1:0] {
+		LOW = 2'b00,
+		MID = 2'b01,
+		HIGH = 2'b10,
+		ABOVE_HIGH = 2'b11
+	} state_t;
+
+	state_t state, next_state;
+
+	always_ff @(posedge clk or posedge reset) begin
+		if (reset) begin
+			state <= LOW;
+		end else begin
+			state <= next_state;
+		end
+	end
+
+	always_ff @(posedge clk or posedge reset) begin
+		if (reset) begin
+			// Reset all the outputs to initial state
+			fr3 <= 1'b1;
+			fr2 <= 1'b1;
+			fr1 <= 1'b1;
+			dfr <= 1'b0;
+		end else begin
+			// Default values
+			fr3 <= 1'b0;
+			fr2 <= 1'b0;
+			fr1 <= 1'b0;
+			dfr <= 1'b0;
+
+			case (state) 
+				LOW: begin
+					fr3 <= 1;
+					fr2 <= 1;
+					fr1 <= 1;
+
+					if (s != 3'b000) begin
+						next_state <= MID;
+					end else begin
+						next_state <= LOW;
+					end
+				end
+				MID: begin
+					fr2 <= 1;
+					fr1 <= 1;
+
+					if (s == 3'b001 || s == 3'b010) begin
+						next_state <= MID;
+					end else if (s == 3'b011 || s == 3'b100) begin
+						next_state <= HIGH;
+					end else if (s == 3'b000) begin
+						next_state <= LOW;
+					end else if (s[3] == 1) begin
+						next_state <= ABOVE_HIGH;
+					end
+				end
+				HIGH: begin
+					fr1 <= 1;
+
+					if (s[2] == 1 && s[3] == 0) begin
+						next_state <= HIGH;
+					end else if (s[3] == 1) begin
+						next_state <= ABOVE_HIGH;
+					end else if (s[2:1] == 2'b00) begin
+						next_state <= MID;
+					end
+				end
+				ABOVE_HIGH: begin
+					if (s[3] == 1) begin
+						next_state <= ABOVE_HIGH;
+					end else begin
+						next_state <= MID;
+					end
+				end
+				default: begin
+					next_state <= LOW;
+				end
+			endcase
+			
+			// Determine 'dfr'
+			if (state == MID && next_state == HIGH) begin
+				dfr <= 1;
+			end else if (state == HIGH && next_state == MID) begin
+				dfr <= 0;
+			end
+		end
+	end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your reset doesn't seem to be working.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/ece241_2013_q4/ece241_2013_q4_tb.sv:127: $finish called at 10200 (1ps)
+Hint: Output 'fr3' has 439 mismatches. First mismatch occurred at time 30.
+Hint: Output 'fr2' has 502 mismatches. First mismatch occurred at time 40.
+Hint: Output 'fr1' has 322 mismatches. First mismatch occurred at time 40.
+Hint: Output 'dfr' has 1256 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 1693 out of 2040 samples
+
+Simulation finished at 10200 ps
+Mismatches: 1693 in 2040 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output reg fr3,
+    output reg fr2,
+    output reg fr1,
+    output reg dfr
+);
+
+    typedef enum logic [1:0] {
+        LOW = 2'b00,
+        MID = 2'b01,
+        HIGH = 2'b10,
+        ABOVE_HIGH = 2'b11
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= LOW;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            // Reset all the outputs to initial state
+            fr3 <= 1'b1;
+            fr2 <= 1'b1;
+            fr1 <= 1'b1;
+            dfr <= 1'b0;
+        end else begin
+            // Default values
+            fr3 <= 1'b0;
+            fr2 <= 1'b0;
+            fr1 <= 1'b0;
+            dfr <= 1'b0;
+
+            case (state) 
+                LOW: begin
+                    fr3 <= 1'b1;
+                    fr2 <= 1'b1;
+                    fr1 <= 1'b1;
+                    if (s != 3'b000) begin
+                        next_state <= MID;
+                    end else begin
+                        next_state <= LOW;
+                    end
+                end
+                MID: begin
+                    fr2 <= 1'b1;
+                    fr1 <= 1'b1;
+                    if (s == 3'b011 || s == 3'b010) begin
+                        next_state <= HIGH;
+                    end else if (s == 3'b001) begin
+                        next_state <= MID;
+                    end else if (s == 3'b000) begin
+                        next_state <= LOW;
+                    end else if (s[3] == 1) begin
+                        next_state <= ABOVE_HIGH;
+                    end
+                end
+                HIGH: begin
+                    fr1 <= 1'b1;
+                    if (s[3] == 1) begin
+                        next_state <= ABOVE_HIGH;
+                    end else if (s[2] == 1 && s[3] == 0) begin
+                        next_state <= HIGH;
+                    end else if (s[2:1] == 2'b00) begin
+                        next_state <= MID;
+                    end
+                end
+                ABOVE_HIGH: begin
+                    if (s[3] == 1) begin
+                        next_state <= ABOVE_HIGH;
+                    end else begin
+                        next_state <= MID;
+                    end
+                end
+                default: begin
+                    next_state <= LOW;
+                end
+            endcase
+            
+            // Determine 'dfr'
+            if (state == MID && next_state == HIGH) begin
+                dfr <= 1'b1;
+            end else if (state == HIGH && next_state == ABOVE_HIGH) begin
+                dfr <= 1'b0;
+            end else if (state == HIGH && next_state == MID) begin
+                dfr <= 1'b1; // Increase flow when water level drops from HIGH to MID
+            end
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your reset doesn't seem to be working.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/ece241_2013_q4/ece241_2013_q4_tb.sv:127: $finish called at 10200 (1ps)
+Hint: Output 'fr3' has 439 mismatches. First mismatch occurred at time 30.
+Hint: Output 'fr2' has 502 mismatches. First mismatch occurred at time 40.
+Hint: Output 'fr1' has 322 mismatches. First mismatch occurred at time 40.
+Hint: Output 'dfr' has 1218 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 1699 out of 2040 samples
+
+Simulation finished at 10200 ps
+Mismatches: 1699 in 2040 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output reg fr3,
+    output reg fr2,
+    output reg fr1,
+    output reg dfr
+);
+
+    typedef enum logic [1:0] {
+        LOW = 2'b00,
+        BETWEEN_LOW_MID = 2'b01,
+        BETWEEN_MID_HIGH = 2'b10,
+        HIGH = 2'b11
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= LOW;
+            fr3 <= 1'b1;
+            fr2 <= 1'b1;
+            fr1 <= 1'b1;
+            dfr <= 1'b0;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    always_comb begin
+        next_state = state;
+        // Default values
+        fr3 = 1'b0;
+        fr2 = 1'b0;
+        fr1 = 1'b0;
+        dfr = 1'b0;
+
+        case (state)
+            LOW: begin
+                fr3 = 1'b1;
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            BETWEEN_LOW_MID: begin
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            BETWEEN_MID_HIGH: begin
+                fr1 = 1'b1;
+                if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            HIGH: begin
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+        endcase
+
+        // Determine 'dfr' based on state transitions
+        if (state == BETWEEN_LOW_MID && next_state == BETWEEN_MID_HIGH) begin
+            dfr = 1'b1;
+        end else if (state == BETWEEN_MID_HIGH && next_state == HIGH) begin
+            dfr = 1'b0;
+        end else if ((state == LOW && next_state == BETWEEN_LOW_MID) ||
+                     (state == BETWEEN_LOW_MID && next_state == BETWEEN_MID_HIGH) ||
+                     (state == BETWEEN_MID_HIGH && next_state == HIGH)) begin
+            dfr = 1'b1; // Increase flow when water level rises
+        end else begin
+            dfr = 1'b0; // No supplemental flow needed otherwise
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your reset doesn't seem to be working.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/ece241_2013_q4/ece241_2013_q4_tb.sv:127: $finish called at 10200 (1ps)
+Hint: Output 'fr3' has 1 mismatches. First mismatch occurred at time 55.
+Hint: Output 'fr2' has no mismatches.
+Hint: Output 'fr1' has no mismatches.
+Hint: Output 'dfr' has 998 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 998 out of 2040 samples
+
+Simulation finished at 10200 ps
+Mismatches: 998 in 2040 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output reg fr3,
+    output reg fr2,
+    output reg fr1,
+    output reg dfr
+);
+
+    typedef enum logic [1:0] {
+        LOW = 2'b00,
+        BETWEEN_LOW_MID = 2'b01,
+        BETWEEN_MID_HIGH = 2'b10,
+        HIGH = 2'b11
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= LOW;
+            fr3 <= 1'b1;
+            fr2 <= 1'b1;
+            fr1 <= 1'b1;
+            dfr <= 1'b0;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    always_comb begin
+        next_state = state;
+        // Default values
+        fr3 = 1'b0;
+        fr2 = 1'b0;
+        fr1 = 1'b0;
+        dfr = 1'b0;
+
+        case (state)
+            LOW: begin
+                fr3 = 1'b1;
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            BETWEEN_LOW_MID: begin
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            BETWEEN_MID_HIGH: begin
+                fr1 = 1'b1;
+                if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            HIGH: begin
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+        endcase
+    end
+    
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            dfr <= 1'b0;
+        end else begin
+            // Determine 'dfr' based on state transitions
+            if ((state == BETWEEN_LOW_MID && next_state == BETWEEN_MID_HIGH) || 
+                (state == BETWEEN_MID_HIGH && next_state == HIGH) || 
+                ((state == LOW && next_state == BETWEEN_LOW_MID) ||
+                 (state == BETWEEN_LOW_MID && next_state == BETWEEN_MID_HIGH) ||
+                 (state == BETWEEN_MID_HIGH && next_state == HIGH))) begin
+                dfr <= 1'b1; // Increase flow when water level rises
+            end else begin
+                dfr <= 1'b0; // No supplemental flow needed otherwise
+            end
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your reset doesn't seem to be working.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/ece241_2013_q4/ece241_2013_q4_tb.sv:127: $finish called at 10200 (1ps)
+Hint: Output 'fr3' has 1 mismatches. First mismatch occurred at time 55.
+Hint: Output 'fr2' has no mismatches.
+Hint: Output 'fr1' has no mismatches.
+Hint: Output 'dfr' has 1240 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 1241 out of 2040 samples
+
+Simulation finished at 10200 ps
+Mismatches: 1241 in 2040 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output reg fr3,
+    output reg fr2,
+    output reg fr1,
+    output reg dfr
+);
+
+    typedef enum logic [1:0] {
+        LOW = 2'b00,
+        BETWEEN_LOW_MID = 2'b01,
+        BETWEEN_MID_HIGH = 2'b10,
+        HIGH = 2'b11
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= LOW;
+            fr3 <= 1'b1;
+            fr2 <= 1'b1;
+            fr1 <= 1'b1;
+            dfr <= 1'b0;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    always_comb begin
+        next_state = state;
+        // Default values
+        fr3 = 1'b0;
+        fr2 = 1'b0;
+        fr1 = 1'b0;
+        dfr = 1'b0;
+
+        case (state)
+            LOW: begin
+                fr3 = 1'b1;
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            BETWEEN_LOW_MID: begin
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            BETWEEN_MID_HIGH: begin
+                fr1 = 1'b1;
+                if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            HIGH: begin
+                fr3 = 1'b0;
+                fr2 = 1'b0;
+                fr1 = 1'b0;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+        endcase
+    end
+    
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            dfr <= 1'b0;
+        end else begin
+            // Determine 'dfr' based on state transitions
+            if ((state == BETWEEN_LOW_MID && next_state == BETWEEN_MID_HIGH) || 
+                (state == BETWEEN_MID_HIGH && next_state == HIGH) || 
+                ((state == LOW && next_state == BETWEEN_LOW_MID) ||
+                 (state == BETWEEN_LOW_MID && next_state == BETWEEN_MID_HIGH) ||
+                 (state == BETWEEN_MID_HIGH && next_state == HIGH))) begin
+                dfr <= 1'b1; // Increase flow when water level rises
+            end else begin
+                dfr <= 1'b0; // No supplemental flow needed otherwise
+            end
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your reset doesn't seem to be working.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/ece241_2013_q4/ece241_2013_q4_tb.sv:127: $finish called at 10200 (1ps)
+Hint: Output 'fr3' has 1 mismatches. First mismatch occurred at time 55.
+Hint: Output 'fr2' has no mismatches.
+Hint: Output 'fr1' has no mismatches.
+Hint: Output 'dfr' has 1240 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 1241 out of 2040 samples
+
+Simulation finished at 10200 ps
+Mismatches: 1241 in 2040 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output reg fr3,
+    output reg fr2,
+    output reg fr1,
+    output reg dfr
+);
+
+    typedef enum logic [1:0] {
+        LOW = 2'b00,
+        BETWEEN_LOW_MID = 2'b01,
+        BETWEEN_MID_HIGH = 2'b10,
+        HIGH = 2'b11
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= LOW;
+            fr3 <= 1'b1;
+            fr2 <= 1'b1;
+            fr1 <= 1'b1;
+            dfr <= 1'b0;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    always_comb begin
+        next_state = state;
+        // Default values
+        fr3 = 1'b0;
+        fr2 = 1'b0;
+        fr1 = 1'b0;
+        dfr = 1'b0;
+
+        case (state)
+            LOW: begin
+                fr3 = 1'b1;
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            BETWEEN_LOW_MID: begin
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            BETWEEN_MID_HIGH: begin
+                fr1 = 1'b1;
+                if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            HIGH: begin
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                    fr3 = 1'b1; // Keep supplying maximum flow in low state
+                    fr2 = 1'b1;
+                    fr1 = 1'b1;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                    fr2 = 1'b1;
+                    fr1 = 1'b1;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                    fr1 = 1'b1;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+        endcase
+    end
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            dfr <= 1'b0;
+        end else begin
+            // Determine 'dfr' based on state transitions
+            if ((state == BETWEEN_LOW_MID && next_state == BETWEEN_MID_HIGH) || 
+                (state == BETWEEN_MID_HIGH && next_state == HIGH) || 
+                ((state == LOW && next_state == BETWEEN_LOW_MID) ||
+                 (state == BETWEEN_LOW_MID && next_state == BETWEEN_MID_HIGH) ||
+                 (state == BETWEEN_MID_HIGH && next_state == HIGH))) begin
+                dfr <= 1'b1; // Increase flow when water level rises
+            end else begin
+                dfr <= 1'b0; // No supplemental flow needed otherwise
+            end
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your reset doesn't seem to be working.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/ece241_2013_q4/ece241_2013_q4_tb.sv:127: $finish called at 10200 (1ps)
+Hint: Output 'fr3' has 1 mismatches. First mismatch occurred at time 55.
+Hint: Output 'fr2' has no mismatches.
+Hint: Output 'fr1' has 65 mismatches. First mismatch occurred at time 150.
+Hint: Output 'dfr' has 1240 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 1306 out of 2040 samples
+
+Simulation finished at 10200 ps
+Mismatches: 1306 in 2040 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output reg fr3,
+    output reg fr2,
+    output reg fr1,
+    output reg dfr
+);
+
+    typedef enum logic [1:0] {
+        LOW = 2'b00,
+        BETWEEN_LOW_MID = 2'b01,
+        BETWEEN_MID_HIGH = 2'b10,
+        HIGH = 2'b11
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= LOW;
+            fr3 <= 1'b1;
+            fr2 <= 1'b1;
+            fr1 <= 1'b1;
+            dfr <= 1'b0;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    always_comb begin
+        next_state = state;
+        // Default values
+        fr3 = 1'b0;
+        fr2 = 1'b0;
+        fr1 = 1'b0;
+        dfr = 1'b0;
+
+        case (state)
+            LOW: begin
+                fr3 = 1'b1;
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            BETWEEN_LOW_MID: begin
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            BETWEEN_MID_HIGH: begin
+                fr1 = 1'b1;
+                if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            HIGH: begin
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+        endcase
+    end
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            dfr <= 1'b0;
+        end else if (state == BETWEEN_LOW_MID && next_state == BETWEEN_MID_HIGH) begin
+            dfr <= 1'b1; // Increase flow when water level rises
+        end else if (state == BETWEEN_MID_HIGH && next_state == HIGH) begin
+            dfr <= 1'b1; // Increase flow when water level rises
+        end else if (state == LOW && next_state == BETWEEN_LOW_MID) begin
+            dfr <= 1'b1; // Increase flow when water level rises
+        end else begin
+            dfr <= 1'b0; // No supplemental flow needed otherwise
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your reset doesn't seem to be working.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/ece241_2013_q4/ece241_2013_q4_tb.sv:127: $finish called at 10200 (1ps)
+Hint: Output 'fr3' has 1 mismatches. First mismatch occurred at time 55.
+Hint: Output 'fr2' has no mismatches.
+Hint: Output 'fr1' has no mismatches.
+Hint: Output 'dfr' has 1240 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 1241 out of 2040 samples
+
+Simulation finished at 10200 ps
+Mismatches: 1241 in 2040 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output reg fr3,
+    output reg fr2,
+    output reg fr1,
+    output reg dfr
+);
+
+    typedef enum logic [1:0] {
+        LOW = 2'b00,
+        BETWEEN_LOW_MID = 2'b01,
+        BETWEEN_MID_HIGH = 2'b10,
+        HIGH = 2'b11
+    } state_t;
+
+    state_t state, next_state;
+    reg level_rising;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= LOW;
+            fr3 <= 1'b1;
+            fr2 <= 1'b1;
+            fr1 <= 1'b1;
+            dfr <= 1'b1;
+            level_rising <= 1'b0;
+        end else begin
+            state <= next_state;
+            dfr <= (level_rising && (state != HIGH)); // Ensure dfr only high when state is not HIGH
+        end
+    end
+
+    always_comb begin
+        next_state = state;
+        level_rising = 1'b0; // Default level_rising to low
+        
+        // Default flow rate output values
+        fr3 = 1'b0;
+        fr2 = 1'b0;
+        fr1 = 1'b0;
+
+        case (state)
+            LOW: begin
+                fr3 = 1'b1;
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                    level_rising = 1'b1; // Indicate level is rising
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                    level_rising = 1'b1; // Indicate level is rising
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                    level_rising = 1'b1; // Indicate level is rising
+                end
+            end
+            BETWEEN_LOW_MID: begin
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                    level_rising = 1'b0; // Indicate level is falling
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                    level_rising = 1'b1; // Indicate level is rising
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                    level_rising = 1'b1; // Indicate level is rising
+                end
+            end
+            BETWEEN_MID_HIGH: begin
+                fr1 = 1'b1;
+                if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                    level_rising = 1'b0; // Indicate level is falling
+                end else if (s == 3'b000) begin
+                    next_state = LOW;
+                    level_rising = 1'b0; // Indicate level is falling
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                    level_rising = 1'b1; // Indicate level is rising
+                end
+            end
+            HIGH: begin
+                if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                    level_rising = 1'b0; // Indicate level is falling
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                    level_rising = 1'b0; // Indicate level is falling
+                end else if (s == 3'b000) begin
+                    next_state = LOW;
+                    level_rising = 1'b0; // Indicate level is falling
+                end
+            end
+        endcase
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your reset should be synchronous, but doesn't appear to be.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/ece241_2013_q4/ece241_2013_q4_tb.sv:127: $finish called at 10200 (1ps)
+Hint: Output 'fr3' has 1 mismatches. First mismatch occurred at time 55.
+Hint: Output 'fr2' has no mismatches.
+Hint: Output 'fr1' has no mismatches.
+Hint: Output 'dfr' has 1655 mismatches. First mismatch occurred at time 55.
+Hint: Total mismatched samples is 1655 out of 2040 samples
+
+Simulation finished at 10200 ps
+Mismatches: 1655 in 2040 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output reg fr3,
+    output reg fr2,
+    output reg fr1,
+    output reg dfr
+);
+
+    typedef enum logic [1:0] {
+        LOW = 2'b00,
+        BETWEEN_LOW_MID = 2'b01,
+        BETWEEN_MID_HIGH = 2'b10,
+        HIGH = 2'b11
+    } state_t;
+
+    state_t state, next_state;
+    reg level_rising;
+
+    always_ff @(posedge clk) begin
+        if (reset) begin
+            state <= LOW;
+            fr3 <= 1'b1;
+            fr2 <= 1'b1;
+            fr1 <= 1'b1;
+            dfr <= 1'b1;
+        end else begin
+            state <= next_state;
+            dfr <= (level_rising && (state != HIGH)); // Ensure dfr only high when state is not HIGH
+        end
+    end
+
+    always_comb begin
+        next_state = state;
+        level_rising = 1'b0; // Default level_rising to low
+        
+        // Default flow rate output values
+        fr3 = 1'b0;
+        fr2 = 1'b0;
+        fr1 = 1'b0;
+
+        case (state)
+            LOW: begin
+                fr3 = 1'b1;
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                    level_rising = 1'b1; // Indicate level is rising
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                    level_rising = 1'b1; // Indicate level is rising
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                    level_rising = 1'b1; // Indicate level is rising
+                end
+            end
+            BETWEEN_LOW_MID: begin
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                    level_rising = 1'b0; // Indicate level is falling
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                    level_rising = 1'b1; // Indicate level is rising
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                    level_rising = 1'b1; // Indicate level is rising
+                end
+            end
+            BETWEEN_MID_HIGH: begin
+                fr1 = 1'b1;
+                if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                    level_rising = 1'b0; // Indicate level is falling
+                end else if (s == 3'b000) begin
+                    next_state = LOW;
+                    level_rising = 1'b0; // Indicate level is falling
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                    level_rising = 1'b1; // Indicate level is rising
+                end
+            end
+            HIGH: begin
+                if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                    level_rising = 1'b0; // Indicate level is falling
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                    level_rising = 1'b0; // Indicate level is falling
+                end else if (s == 3'b000) begin
+                    next_state = LOW;
+                    level_rising = 1'b0; // Indicate level is falling
+                end
+            end
+        endcase
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/ece241_2013_q4/ece241_2013_q4_tb.sv:127: $finish called at 10200 (1ps)
+Hint: Output 'fr3' has no mismatches.
+Hint: Output 'fr2' has no mismatches.
+Hint: Output 'fr1' has no mismatches.
+Hint: Output 'dfr' has 1658 mismatches. First mismatch occurred at time 30.
+Hint: Total mismatched samples is 1658 out of 2040 samples
+
+Simulation finished at 10200 ps
+Mismatches: 1658 in 2040 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output reg fr3,
+    output reg fr2,
+    output reg fr1,
+    output reg dfr
+);
+
+    typedef enum logic [1:0] {
+        LOW = 2'b00,
+        BETWEEN_LOW_MID = 2'b01,
+        BETWEEN_MID_HIGH = 2'b10,
+        HIGH = 2'b11
+    } state_t;
+
+    state_t state, next_state;
+    reg level_rising;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= LOW;
+            fr3 <= 1'b1;
+            fr2 <= 1'b1;
+            fr1 <= 1'b1;
+            dfr <= 1'b1;
+        end else begin
+            state <= next_state;
+            dfr <= (level_rising && (state != HIGH)); // Ensure dfr only high when state is not HIGH
+        end
+    end
+
+    always @(*) begin
+        next_state = state;
+        level_rising = 1'b0; 
+
+        // Default flow rate output values
+        fr3 = 1'b0;
+        fr2 = 1'b0;
+        fr1 = 1'b0;
+
+        case (state)
+            LOW: begin
+                fr3 = 1'b1;
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                    level_rising = 1'b1;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                    level_rising = 1'b1;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                    level_rising = 1'b1;
+                end
+            end
+            BETWEEN_LOW_MID: begin
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                    level_rising = 1'b0;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                    level_rising = 1'b1;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                    level_rising = 1'b1;
+                end
+            end
+            BETWEEN_MID_HIGH: begin
+                fr1 = 1'b1;
+                if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                    level_rising = 1'b0;
+                end else if (s == 3'b000) begin
+                    next_state = LOW;
+                    level_rising = 1'b0;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                    level_rising = 1'b1;
+                end
+            end
+            HIGH: begin
+                if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                    level_rising = 1'b0;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                    level_rising = 1'b0;
+                end else if (s == 3'b000) begin
+                    next_state = LOW;
+                    level_rising = 1'b0;
+                end
+            end
+        endcase
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your reset should be synchronous, but doesn't appear to be.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/ece241_2013_q4/ece241_2013_q4_tb.sv:127: $finish called at 10200 (1ps)
+Hint: Output 'fr3' has 1 mismatches. First mismatch occurred at time 55.
+Hint: Output 'fr2' has no mismatches.
+Hint: Output 'fr1' has no mismatches.
+Hint: Output 'dfr' has 1659 mismatches. First mismatch occurred at time 30.
+Hint: Total mismatched samples is 1659 out of 2040 samples
+
+Simulation finished at 10200 ps
+Mismatches: 1659 in 2040 samples
+
+Time to Generate: 190.81135511398315
+Best ranked response at iteration 3 with response number 0
+Rank of best response: 0.5107843137254902
+Best response module:
+module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output reg fr3,
+    output reg fr2,
+    output reg fr1,
+    output reg dfr
+);
+
+    typedef enum logic [1:0] {
+        LOW = 2'b00,
+        BETWEEN_LOW_MID = 2'b01,
+        BETWEEN_MID_HIGH = 2'b10,
+        HIGH = 2'b11
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= LOW;
+            fr3 <= 1'b1;
+            fr2 <= 1'b1;
+            fr1 <= 1'b1;
+            dfr <= 1'b0;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    always_comb begin
+        next_state = state;
+        // Default values
+        fr3 = 1'b0;
+        fr2 = 1'b0;
+        fr1 = 1'b0;
+        dfr = 1'b0;
+
+        case (state)
+            LOW: begin
+                fr3 = 1'b1;
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            BETWEEN_LOW_MID: begin
+                fr2 = 1'b1;
+                fr1 = 1'b1;
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            BETWEEN_MID_HIGH: begin
+                fr1 = 1'b1;
+                if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+            HIGH: begin
+                if (s == 3'b000) begin
+                    next_state = LOW;
+                end else if (s == 3'b001) begin
+                    next_state = BETWEEN_LOW_MID;
+                end else if (s == 3'b011) begin
+                    next_state = BETWEEN_MID_HIGH;
+                end else if (s == 3'b111) begin
+                    next_state = HIGH;
+                end
+            end
+        endcase
+
+        // Determine 'dfr' based on state transitions
+        if (state == BETWEEN_LOW_MID && next_state == BETWEEN_MID_HIGH) begin
+            dfr = 1'b1;
+        end else if (state == BETWEEN_MID_HIGH && next_state == HIGH) begin
+            dfr = 1'b0;
+        end else if ((state == LOW && next_state == BETWEEN_LOW_MID) ||
+                     (state == BETWEEN_LOW_MID && next_state == BETWEEN_MID_HIGH) ||
+                     (state == BETWEEN_MID_HIGH && next_state == HIGH)) begin
+            dfr = 1'b1; // Increase flow when water level rises
+        end else begin
+            dfr = 1'b0; // No supplemental flow needed otherwise
+        end
+    end
+endmodule
+
+

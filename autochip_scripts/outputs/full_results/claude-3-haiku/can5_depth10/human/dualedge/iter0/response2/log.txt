@@ -1,0 +1,40 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// A dual-edge triggered flip-flop is triggered on both edges of the clock. However, FPGAs don't have dual-edge triggered flip-flops, and always @(posedge clk or negedge clk) is not accepted as a legal sensitivity list. Build a circuit that functionally behaves like a dual-edge triggered flip-flop.\n\nmodule top_module(\n\tinput clk,\n\tinput d,\n\toutput reg q);"}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input d,
+    output reg q
+);
+
+    reg q_posedge, q_negedge;
+
+    always @(posedge clk) begin
+        q_posedge <= d;
+    end
+
+    always @(negedge clk) begin
+        q_negedge <= d;
+    end
+
+    always @(*) begin
+        if (clk) begin
+            q <= q_posedge;
+        end else begin
+            q <= q_negedge;
+        end
+    end
+
+endmodule
+```
+
+This module implements a dual-edge triggered flip-flop using two separate flip-flops, one triggered on the positive edge of the clock and one triggered on the negative edge. The output `q` is then driven by a combinational logic block that selects between the two flip-flop outputs based on the current state of the clock signal.
+
+The key aspects of this implementation are:
+
+1. The use of two separate flip-flops, `q_posedge` and `q_negedge`, to capture the input data on the positive and negative edges of the clock, respectively.
+2. The use of an `always` block with a level-sensitive sensitivity list (`@(*)`) to drive the output `q` based on the current state of the clock signal.
+
+This approach ensures that the module behaves like a dual-edge triggered flip-flop, even though FPGAs do not have native support for such a construct.'}
+
+ Iteration rank: 1.0

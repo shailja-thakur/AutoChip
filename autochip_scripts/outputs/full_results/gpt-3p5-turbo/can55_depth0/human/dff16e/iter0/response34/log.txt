@@ -1,0 +1,32 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// Create 16 D flip-flops. It's sometimes useful to only modify parts of a group of flip-flops. The byte-enable inputs control whether each byte of the 16 registers should be written to on that cycle. byteena[1] controls the upper byte d[15:8], while byteena[0] controls the lower byte d[7:0]. resetn is a synchronous, active-low reset. All DFFs should be triggered by the positive edge of clk.\n\nmodule top_module(\n\tinput clk,\n\tinput resetn,\n\tinput [1:0] byteena,\n\tinput [15:0] d,\n\toutput reg [15:0] q);"}
+{'assistant': 'module top_module(
+    input clk,
+    input resetn,
+    input [1:0] byteena,
+    input [15:0] d,
+    output reg [15:0] q);
+  
+  reg [7:0] d_lower;
+  reg [7:0] d_upper;
+  
+  always @(posedge clk, negedge resetn) begin
+    if (~resetn) begin
+      d_lower <= 8'b0;
+      d_upper <= 8'b0;
+    end else begin
+      if (byteena[0])
+        d_lower <= d[7:0];
+      if (byteena[1])
+        d_upper <= d[15:8];
+    end
+  end
+  
+  always @(posedge clk) begin
+    if (resetn)
+      q <= {d_upper, d_lower};
+  end
+  
+endmodule'}
+
+ Iteration rank: 0.10609480812641084

@@ -1,0 +1,97 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput done\n);'}
+{'assistant': 'module top_module (
+    input clk,
+    input in,
+    input reset,
+    output done
+);
+
+reg [3:0] state;
+reg start_detected;
+reg [7:0] data;
+reg stop_detected;
+
+// FSM states
+parameter IDLE = 0;
+parameter WAIT_START = 1;
+parameter RECEIVE_DATA = 2;
+parameter WAIT_STOP = 3;
+parameter FRAME_RECEIVED = 4;
+
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        state <= IDLE;
+        start_detected <= 0;
+        data <= 0;
+        stop_detected <= 0;
+    end else begin
+        case (state)
+            IDLE:
+                if (in == 0) begin
+                    state <= WAIT_START;
+                    start_detected <= 1;
+                    data <= 0;
+                    stop_detected <= 0;
+                end else begin
+                    state <= IDLE;
+                    start_detected <= 0;
+                    data <= 0;
+                    stop_detected <= 0;
+                end
+            WAIT_START:
+                if (start_detected) begin
+                    state <= RECEIVE_DATA;
+                    start_detected <= 0;
+                    data <= 0;
+                    stop_detected <= 0;
+                end else begin
+                    state <= WAIT_START;
+                    start_detected <= in;
+                    data <= 0;
+                    stop_detected <= 0;
+                end
+            RECEIVE_DATA:
+                if (start_detected) begin
+                    state <= RECEIVE_DATA;
+                    start_detected <= in;
+                    data <= {data[6:0], in};
+                    stop_detected <= 0;
+                end else if (data == 7'b1111111) begin
+                    state <= WAIT_STOP;
+                    start_detected <= 0;
+                    data <= data;
+                    stop_detected <= in;
+                end else begin
+                    state <= RECEIVE_DATA;
+                    start_detected <= in;
+                    data <= {data[6:0], in};
+                    stop_detected <= 0;
+                end
+            WAIT_STOP:
+                if (stop_detected) begin
+                    state <= FRAME_RECEIVED;
+                    start_detected <= 0;
+                    data <= 0;
+                    stop_detected <= 0;
+                end else begin
+                    state <= WAIT_STOP;
+                    start_detected <= in;
+                    data <= data;
+                    stop_detected <= in;
+                end
+            FRAME_RECEIVED:
+                state <= IDLE;
+                start_detected <= 0;
+                data <= 0;
+                stop_detected <= 0;
+        endcase
+    end
+end
+
+assign done = (state == FRAME_RECEIVED);
+
+endmodule
+'}
+
+ Iteration rank: -1

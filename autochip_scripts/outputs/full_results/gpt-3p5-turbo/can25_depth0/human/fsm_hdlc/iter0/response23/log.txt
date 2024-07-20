@@ -1,0 +1,164 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Synchronous HDLC framing involves decoding a continuous bit stream of data to look for bit patterns that indicate the beginning and end of frames (packets). Seeing exactly 6 consecutive 1s (i.e., 01111110) is a "flag" that indicate frame boundaries. To avoid the data stream from accidentally containing "flags", the sender inserts a zero after every 5 consecutive 1s which the receiver must detect and discard. We also need to signal an error if there are 7 or more consecutive 1s. Create a Moore-type finite state machine to recognize these three sequences:\n\n// (1) 0111110: Signal a bit needs to be discarded (disc).\n// (2) 01111110: Flag the beginning/end of a frame (flag).\n// (3) 01111111...: Error (7 or more 1s) (err).\n\n// When the FSM is reset, it should be in a state that behaves as though the previous input were 0. The reset signal is active high synchronous. The output signals should be asserted for a complete cycle beginning on the clock cycle after the condition occurs.\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput in,\n\toutput disc,\n\toutput flag,\n\toutput err);'}
+{'assistant': 'module top_module (
+    input clk,
+    input reset,
+    input in,
+    output disc,
+    output flag,
+    output err);
+
+    reg [2:0] state;
+    reg prev_in;
+    reg [2:0] next_state;
+    wire flag_next;
+    wire disc_next;
+    wire err_next;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            state <= 3'b000;
+        else
+            state <= next_state;
+    end
+
+    always @* begin
+        prev_in = in;
+
+        case (state)
+            3'b000: begin // Idle
+                if (in == 1'b0) begin
+                    next_state = 3'b000;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+                else begin
+                    next_state = 3'b001;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+            end
+
+            3'b001: begin // One
+                if (in == 1'b0) begin
+                    next_state = 3'b010;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+                else begin
+                    next_state = 3'b001;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+            end
+
+            3'b010: begin // Two
+                if (in == 1'b0) begin
+                    next_state = 3'b011;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+                else begin
+                    next_state = 3'b001;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+            end
+
+            3'b011: begin // Three
+                if (in == 1'b0) begin
+                    next_state = 3'b100;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+                else begin
+                    next_state = 3'b001;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+            end
+
+            3'b100: begin // Four
+                if (in == 1'b0) begin
+                    next_state = 3'b101;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+                else begin
+                    next_state = 3'b111;
+                    flag_next = 1'b0;
+                    disc_next = 1'b1;
+                    err_next = 1'b0;
+                end
+            end
+
+            3'b101: begin // Five
+                if (in == 1'b0) begin
+                    next_state = 3'b110;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+                else begin
+                    next_state = 3'b111;
+                    flag_next = 1'b0;
+                    disc_next = 1'b1;
+                    err_next = 1'b0;
+                end
+            end
+
+            3'b110: begin // Six
+                if (in == 1'b0) begin
+                    next_state = 3'b111;
+                    flag_next = 1'b1;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+                else begin
+                    next_state = 3'b111;
+                    flag_next = 1'b0;
+                    disc_next = 1'b1;
+                    err_next = 1'b0;
+                end
+            end
+
+            3'b111: begin // Discard or error
+                if (in == 1'b0) begin
+                    next_state = 3'b000;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+                else if (prev_in == 1'b1) begin
+                    next_state = 3'b111;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b1;
+                end
+                else begin
+                    next_state = 3'b001;
+                    flag_next = 1'b0;
+                    disc_next = 1'b0;
+                    err_next = 1'b0;
+                end
+            end
+        endcase
+    end
+
+    always @(posedge clk) begin
+        disc <= disc_next;
+        flag <= flag_next;
+        err <= err_next;
+    end
+endmodule'}
+
+ Iteration rank: -1

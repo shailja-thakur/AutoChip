@@ -1,0 +1,16 @@
+module top_module (
+    input in,
+    input [3:0] state,
+    output reg [3:0] next_state,
+    output out
+);
+
+    always @(*) begin
+        next_state[0] = (in) ? 0 : (state[0] | state[2]);
+        next_state[1] = (in) ? (state[0] | state[1] | state[3]) : 0;
+        next_state[2] = (in) ? 0 : (state[1] | state[3]);
+        next_state[3] = (in) ? state[2] : 0;
+        out = state[3];
+    end
+
+endmodule

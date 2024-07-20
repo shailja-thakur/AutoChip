@@ -1,0 +1,13 @@
+module top_module (
+    input c,
+    input d,
+    output [3:0] mux_in
+);
+
+    // Generate mux_in signals based on the K-map
+    assign mux_in[0] = (~c & d) | (c & ~d);
+    assign mux_in[1] = 0;
+    assign mux_in[2] = (c & d) | (~c & ~d);
+    assign mux_in[3] = 1;
+
+endmodule

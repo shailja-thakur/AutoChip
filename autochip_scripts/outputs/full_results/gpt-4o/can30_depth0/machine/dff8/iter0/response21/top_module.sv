@@ -1,0 +1,17 @@
+module top_module(
+    input clk,
+    input [7:0] d,
+    output reg [7:0] q
+);
+
+    // Initial block to set the default value of the output
+    initial begin
+        q = 8'h0;
+    end
+
+    // Always block to store input data on the rising edge of the clock
+    always @(posedge clk) begin
+        q <= d;
+    end
+
+endmodule

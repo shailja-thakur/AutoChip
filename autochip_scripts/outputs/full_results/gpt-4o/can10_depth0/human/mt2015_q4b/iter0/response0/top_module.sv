@@ -1,0 +1,17 @@
+module top_module(
+    input x,
+    input y,
+    output reg z);  // Use reg because we assign a value in an always block
+
+    always @(*) begin
+        if (x == 1 && y == 1) begin
+            z = 1;
+        end else if (x == 1 && y == 0) begin
+            z = 0;
+        end else if (x == 0 && y == 1) begin
+            z = 0;
+        end else begin
+            z = 1;
+        end
+    end
+endmodule

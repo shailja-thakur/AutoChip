@@ -1,0 +1,26 @@
+module top_module(
+    input p1a,
+    input p1b,
+    input p1c,
+    input p1d,
+    input p2a,
+    input p2b,
+    input p2c,
+    input p2d,
+    output p1y,
+    output p2y
+);
+
+    // AND operation for first set of inputs
+    wire p1and_out;
+    assign p1and_out = p1a & p1b & p1c & p1d;
+
+    // AND operation for second set of inputs
+    wire p2and_out;
+    assign p2and_out = p2a & p2b & p2c & p2d;
+
+    // Invert the AND results
+    assign p1y = ~p1and_out;
+    assign p2y = ~p2and_out;
+
+endmodule

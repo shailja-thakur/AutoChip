@@ -1,0 +1,29 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// A dual-edge triggered flip-flop is triggered on both edges of the clock. However, FPGAs don't have dual-edge triggered flip-flops, and always @(posedge clk or negedge clk) is not accepted as a legal sensitivity list. Build a circuit that functionally behaves like a dual-edge triggered flip-flop.\n\nmodule top_module(\n\tinput clk,\n\tinput d,\n\toutput reg q);"}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input d,
+    output reg q
+);
+
+reg temp_q;
+
+// Positive edge detection
+always @(posedge clk) begin
+    temp_q <= d;
+end
+
+// Negative edge detection
+always @(negedge clk) begin
+    q <= temp_q;
+end
+
+endmodule
+```
+
+The provided Verilog code implements a dual-edge triggered flip-flop using two separate always blocks, one for the positive edge of the clock and one for the negative edge. The `temp_q` register is used to store the input data `d` on the positive clock edge, and the output `q` is updated on the negative clock edge using the value stored in `temp_q`.
+
+This approach mimics the behavior of a dual-edge triggered flip-flop, while using the standard single-edge triggered flip-flops that are available in FPGAs.'}
+
+ Iteration rank: 0.4955357142857143

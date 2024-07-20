@@ -1,0 +1,76 @@
+module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+ 
+ // Define the states
+ reg [9:0] S, S1, S11, S110, B0, B1, B2, B3, Count, Wait;
+ 
+ // Define the next states
+ wire [9:0] S_next, S1_next, Count_next, Wait_next;
+ 
+ // Define the output wires
+ wire B3_next_out, S_next_out, S1_next_out;
+ 
+ always @ *
+ begin
+    // Assign the next states based on the current state and input signals
+    
+    // S_next is 1 when the state S and d is 0, or the state S1 and d is 0, or the state S110 and d is 0, or the state Wait and ack is 1.
+    S_next_out = (state[S] && !d) || (state[S1] && !d) || (state[S110] && !d) || (state[Wait] && ack);
+    
+    // S1_next is 1 when the state S and d is 1.
+    S1_next_out = (state[S] && d);
+    
+    // Count_next is 1 when the state B3 is active, or the state Count and done_counting is 0.
+    Count_next = state[B3] || (state[Count] && !done_counting);
+    
+    // Wait_next is 1 when the state Count and done_counting is 1, or the state Wait and ack is 0.
+    Wait_next = (state[Count] && done_counting) || (state[Wait] && !ack);
+    
+    // Assign the outputs based on the next states
+    
+    // B3_next is 1 when the state B2 is active.
+    B3_next_out = state[B2];
+    
+    // done signal is 1 in the state Wait.
+    done = state[Wait];
+    
+    // counting signal is 1 in the state Count.
+    counting = state[Count];
+    
+    // shift_ena signal is 1 if any of the states B3, B2, B1 and B0 is active.
+    shift_ena = state[B3] || state[B2] || state[B1] || state[B0];
+    
+    // Update the next states
+    S_next = S_next_out;
+    S1_next = S1_next_out;
+    B3_next = B3_next_out;
+ end
+
+ // Define the next states
+ assign S_next = {state[9:1], 0};
+ assign S1_next = {state[9:1], 1};
+ assign Count_next = {state[9:1], 0};
+ assign Wait_next = {state[9:1], 1};
+ 
+ always @ (posedge clk)
+ begin
+    // Update the current states based on the next states
+    S <= S_next;
+    S1 <= S1_next;
+    Count <= Count_next;
+    Wait <= Wait_next;
+ end
+ 
+ endmodule

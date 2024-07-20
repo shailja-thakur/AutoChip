@@ -1,0 +1,56 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the follow Moore machine with the diagram described below:\n\n// B (1) --0--> A\n// B (1) --1--> B\n// A (0) --0--> B\n// A (0) --1--> A\n\n// Write Verilog implementing this state machine. It should asynchronously reset into state B if reset if high.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+reg state;
+parameter A = 1'b0, B = 1'b1;
+
+always @(posedge clk or posedge areset) begin
+    if (areset) begin
+        state <= B;
+    end
+    else begin
+        case (state)
+            B: begin
+                if (in) begin
+                    state <= B;
+                end
+                else begin
+                    state <= A;
+                end
+            end
+            A: begin
+                if (in) begin
+                    state <= A;
+                end
+                else begin
+                    state <= B;
+                end
+            end
+            default: state <= B;
+        endcase
+    end
+end
+
+always @(*) begin
+    case (state)
+        B: out = 1'b1;
+        A: out = 1'b0;
+        default: out = 1'b0;
+    endcase
+end
+
+endmodule
+```
+
+The provided Verilog code correctly implements the given Moore state machine with the specified state transitions and asynchronous reset behavior. The state is stored in the `state` register, which is updated based on the current state and the `in` input using a `case` statement. The output `out` is then generated based on the current state using another `case` statement.
+
+When `areset` is high, the state is asynchronously reset to `B`. The state machine then transitions between states `A` and `B` based on the `in` input, as described in the problem statement.'}
+
+ Iteration rank: 1.0

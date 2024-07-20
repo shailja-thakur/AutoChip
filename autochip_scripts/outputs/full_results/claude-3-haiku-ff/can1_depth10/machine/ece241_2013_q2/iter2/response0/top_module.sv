@@ -1,0 +1,22 @@
+module top_module (
+    input a,
+    input b,
+    input c,
+    input d,
+    output out_sop,
+    output out_pos
+);
+
+    wire sop;
+    wire pos0, pos1;
+
+    // SOP expression
+    assign sop = (c & d) | (~a & ~b & c);
+    assign out_sop = sop;
+
+    // POS expression
+    assign pos0 = (c & (~b | d) & (~a | b));
+    assign pos1 = (c & (~a | d));
+    assign out_pos = (pos0 & pos1) ? 1'b1 : 1'b0;
+
+endmodule

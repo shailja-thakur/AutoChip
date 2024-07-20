@@ -1,0 +1,49 @@
+module top_module(
+	input clk,
+	input reset,
+	input in,
+	output out);
+
+	reg [1:0] state;
+	reg [7:0] counter;
+	reg [7:0] data_out;
+	reg valid_out;
+
+	parameter IDLE = 2'b00;
+	parameter WAIT = 2'b01;
+	parameter PROCESS = 2'b10;
+	parameter DONE = 2'b11;
+
+	always @(posedge clk or posedge reset) begin
+		if (reset)
+			state <= IDLE;
+		else begin
+			case(state)
+				IDLE: begin
+					counter <= 8'b0;
+					data_out <= 8'b0;
+					valid_out <= 0;
+					state <= WAIT;
+				end
+				WAIT: begin
+					counter <= counter + 1;
+					data_out <= 8'b0;
+					if (counter >= 8'hF) // Fix the comparison to counter value
+						state <= PROCESS;
+				end
+				PROCESS: begin
+					data_out <= in;
+					state <= DONE;
+				end
+				DONE: begin
+					data_out <= data_out;
+					valid_out <= 1;
+					state <= IDLE;
+				end
+			endcase
+		end
+	end
+
+	assign out = data_out;
+
+endmodule

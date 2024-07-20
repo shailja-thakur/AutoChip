@@ -1,0 +1,68 @@
+module ModuleA(
+    input x,
+    input y,
+    output z
+);
+
+assign z = (x ^ y) & x;
+
+endmodule
+module ModuleB(
+    input x,
+    input y,
+    output z
+);
+
+reg z;
+
+always @(*) begin
+    case ({x, y})
+        2'b00: z = 1;
+        2'b01: z = 0;
+        2'b10: z = 0;
+        2'b11: z = 1;
+    endcase
+end
+
+endmodule
+module top_module(
+    input x,
+    input y,
+    output z
+);
+
+wire z1, z2, z3, z4;
+
+ModuleA ModuleA1(
+    .x(x),
+    .y(y),
+    .z(z1)
+);
+
+ModuleA ModuleA2(
+    .x(x),
+    .y(y),
+    .z(z2)
+);
+
+ModuleB ModuleB1(
+    .x(x),
+    .y(y),
+    .z(z3)
+);
+
+ModuleB ModuleB2(
+    .x(x),
+    .y(y),
+    .z(z4)
+);
+
+wire or_output;
+assign or_output = z1 | z3;
+
+wire and_output;
+assign and_output = z2 & z4;
+
+assign z = or_output ^ and_output;
+
+endmodule

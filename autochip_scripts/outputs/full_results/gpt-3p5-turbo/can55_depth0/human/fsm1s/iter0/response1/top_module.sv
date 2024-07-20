@@ -1,0 +1,38 @@
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output out
+);
+
+    reg [1:0] state, next_state;
+    
+    always @(posedge clk) begin
+        if (reset)
+            state <= 2'b10;
+        else
+            state <= next_state;
+    end
+    
+    always @(*) begin
+        case (state)
+            2'b00: begin
+                next_state = in ? 2'b00 : 2'b01;
+                out = 1'b0;
+            end
+            2'b01: begin
+                next_state = in ? 2'b01 : 2'b00;
+                out = 1'b0;
+            end
+            2'b10: begin
+                next_state = in ? 2'b00 : 2'b10;
+                out = 1'b1;
+            end
+            default: begin
+                next_state = 2'b10;
+                out = 1'b1;
+            end
+        endcase
+    end
+    
+endmodule

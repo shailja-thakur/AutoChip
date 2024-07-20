@@ -1,0 +1,37 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// Rule 90 is a one-dimensional cellular automaton with interesting properties. The rules are simple. There is a one-dimensional array of cells (on or off). At each time step, the next state of each cell is the XOR of the cell's two current neighbours:\n// Left | Center | Right | Center's next state\n// 1 | 1 | 1 | 0\n// 1 | 1 | 0 | 1\n// 1 | 0 | 1 | 0\n// 1 | 0 | 0 | 1\n// 0 | 1 | 1 | 1\n// 0 | 1 | 0 | 0 \n// 0 | 0 | 1 | 1\n// 0 | 0 | 0 | 0\n// In this circuit, create a 512-cell system (q[511:0]), and advance by one time step each clock cycle. The load input indicates the state of the system should be loaded with data[511:0]. Assume the boundaries (q[-1] and q[512]) are both zero (off).\n\nmodule top_module(\n\tinput clk,\n\tinput load,\n\tinput [511:0] data,\n\toutput reg [511:0] q);"}
+{'assistant': 'module top_module(
+    input clk,
+    input load,
+    input [511:0] data,
+    output reg [511:0] q);
+  
+  // create temporary registers for the previous state of q
+  reg [511:0] q_prev;
+  
+  always @(posedge clk) begin
+    // update q_prev with the current state of q
+    q_prev <= q;
+    
+    if (load) begin
+      // load the data into q with zero boundaries
+      q[511:0] <= {1'b0, data, 1'b0};
+    end else begin
+      // calculate the next state of q based on the rules
+      for (int i = 0; i < 512; i = i + 1) begin
+        if (i == 0) begin
+          // handle boundary condition for leftmost cell
+          q[i] <= q_prev[i+1] ^ q_prev[i+2];
+        end else if (i == 511) begin
+          // handle boundary condition for rightmost cell
+          q[i] <= q_prev[i-2] ^ q_prev[i-1];
+        end else begin
+          // apply the rule to calculate the next state
+          q[i] <= q_prev[i-1] ^ q_prev[i+1];
+        end
+      end
+    end
+  end
+end'}
+
+ Iteration rank: -2

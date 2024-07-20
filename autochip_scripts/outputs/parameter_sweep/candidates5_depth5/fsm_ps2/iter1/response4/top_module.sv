@@ -1,0 +1,63 @@
+module top_module (
+  input clk,
+  input [7:0] in,
+  input reset,
+  output done
+);
+  
+  reg [2:0] state;
+  reg done_next;
+  reg byte1_received;
+  reg byte2_received;
+  wire [7:0] in_reg;
+  
+  always @(posedge clk) begin
+    if (reset) begin
+      state <= 3'b000;
+      done_next <= 1'b0;
+      byte1_received <= 1'b0;
+      byte2_received <= 1'b0;
+    end else begin
+      state <= state;
+      byte1_received <= byte1_received;
+      byte2_received <= byte2_received;
+      case (state)
+        3'b000: begin // Idle state
+          if (in[3]) begin  // Check if byte 1 of a message
+            state <= 3'b001;
+            byte1_received <= 1'b1;
+          end
+        end
+        3'b001: begin // Byte 1 received
+          if (in[3]) begin  // Check if byte 2 of a message
+            state <= 3'b010;
+            byte2_received <= 1'b1;
+          end
+        end
+        3'b010: begin // Byte 2 received
+          if (in[3]) begin  // Check if byte 3 of a message
+            state <= 3'b011;
+            done_next <= 1'b1;
+          end
+        end
+        3'b011: begin // Byte 3 received
+          state <= 3'b000; // Go back to idle state
+          byte1_received <= 1'b0;
+          byte2_received <= 1'b0;
+          done_next <= 1'b0;
+        end
+      endcase
+    end
+  end
+  
+  always @(posedge clk) begin
+    if (reset) begin
+      in_reg <= 8'b0;
+    end else begin
+      in_reg <= in;
+    end
+  end
+  
+  assign done = done_next;
+
+endmodule

@@ -1,0 +1,73 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The following is the state transition table for a Moore state machine with one input, one output, and four states. Implement this state machine. Include a positive edge triggered asynchronous reset that resets the FSM to state A.\n \n// state | next state in=0, next state in=1 | output\n// A | A, B | 0\n// B | C, B | 0\n// C | A, D | 0\n// D | C, B | 1\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+    // Define states
+    typedef enum logic [1:0] {A, B, C, D} state_t;
+    
+    // Define state register
+    reg [1:0] current_state;
+    reg [1:0] next_state;
+    
+    // Define output register
+    reg [0:0] current_output;
+    
+    always @(posedge clk, posedge areset) begin
+        if (areset) begin
+            current_state <= A;
+            current_output <= 0;
+        end else begin
+            current_state <= next_state;
+            current_output <= current_output;
+        end
+    end
+    
+    always @* begin
+        case (current_state)
+            A: begin
+                if (in == 0)
+                    next_state = A;
+                else
+                    next_state = B;
+                current_output = 0;
+            end
+            B: begin
+                if (in == 0)
+                    next_state = C;
+                else
+                    next_state = B;
+                current_output = 0;
+            end
+            C: begin
+                if (in == 0)
+                    next_state = A;
+                else
+                    next_state = D;
+                current_output = 0;
+            end
+            D: begin
+                if (in == 0)
+                    next_state = C;
+                else
+                    next_state = B;
+                current_output = 1;
+            end
+            default: begin
+                next_state = A;
+                current_output = 0;
+            end
+        endcase
+    end
+    
+    assign out = current_output;
+    
+endmodule
+```'}
+
+ Iteration rank: 1.0

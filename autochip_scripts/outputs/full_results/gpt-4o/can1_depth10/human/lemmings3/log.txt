@@ -1,0 +1,838 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // The game Lemmings involves critters with fairly simple brains. So simple that we are going to model it using a finite state machine. In the Lemmings' 2D world, Lemmings can be in one of two states: walking left (walk_left is 1) or walking right (walk_right is 1). It will switch directions if it hits an obstacle. In particular, if a Lemming is bumped on the left (by receiving a 1 on bump_left), it will walk right. If it's bumped on the right (by receiving a 1 on bump_right), it will walk left. If it's bumped on both sides at the same time, it will still switch directions. 
+// In addition to walking left and right and changing direction when bumped, when ground=0, the Lemming will fall and say "aaah!". When the ground reappears (ground=1), the Lemming will resume walking in the same direction as before the fall. Being bumped while falling does not affect the walking direction, and being bumped in the same cycle as ground disappears (but not yet falling), or when the ground reappears while still falling, also does not affect the walking direction.
+// In addition to walking and falling, Lemmings can sometimes be told to do useful things, like dig (it starts digging when dig=1). A Lemming can dig if it is currently walking on ground (ground=1 and not falling), and will continue digging until it reaches the other side (ground=0). At that point, since there is no ground, it will fall (aaah!), then continue walking in its original direction once it hits ground again. As with falling, being bumped while digging has no effect, and being told to dig when falling or when there is no ground is ignored. (In other words, a walking Lemming can fall, dig, or switch directions. If more than one of these conditions are satisfied, fall has higher precedence than dig, which has higher precedence than switching directions.)
+// Implement a Moore state machine that models this behaviour. areset is positive edge triggered asynchronous reseting the Lemming machine to walk left.
+
+module top_module (
+	input clk,
+	input areset,
+	input bump_left,
+	input bump_right,
+	input ground,
+	input dig,
+	output walk_left,
+	output walk_right,
+	output aaah,
+	output digging
+);
+assistant: module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    input ground,
+    input dig,
+    output reg walk_left,
+    output reg walk_right,
+    output reg aaah,
+    output reg digging
+);
+
+    typedef enum reg [2:0] {
+        LEFT,       // walking left
+        RIGHT,      // walking right
+        FALL_LEFT,  // falling from walking left
+        FALL_RIGHT, // falling from walking right
+        DIG_LEFT,   // digging from walking left
+        DIG_RIGHT   // digging from walking right
+    } state_t;
+
+    state_t state, next_state;
+
+    // State transition logic
+    always @(*) begin
+        case (state)
+            LEFT: begin
+                if (!ground)                   next_state = FALL_LEFT;
+                else if (dig)                  next_state = DIG_LEFT;
+                else if (bump_left || bump_right) next_state = RIGHT;
+                else                           next_state = LEFT;
+            end
+            RIGHT: begin
+                if (!ground)                   next_state = FALL_RIGHT;
+                else if (dig)                  next_state = DIG_RIGHT;
+                else if (bump_right || bump_left) next_state = LEFT;
+                else                           next_state = RIGHT;
+            end
+            FALL_LEFT: begin
+                if (ground)                    next_state = LEFT;
+                else                           next_state = FALL_LEFT;
+            end
+            FALL_RIGHT: begin
+                if (ground)                    next_state = RIGHT;
+                else                           next_state = FALL_RIGHT;
+            end
+            DIG_LEFT: begin
+                if (!ground)                   next_state = FALL_LEFT;
+                else                           next_state = DIG_LEFT;
+            end
+            DIG_RIGHT: begin
+                if (!ground)                   next_state = FALL_RIGHT;
+                else                           next_state = DIG_RIGHT;
+            end
+            default:                           next_state = LEFT;
+        endcase
+    end
+
+    // State flip-flops with asynchronous reset
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            state <= LEFT;
+        end
+        else begin
+            state <= next_state;
+        end
+    end
+
+    // Output logic
+    always @(*) begin
+        walk_left  = 1'b0;
+        walk_right = 1'b0;
+        aaah       = 1'b0;
+        digging    = 1'b0;
+
+        case (state)
+            LEFT: begin
+                walk_left = 1'b1;
+            end
+            RIGHT: begin
+                walk_right = 1'b1;
+            end
+            FALL_LEFT: begin
+                aaah = 1'b1;
+            end
+            FALL_RIGHT: begin
+                aaah = 1'b1;
+            end
+            DIG_LEFT: begin
+                digging = 1'b1;
+            end
+            DIG_RIGHT: begin
+                digging = 1'b1;
+            end
+        endcase
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/lemmings3/lemmings3_tb.sv:139: $finish called at 2216 (1ps)
+Hint: Output 'walk_left' has 56 mismatches. First mismatch occurred at time 280.
+Hint: Output 'walk_right' has 56 mismatches. First mismatch occurred at time 280.
+Hint: Output 'aaah' has no mismatches.
+Hint: Output 'digging' has no mismatches.
+Hint: Total mismatched samples is 56 out of 443 samples
+
+Simulation finished at 2216 ps
+Mismatches: 56 in 443 samples
+
+assistant: module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    input ground,
+    input dig,
+    output reg walk_left,
+    output reg walk_right,
+    output reg aaah,
+    output reg digging
+);
+
+    typedef enum reg [2:0] {
+        LEFT,       // walking left
+        RIGHT,      // walking right
+        FALL_LEFT,  // falling from walking left
+        FALL_RIGHT, // falling from walking right
+        DIG_LEFT,   // digging from walking left
+        DIG_RIGHT   // digging from walking right
+    } state_t;
+
+    state_t state, next_state;
+
+    // State transition logic
+    always @(*) begin
+        case (state)
+            LEFT: begin
+                if (!ground)
+                    next_state = FALL_LEFT;
+                else if (dig)
+                    next_state = DIG_LEFT;
+                else if (bump_left)
+                    next_state = RIGHT;
+                else if (bump_right)
+                    next_state = RIGHT;
+                else
+                    next_state = LEFT;
+            end
+            RIGHT: begin
+                if (!ground)
+                    next_state = FALL_RIGHT;
+                else if (dig)
+                    next_state = DIG_RIGHT;
+                else if (bump_right)
+                    next_state = LEFT;
+                else if (bump_left)
+                    next_state = LEFT;
+                else
+                    next_state = RIGHT;
+            end
+            FALL_LEFT: begin
+                if (ground)
+                    next_state = LEFT;
+                else
+                    next_state = FALL_LEFT;
+            end
+            FALL_RIGHT: begin
+                if (ground)
+                    next_state = RIGHT;
+                else
+                    next_state = FALL_RIGHT;
+            end
+            DIG_LEFT: begin
+                if (!ground)
+                    next_state = FALL_LEFT;
+                else
+                    next_state = DIG_LEFT;
+            end
+            DIG_RIGHT: begin
+                if (!ground)
+                    next_state = FALL_RIGHT;
+                else
+                    next_state = DIG_RIGHT;
+            end
+            default: next_state = LEFT;
+        endcase
+    end
+
+    // State flip-flops with asynchronous reset
+    always @(posedge clk or posedge areset) begin
+        if (areset)
+            state <= LEFT;
+        else
+            state <= next_state;
+    end
+
+    // Output logic
+    always @(*) begin
+        walk_left  = (state == LEFT);
+        walk_right = (state == RIGHT);
+        aaah       = (state == FALL_LEFT) || (state == FALL_RIGHT);
+        digging    = (state == DIG_LEFT) || (state == DIG_RIGHT);
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/lemmings3/lemmings3_tb.sv:139: $finish called at 2216 (1ps)
+Hint: Output 'walk_left' has 56 mismatches. First mismatch occurred at time 280.
+Hint: Output 'walk_right' has 56 mismatches. First mismatch occurred at time 280.
+Hint: Output 'aaah' has no mismatches.
+Hint: Output 'digging' has no mismatches.
+Hint: Total mismatched samples is 56 out of 443 samples
+
+Simulation finished at 2216 ps
+Mismatches: 56 in 443 samples
+
+assistant: module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    input ground,
+    input dig,
+    output reg walk_left,
+    output reg walk_right,
+    output reg aaah,
+    output reg digging
+);
+
+    typedef enum reg [2:0] {
+        LEFT,       // walking left
+        RIGHT,      // walking right
+        FALL_LEFT,  // falling from walking left
+        FALL_RIGHT, // falling from walking right
+        DIG_LEFT,   // digging from walking left
+        DIG_RIGHT   // digging from walking right
+    } state_t;
+
+    state_t state, next_state;
+
+    // State transition logic
+    always @(*) begin
+        case (state)
+            LEFT: begin
+                if (!ground)
+                    next_state = FALL_LEFT;
+                else if (dig)
+                    next_state = DIG_LEFT;
+                else if (bump_left || bump_right) // Change direction if bumped on either side
+                    next_state = RIGHT;
+                else
+                    next_state = LEFT;
+            end
+            RIGHT: begin
+                if (!ground)
+                    next_state = FALL_RIGHT;
+                else if (dig)
+                    next_state = DIG_RIGHT;
+                else if (bump_right || bump_left) // Change direction if bumped on either side
+                    next_state = LEFT;
+                else
+                    next_state = RIGHT;
+            end
+            FALL_LEFT: begin
+                if (ground)
+                    next_state = LEFT;
+                else
+                    next_state = FALL_LEFT;
+            end
+            FALL_RIGHT: begin
+                if (ground)
+                    next_state = RIGHT;
+                else
+                    next_state = FALL_RIGHT;
+            end
+            DIG_LEFT: begin
+                if (!ground)
+                    next_state = FALL_LEFT;
+                else
+                    next_state = DIG_LEFT;
+            end
+            DIG_RIGHT: begin
+                if (!ground)
+                    next_state = FALL_RIGHT;
+                else
+                    next_state = DIG_RIGHT;
+            end
+            default: next_state = LEFT;
+        endcase
+    end
+
+    // State flip-flops with asynchronous reset
+    always @(posedge clk or posedge areset) begin
+        if (areset)
+            state <= LEFT;
+        else
+            state <= next_state;
+    end
+
+    // Output logic
+    always @(*) begin
+        walk_left  = (state == LEFT);
+        walk_right = (state == RIGHT);
+        aaah       = (state == FALL_LEFT) || (state == FALL_RIGHT);
+        digging    = (state == DIG_LEFT) || (state == DIG_RIGHT);
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/lemmings3/lemmings3_tb.sv:139: $finish called at 2216 (1ps)
+Hint: Output 'walk_left' has 56 mismatches. First mismatch occurred at time 280.
+Hint: Output 'walk_right' has 56 mismatches. First mismatch occurred at time 280.
+Hint: Output 'aaah' has no mismatches.
+Hint: Output 'digging' has no mismatches.
+Hint: Total mismatched samples is 56 out of 443 samples
+
+Simulation finished at 2216 ps
+Mismatches: 56 in 443 samples
+
+assistant: module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    input ground,
+    input dig,
+    output reg walk_left,
+    output reg walk_right,
+    output reg aaah,
+    output reg digging
+);
+
+    typedef enum reg [2:0] {
+        LEFT,       // walking left
+        RIGHT,      // walking right
+        FALL,       // falling from either direction
+        DIG_LEFT,   // digging from walking left
+        DIG_RIGHT   // digging from walking right
+    } state_t;
+
+    state_t state, next_state;
+
+    // State transition logic
+    always @(*) begin
+        case (state)
+            LEFT: begin
+                if (!ground)
+                    next_state = FALL;
+                else if (dig)
+                    next_state = DIG_LEFT;
+                else if (bump_left || bump_right)
+                    next_state = RIGHT;
+                else
+                    next_state = LEFT;
+            end
+            RIGHT: begin
+                if (!ground)
+                    next_state = FALL;
+                else if (dig)
+                    next_state = DIG_RIGHT;
+                else if (bump_right || bump_left)
+                    next_state = LEFT;
+                else
+                    next_state = RIGHT;
+            end
+            FALL: begin
+                if (ground) begin
+                    if (state == FALL)
+                        next_state = RIGHT;
+                    else
+                        next_state = LEFT;
+                end
+                else
+                    next_state = FALL;
+            end
+            DIG_LEFT: begin
+                if (!ground)
+                    next_state = FALL;
+                else
+                    next_state = DIG_LEFT;
+            end
+            DIG_RIGHT: begin
+                if (!ground)
+                    next_state = FALL;
+                else
+                    next_state = DIG_RIGHT;
+            end
+            default: next_state = LEFT;
+        endcase
+    end
+
+    // State flip-flops with asynchronous reset
+    always @(posedge clk or posedge areset) begin
+        if (areset)
+            state <= LEFT;
+        else
+            state <= next_state;
+    end
+
+    // Output logic
+    always @(*) begin
+        walk_left  = (state == LEFT);
+        walk_right = (state == RIGHT);
+        aaah       = (state == FALL);
+        digging    = (state == DIG_LEFT) || (state == DIG_RIGHT);
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/lemmings3/lemmings3_tb.sv:139: $finish called at 2216 (1ps)
+Hint: Output 'walk_left' has 70 mismatches. First mismatch occurred at time 190.
+Hint: Output 'walk_right' has 70 mismatches. First mismatch occurred at time 190.
+Hint: Output 'aaah' has no mismatches.
+Hint: Output 'digging' has no mismatches.
+Hint: Total mismatched samples is 70 out of 443 samples
+
+Simulation finished at 2216 ps
+Mismatches: 70 in 443 samples
+
+assistant: module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    input ground,
+    input dig,
+    output reg walk_left,
+    output reg walk_right,
+    output reg aaah,
+    output reg digging
+);
+
+    typedef enum reg [2:0] {
+        LEFT,       // walking left
+        RIGHT,      // walking right
+        FALL,       // falling from either direction
+        DIG_LEFT,   // digging from walking left
+        DIG_RIGHT   // digging from walking right
+    } state_t;
+
+    state_t state, next_state;
+
+    // State transition logic
+    always @(*) begin
+        case (state)
+            LEFT: begin
+                if (!ground)
+                    next_state = FALL;
+                else if (dig)
+                    next_state = DIG_LEFT;
+                else if (bump_left)
+                    next_state = RIGHT;
+                else
+                    next_state = LEFT;
+            end
+            RIGHT: begin
+                if (!ground)
+                    next_state = FALL;
+                else if (dig)
+                    next_state = DIG_RIGHT;
+                else if (bump_right)
+                    next_state = LEFT;
+                else
+                    next_state = RIGHT;
+            end
+            FALL: begin
+                if (ground) begin // Resuming walking after fall
+                    if ((state == LEFT) || (state == DIG_LEFT))
+                        next_state = LEFT;
+                    else
+                        next_state = RIGHT;
+                end
+                else
+                    next_state = FALL;
+            end
+            DIG_LEFT: begin
+                if (!ground)
+                    next_state = FALL;
+                else
+                    next_state = DIG_LEFT;
+            end
+            DIG_RIGHT: begin
+                if (!ground)
+                    next_state = FALL;
+                else
+                    next_state = DIG_RIGHT;
+            end
+            default: next_state = LEFT;
+        endcase
+    end
+
+    // State flip-flops with asynchronous reset
+    always @(posedge clk or posedge areset) begin
+        if (areset)
+            state <= LEFT;
+        else
+            state <= next_state;
+    end
+
+    // Output logic
+    always @(*) begin
+        walk_left  = (state == LEFT);
+        walk_right = (state == RIGHT);
+        aaah       = (state == FALL);
+        digging    = (state == DIG_LEFT) || (state == DIG_RIGHT);
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/lemmings3/lemmings3_tb.sv:139: $finish called at 2216 (1ps)
+Hint: Output 'walk_left' has 36 mismatches. First mismatch occurred at time 190.
+Hint: Output 'walk_right' has 36 mismatches. First mismatch occurred at time 190.
+Hint: Output 'aaah' has no mismatches.
+Hint: Output 'digging' has no mismatches.
+Hint: Total mismatched samples is 36 out of 443 samples
+
+Simulation finished at 2216 ps
+Mismatches: 36 in 443 samples
+
+assistant: module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    input ground,
+    input dig,
+    output reg walk_left,
+    output reg walk_right,
+    output reg aaah,
+    output reg digging
+);
+
+    typedef enum reg [2:0] {
+        LEFT,       // walking left
+        RIGHT,      // walking right
+        FALL,       // falling from either direction
+        DIG_LEFT,   // digging from walking left
+        DIG_RIGHT   // digging from walking right
+    } state_t;
+
+    state_t state, next_state;
+
+    // State transition logic
+    always @(*) begin
+        case (state)
+            LEFT: begin
+                if (!ground)
+                    next_state = FALL;
+                else if (dig)
+                    next_state = DIG_LEFT;
+                else if (bump_left)
+                    next_state = RIGHT;
+                else
+                    next_state = LEFT;
+            end
+            RIGHT: begin
+                if (!ground)
+                    next_state = FALL;
+                else if (dig)
+                    next_state = DIG_RIGHT;
+                else if (bump_right)
+                    next_state = LEFT;
+                else
+                    next_state = RIGHT;
+            end
+            FALL: begin
+                if (ground) begin // Resuming walking after fall
+                    if (next_state == DIG_LEFT || next_state == LEFT)
+                        next_state = LEFT;
+                    else if (next_state == DIG_RIGHT || next_state == RIGHT)
+                        next_state = RIGHT;
+                end
+                else
+                    next_state = FALL;
+            end
+            DIG_LEFT: begin
+                if (!ground)
+                    next_state = FALL;
+                else
+                    next_state = DIG_LEFT;
+            end
+            DIG_RIGHT: begin
+                if (!ground)
+                    next_state = FALL;
+                else
+                    next_state = DIG_RIGHT;
+            end
+            default: next_state = LEFT;
+        endcase
+    end
+
+    // State flip-flops with asynchronous reset
+    always @(posedge clk or posedge areset) begin
+        if (areset)
+            state <= LEFT;
+        else
+            state <= next_state;
+    end
+
+    // Output logic
+    always @(*) begin
+        walk_left  = (state == LEFT);
+        walk_right = (state == RIGHT);
+        aaah       = (state == FALL);
+        digging    = (state == DIG_LEFT) || (state == DIG_RIGHT);
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/lemmings3/lemmings3_tb.sv:139: $finish called at 2216 (1ps)
+Hint: Output 'walk_left' has 50 mismatches. First mismatch occurred at time 190.
+Hint: Output 'walk_right' has 42 mismatches. First mismatch occurred at time 240.
+Hint: Output 'aaah' has 211 mismatches. First mismatch occurred at time 190.
+Hint: Output 'digging' has 119 mismatches. First mismatch occurred at time 310.
+Hint: Total mismatched samples is 211 out of 443 samples
+
+Simulation finished at 2216 ps
+Mismatches: 211 in 443 samples
+
+assistant: module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    input ground,
+    input dig,
+    output reg walk_left,
+    output reg walk_right,
+    output reg aaah,
+    output reg digging
+);
+
+    typedef enum reg [2:0] {
+        LEFT,       // walking left
+        RIGHT,      // walking right
+        FALL,       // falling from either direction
+        DIG_LEFT,   // digging from walking left
+        DIG_RIGHT   // digging from walking right
+    } state_t;
+
+    state_t state, next_state;
+    state_t prev_walk_state;
+
+    // State transition logic
+    always @(*) begin
+        case (state)
+            LEFT: begin
+                if (!ground)
+                    next_state = FALL;
+                else if (dig)
+                    next_state = DIG_LEFT;
+                else if (bump_left)
+                    next_state = RIGHT;
+                else
+                    next_state = LEFT;
+            end
+            RIGHT: begin
+                if (!ground)
+                    next_state = FALL;
+                else if (dig)
+                    next_state = DIG_RIGHT;
+                else if (bump_right)
+                    next_state = LEFT;
+                else
+                    next_state = RIGHT;
+            end
+            FALL: begin
+                if (ground)
+                    next_state = prev_walk_state;
+                else
+                    next_state = FALL;
+            end
+            DIG_LEFT: begin
+                if (!ground)
+                    next_state = FALL;
+                else
+                    next_state = DIG_LEFT;
+            end
+            DIG_RIGHT: begin
+                if (!ground)
+                    next_state = FALL;
+                else
+                    next_state = DIG_RIGHT;
+            end
+            default: next_state = LEFT;
+        endcase
+    end
+
+    // State flip-flops with asynchronous reset
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            state <= LEFT;
+            prev_walk_state <= LEFT;
+        end else begin
+            if (state == LEFT || state == RIGHT) begin
+                prev_walk_state <= state;
+            end
+            state <= next_state;
+        end
+    end
+
+    // Output logic
+    always @(*) begin
+        walk_left  = (state == LEFT);
+        walk_right = (state == RIGHT);
+        aaah       = (state == FALL);
+        digging    = (state == DIG_LEFT) || (state == DIG_RIGHT);
+    end
+endmodule
+
+
+Time to Generate: 97.99348258972168
+Best ranked response at iteration 6 with response number 0
+Rank of best response: 1.0
+Best response module:
+module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    input ground,
+    input dig,
+    output reg walk_left,
+    output reg walk_right,
+    output reg aaah,
+    output reg digging
+);
+
+    typedef enum reg [2:0] {
+        LEFT,       // walking left
+        RIGHT,      // walking right
+        FALL,       // falling from either direction
+        DIG_LEFT,   // digging from walking left
+        DIG_RIGHT   // digging from walking right
+    } state_t;
+
+    state_t state, next_state;
+    state_t prev_walk_state;
+
+    // State transition logic
+    always @(*) begin
+        case (state)
+            LEFT: begin
+                if (!ground)
+                    next_state = FALL;
+                else if (dig)
+                    next_state = DIG_LEFT;
+                else if (bump_left)
+                    next_state = RIGHT;
+                else
+                    next_state = LEFT;
+            end
+            RIGHT: begin
+                if (!ground)
+                    next_state = FALL;
+                else if (dig)
+                    next_state = DIG_RIGHT;
+                else if (bump_right)
+                    next_state = LEFT;
+                else
+                    next_state = RIGHT;
+            end
+            FALL: begin
+                if (ground)
+                    next_state = prev_walk_state;
+                else
+                    next_state = FALL;
+            end
+            DIG_LEFT: begin
+                if (!ground)
+                    next_state = FALL;
+                else
+                    next_state = DIG_LEFT;
+            end
+            DIG_RIGHT: begin
+                if (!ground)
+                    next_state = FALL;
+                else
+                    next_state = DIG_RIGHT;
+            end
+            default: next_state = LEFT;
+        endcase
+    end
+
+    // State flip-flops with asynchronous reset
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            state <= LEFT;
+            prev_walk_state <= LEFT;
+        end else begin
+            if (state == LEFT || state == RIGHT) begin
+                prev_walk_state <= state;
+            end
+            state <= next_state;
+        end
+    end
+
+    // Output logic
+    always @(*) begin
+        walk_left  = (state == LEFT);
+        walk_right = (state == RIGHT);
+        aaah       = (state == FALL);
+        digging    = (state == DIG_LEFT) || (state == DIG_RIGHT);
+    end
+endmodule
+
+

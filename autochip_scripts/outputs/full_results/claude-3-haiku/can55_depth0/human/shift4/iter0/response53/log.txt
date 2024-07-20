@@ -1,0 +1,43 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a 4-bit shift register (right shift), with asynchronous positive edge triggered areset, synchronous active high signals load, and enable. \n// (1) areset: Resets shift register to zero. \n// (2) load: Loads shift register with data[3:0] instead of shifting. \n// (3) ena: Shift right (q[3] becomes zero, q[0] is shifted out and disappears). \n// (4) q: The contents of the shift register. If both the load and ena inputs are asserted (1), the load input has higher priority. \n\n\nmodule top_module(\n\tinput clk,\n\tinput areset,\n\tinput load,\n\tinput ena,\n\tinput [3:0] data,\n\toutput reg [3:0] q);'}
+{'assistant': '```
+module top_module(
+    input clk,
+    input areset,
+    input load,
+    input ena,
+    input [3:0] data,
+    output reg [3:0] q
+);
+
+always @(posedge clk, posedge areset) begin
+    if (areset) begin
+        q <= 4'b0000;
+    end
+    else if (load) begin
+        q <= data;
+    end
+    else if (ena) begin
+        q <= {1'b0, q[3:1]};
+    end
+end
+
+endmodule
+```
+
+This Verilog module implements a 4-bit shift register with the specified functionality:
+
+1. `areset`: Resets the shift register to zero.
+2. `load`: Loads the shift register with the `data[3:0]` input.
+3. `ena`: Shifts the contents of the shift register one bit to the right, with the MSB becoming zero.
+4. `q`: The current contents of the shift register.
+
+The module uses a single `always` block that is sensitive to the positive edge of the clock and the asynchronous reset signal `areset`. Inside the block, the behavior is as follows:
+
+- If `areset` is high, the register `q` is set to zero.
+- If `load` is high, the register `q` is loaded with the `data[3:0]` input.
+- If `ena` is high, the contents of the register `q` are shifted one bit to the right, with the MSB becoming zero.
+
+This implementation ensures that the load input has higher priority than the enable input, as specified in the requirements.'}
+
+ Iteration rank: 1.0

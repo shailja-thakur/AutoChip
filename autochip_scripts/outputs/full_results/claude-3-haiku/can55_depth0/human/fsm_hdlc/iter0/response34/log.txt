@@ -1,0 +1,135 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Synchronous HDLC framing involves decoding a continuous bit stream of data to look for bit patterns that indicate the beginning and end of frames (packets). Seeing exactly 6 consecutive 1s (i.e., 01111110) is a "flag" that indicate frame boundaries. To avoid the data stream from accidentally containing "flags", the sender inserts a zero after every 5 consecutive 1s which the receiver must detect and discard. We also need to signal an error if there are 7 or more consecutive 1s. Create a Moore-type finite state machine to recognize these three sequences:\n\n// (1) 0111110: Signal a bit needs to be discarded (disc).\n// (2) 01111110: Flag the beginning/end of a frame (flag).\n// (3) 01111111...: Error (7 or more 1s) (err).\n\n// When the FSM is reset, it should be in a state that behaves as though the previous input were 0. The reset signal is active high synchronous. The output signals should be asserted for a complete cycle beginning on the clock cycle after the condition occurs.\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput in,\n\toutput disc,\n\toutput flag,\n\toutput err);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input reset,
+    input in,
+    output reg disc,
+    output reg flag,
+    output reg err
+);
+
+// Define the states
+localparam STATE_IDLE = 3'b000;
+localparam STATE_WAIT_1 = 3'b001;
+localparam STATE_WAIT_2 = 3'b010;
+localparam STATE_WAIT_3 = 3'b011;
+localparam STATE_WAIT_4 = 3'b100;
+localparam STATE_WAIT_5 = 3'b101;
+localparam STATE_WAIT_6 = 3'b110;
+localparam STATE_ERROR = 3'b111;
+
+// State register
+reg [2:0] state;
+
+// State transitions
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        state <= STATE_IDLE;
+    end
+    else begin
+        case (state)
+            STATE_IDLE: begin
+                if (in == 1'b1) begin
+                    state <= STATE_WAIT_1;
+                end
+                else begin
+                    state <= STATE_IDLE;
+                end
+            end
+            STATE_WAIT_1: begin
+                if (in == 1'b1) begin
+                    state <= STATE_WAIT_2;
+                end
+                else begin
+                    state <= STATE_IDLE;
+                end
+            end
+            STATE_WAIT_2: begin
+                if (in == 1'b1) begin
+                    state <= STATE_WAIT_3;
+                end
+                else begin
+                    state <= STATE_IDLE;
+                end
+            end
+            STATE_WAIT_3: begin
+                if (in == 1'b1) begin
+                    state <= STATE_WAIT_4;
+                end
+                else begin
+                    state <= STATE_IDLE;
+                end
+            end
+            STATE_WAIT_4: begin
+                if (in == 1'b1) begin
+                    state <= STATE_WAIT_5;
+                end
+                else begin
+                    state <= STATE_IDLE;
+                end
+            end
+            STATE_WAIT_5: begin
+                if (in == 1'b1) begin
+                    state <= STATE_WAIT_6;
+                end
+                else begin
+                    state <= STATE_IDLE;
+                end
+            end
+            STATE_WAIT_6: begin
+                if (in == 1'b1) begin
+                    state <= STATE_ERROR;
+                end
+                else begin
+                    state <= STATE_IDLE;
+                end
+            end
+            STATE_ERROR: begin
+                state <= STATE_ERROR;
+            end
+            default: begin
+                state <= STATE_IDLE;
+            end
+        endcase
+    end
+end
+
+// Output logic
+always @(posedge clk) begin
+    disc <= 1'b0;
+    flag <= 1'b0;
+    err <= 1'b0;
+    case (state)
+        STATE_WAIT_5: begin
+            disc <= 1'b1;
+        end
+        STATE_WAIT_6: begin
+            flag <= 1'b1;
+        end
+        STATE_ERROR: begin
+            err <= 1'b1;
+        end
+        default: begin
+            // Do nothing
+        end
+    endcase
+end
+
+endmodule
+```
+
+This Verilog module implements a Moore-type finite state machine that recognizes the three sequences you described:
+
+1. `0111110`: Signal a bit needs to be discarded (disc)
+2. `01111110`: Flag the beginning/end of a frame (flag)
+3. `01111111...`: Error (7 or more 1s) (err)
+
+The module has a reset input that sets the state machine to the `STATE_IDLE` state, which behaves as though the previous input was 0.
+
+The state transitions are defined in the `always @(posedge clk or posedge reset)` block, where the state machine moves from one state to the next based on the current state and the input value `in`.
+
+The output logic is defined in the `always @(posedge clk)` block, where the `disc`, `flag`, and `err` outputs are set based on the current state of the state machine.'}
+
+ Iteration rank: 0.6004993757802747

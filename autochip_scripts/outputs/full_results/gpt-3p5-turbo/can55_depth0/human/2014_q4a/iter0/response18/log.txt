@@ -1,0 +1,34 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider an n-bit shift register circuit. Inputs E are for enabling shift, R for value to load, L is asserted when it should load, and w is the input to the first stage of the shift register. Write a Verilog module named top_module for one stage of this circuit, including both the flip-flop and multiplexers.\n\nmodule top_module (\n\tinput clk,\n\tinput w,\n\tinput R,\n\tinput E,\n\tinput L,\n\toutput reg Q\n);'}
+{'assistant': 'module top_module (
+	input clk,
+	input w,
+	input R,
+	input E,
+	input L,
+	output reg Q
+);
+
+reg q_next; // next value of Q
+reg q_cur; // current value of Q
+
+always @(posedge clk) begin
+	// update the current value of Q to the next value
+	q_cur <= q_next;
+end
+
+always @* begin
+	if (E && L) begin
+		// load the value R into the shift register
+		q_next <= R;
+	end else begin
+		// shift the value in the shift register
+		q_next <= {q_cur[(n-2):0], w};
+	end
+end
+
+assign Q = q_cur; // output the current value of Q
+
+endmodule'}
+
+ Iteration rank: -1

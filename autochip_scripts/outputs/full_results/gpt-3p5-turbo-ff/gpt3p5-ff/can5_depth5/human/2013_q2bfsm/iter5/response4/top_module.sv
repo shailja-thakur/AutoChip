@@ -1,0 +1,50 @@
+module top_module (
+	input clk,
+	input resetn,
+	input x,
+	input y,
+	output f,
+	output g
+);
+    reg f_reg;
+    reg g_reg;
+    reg [2:0] x_reg;
+    reg [1:0] y_reg;
+    reg reset_q;
+
+    always @(posedge clk) begin
+        if (!resetn) begin
+            f_reg <= 1'b0;
+            g_reg <= 1'b0;
+            x_reg <= 0;
+            y_reg <= 0;
+            reset_q <= 1'b1;
+        end else if (resetn && reset_q) begin
+            reset_q <= 1'b0;
+        end else begin
+            f_reg <= 1'b0;
+            g_reg <= 1'b0;
+            x_reg <= {x_reg[1:0], x};
+            y_reg <= {y_reg[0], y};
+            
+            if (reset_q)
+                f_reg <= 1'b1;
+
+            if (f_reg && !g_reg)
+                f_reg <= 1'b0;
+
+            if (x_reg == 3'b101)
+                g_reg <= 1'b1;
+
+            if (g_reg && y_reg == 2'b00)
+                g_reg <= 1'b0;
+
+            if (g_reg && y_reg == 2'b01)
+                g_reg <= 1'b1;
+        end
+    end
+
+    assign f = f_reg;
+    assign g = g_reg;
+
+endmodule

@@ -1,0 +1,91 @@
+module top_module (
+    input clk,
+    input reset,
+    input w,
+    output z
+);
+
+// Define the state codes
+parameter A = 3'b000;
+parameter B = 3'b001;
+parameter C = 3'b010;
+parameter D = 3'b011;
+parameter E = 3'b100;
+parameter F = 3'b101;
+
+// Declare the state and next_state variables
+reg [2:0] state, next_state;
+
+// Assign initial state
+initial begin
+    state = A;
+end
+
+// Define the state table
+always @(state, w) begin
+    case (state)
+        A: begin
+            if (w)
+                next_state = B;
+            else
+                next_state = A;
+        end
+        
+        B: begin
+            if (w)
+                next_state = C;
+            else
+                next_state = D;
+        end
+        
+        C: begin
+            if (w)
+                next_state = E;
+            else
+                next_state = D;
+        end
+        
+        D: begin
+            if (w)
+                next_state = F;
+            else
+                next_state = A;
+        end
+        
+        E: begin
+            if (w)
+                next_state = E;
+            else
+                next_state = D;
+        end
+        
+        F: begin
+            if (w)
+                next_state = C;
+            else
+                next_state = D;
+        end
+    endcase
+end
+
+// Define the state flip-flop
+always @(posedge clk, posedge reset) begin
+    if (reset)
+        state <= A;
+    else
+        state <= next_state;
+end
+
+// Output assignment
+always @(state) begin
+    case (state)
+        A: z = 1'b0;
+        B: z = 1'b0;
+        C: z = 1'b0;
+        D: z = 1'b0;
+        E: z = 1'b1;
+        F: z = 1'b1;
+    endcase
+end
+
+endmodule

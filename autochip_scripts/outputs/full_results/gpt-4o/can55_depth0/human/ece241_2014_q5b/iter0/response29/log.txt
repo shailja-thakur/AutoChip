@@ -1,0 +1,38 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The following diagram is a Mealy machine implementation of the 2's complementer. Implement in Verilog using one-hot encoding. Resets into state A and reset is asynchronous active-high.\n\n// A --x=0 (z=0)--> A\n// A --x=1 (z=1)--> B\n// B --x=0 (z=1)--> B\n// B --x=1 (z=0)--> B\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput x,\n\toutput z\n);"}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input areset,
+    input x,
+    output z
+);
+    
+    // One-hot encoded state declarations
+    reg state_A, state_B;
+    reg [1:0] state;
+    
+    // State encoding
+    localparam [1:0] A = 2'b01,
+                     B = 2'b10;
+    
+    // State register update
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            state <= A; // On reset, go to state A
+        end else begin
+            case (state)
+                A: state <= (x) ? B : A;
+                B: state <= (x) ? B : B;
+                default: state <= A; // Default to state A for safety
+            endcase
+        end
+    end
+    
+    // Output logic based on current state and input x
+    assign z = (state == A) ? x : ~x;
+
+endmodule
+```'}
+
+ Iteration rank: 1.0

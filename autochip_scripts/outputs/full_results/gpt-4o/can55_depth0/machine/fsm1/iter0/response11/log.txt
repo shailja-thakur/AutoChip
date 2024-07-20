@@ -1,0 +1,48 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "//  The top module is a simple state machine that has two states, A and B. The state transitions are determined by the input signal 'in'. When the state is A, if 'in' is high, the next state is A, otherwise the next state is B. When the state is B, if 'in' is high, the next state is B, otherwise the next state is A. The state is updated on the rising edge of the clock signal 'clk' and reset to state B on the rising edge of the reset signal 'areset'. The output 'out' is high when the state is B and low otherwise.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);"}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+    
+    // State Definitions
+    typedef enum reg {STATE_A, STATE_B} state_t;
+    
+    // State register
+    reg state, next_state;
+    
+    // State transition logic
+    always @(*) begin
+        case (state)
+            STATE_A: 
+                next_state = in ? STATE_A : STATE_B;
+            STATE_B: 
+                next_state = in ? STATE_B : STATE_A;
+            default: 
+                next_state = STATE_B; // Default to State B for safety
+        endcase
+    end
+    
+    // State register update logic
+    always @(posedge clk or posedge areset) begin
+        if (areset)
+            state <= STATE_B; // Reset to State B
+        else
+            state <= next_state;
+    end
+    
+    // Output logic
+    always @(*) begin
+        if (state == STATE_B)
+            out = 1'b1;
+        else
+            out = 1'b0;
+    end
+    
+endmodule
+```'}
+
+ Iteration rank: 1.0

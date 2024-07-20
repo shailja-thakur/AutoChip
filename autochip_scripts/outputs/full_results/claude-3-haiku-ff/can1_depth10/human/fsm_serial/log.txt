@@ -1,0 +1,815 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.
+
+module top_module (
+	input clk,
+	input in,
+	input reset,
+	output done
+);
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    parameter IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
+    reg [1:0] state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_reg;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 0;
+            data_reg <= 0;
+            done <= 0;
+        end else begin
+            state <= next_state;
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin // Start bit detected
+                        next_state <= START;
+                        bit_count <= 0;
+                    end else begin
+                        next_state <= IDLE;
+                    end
+                end
+                START: begin
+                    if (bit_count == 3'd7) begin // All 8 data bits received
+                        next_state <= DATA;
+                    end else begin
+                        data_reg[bit_count] <= in;
+                        bit_count <= bit_count + 1;
+                        next_state <= START;
+                    end
+                end
+                DATA: begin
+                    if (in == 1) begin // Stop bit detected
+                        next_state <= STOP;
+                        done <= 1;
+                    end else begin
+                        next_state <= IDLE; // Stop bit not detected, wait for next start bit
+                        done <= 0;
+                    end
+                end
+                STOP: begin
+                    next_state <= IDLE;
+                    done <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)
+Hint: Output 'done' has 94 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 94 out of 905 samples
+
+Simulation finished at 4526 ps
+Mismatches: 94 in 905 samples
+
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    parameter IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
+    reg [1:0] state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_reg;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 0;
+            data_reg <= 0;
+            done <= 0;
+        end else begin
+            state <= next_state;
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin // Start bit detected
+                        next_state <= START;
+                        bit_count <= 0;
+                    end else begin
+                        next_state <= IDLE;
+                    end
+                end
+                START: begin
+                    if (bit_count == 3'd7) begin // All 8 data bits received
+                        next_state <= STOP;
+                    end else begin
+                        data_reg[bit_count] <= in;
+                        bit_count <= bit_count + 1;
+                        next_state <= START;
+                    end
+                end
+                STOP: begin
+                    if (in == 1) begin // Stop bit detected
+                        next_state <= IDLE;
+                        done <= 1;
+                    end else begin
+                        next_state <= IDLE; // Stop bit not detected, wait for next start bit
+                        done <= 0;
+                    end
+                end
+                default: begin
+                    next_state <= IDLE;
+                    done <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)
+Hint: Output 'done' has 432 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 432 out of 905 samples
+
+Simulation finished at 4526 ps
+Mismatches: 432 in 905 samples
+
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    parameter IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
+    reg [1:0] state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_reg;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 0;
+            data_reg <= 0;
+            done <= 0;
+        end else begin
+            state <= next_state;
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin // Start bit detected
+                        next_state <= START;
+                        bit_count <= 0;
+                    end else begin
+                        next_state <= IDLE;
+                    end
+                end
+                START: begin
+                    if (bit_count == 3'd7) begin // All 8 data bits received
+                        next_state <= STOP;
+                    end else begin
+                        data_reg[bit_count] <= in;
+                        bit_count <= bit_count + 1;
+                        next_state <= START;
+                    end
+                end
+                STOP: begin
+                    if (in == 1) begin // Stop bit detected
+                        next_state <= IDLE;
+                        done <= 1;
+                    end else begin
+                        next_state <= IDLE; // Stop bit not detected, wait for next start bit
+                        done <= 0;
+                    end
+                end
+                default: begin
+                    next_state <= IDLE;
+                    done <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)
+Hint: Output 'done' has 432 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 432 out of 905 samples
+
+Simulation finished at 4526 ps
+Mismatches: 432 in 905 samples
+
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    parameter IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
+    reg [1:0] state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_reg;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 0;
+            data_reg <= 0;
+            done <= 0;
+        end else begin
+            state <= next_state;
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin // Start bit detected
+                        next_state <= START;
+                        bit_count <= 0;
+                    end else begin
+                        next_state <= IDLE;
+                    end
+                end
+                START: begin
+                    data_reg[bit_count] <= in;
+                    bit_count <= bit_count + 1;
+                    if (bit_count == 3'd7) begin // All 8 data bits received
+                        next_state <= STOP;
+                    end else begin
+                        next_state <= START;
+                    end
+                end
+                STOP: begin
+                    if (in == 1) begin // Stop bit detected
+                        next_state <= IDLE;
+                        done <= 1;
+                    end else begin
+                        next_state <= IDLE; // Stop bit not detected, wait for next start bit
+                        done <= 0;
+                    end
+                end
+                default: begin
+                    next_state <= IDLE;
+                    done <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)
+Hint: Output 'done' has 320 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 320 out of 905 samples
+
+Simulation finished at 4526 ps
+Mismatches: 320 in 905 samples
+
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    parameter IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
+    reg [1:0] state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_reg;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 0;
+            data_reg <= 0;
+            done <= 0;
+        end else begin
+            state <= next_state;
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin // Start bit detected
+                        next_state <= START;
+                        bit_count <= 0;
+                    end else begin
+                        next_state <= IDLE;
+                        done <= 0;
+                    end
+                end
+                START: begin
+                    data_reg[bit_count] <= in;
+                    bit_count <= bit_count + 1;
+                    if (bit_count == 3'd7) begin // All 8 data bits received
+                        next_state <= STOP;
+                    end else begin
+                        next_state <= START;
+                    end
+                end
+                STOP: begin
+                    if (in == 1) begin // Stop bit detected
+                        next_state <= IDLE;
+                        done <= 1;
+                    end else begin
+                        next_state <= IDLE; // Stop bit not detected, wait for next start bit
+                        done <= 0;
+                    end
+                end
+                default: begin
+                    next_state <= IDLE;
+                    done <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)
+Hint: Output 'done' has 180 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 180 out of 905 samples
+
+Simulation finished at 4526 ps
+Mismatches: 180 in 905 samples
+
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    parameter IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
+    reg [1:0] state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_reg;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 0;
+            data_reg <= 0;
+            done <= 0;
+        end else begin
+            state <= next_state;
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin // Start bit detected
+                        next_state <= START;
+                        bit_count <= 0;
+                    end else begin
+                        next_state <= IDLE;
+                        done <= 0;
+                    end
+                end
+                START: begin
+                    data_reg[bit_count] <= in;
+                    bit_count <= bit_count + 1;
+                    if (bit_count == 3'd7) begin // All 8 data bits received
+                        next_state <= STOP;
+                    end else begin
+                        next_state <= START;
+                    end
+                end
+                STOP: begin
+                    if (in == 1) begin // Stop bit detected
+                        next_state <= IDLE;
+                        done <= 1;
+                    end else begin
+                        next_state <= IDLE; // Stop bit not detected, wait for next start bit
+                        done <= 0;
+                    end
+                end
+                default: begin
+                    next_state <= IDLE;
+                    done <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)
+Hint: Output 'done' has 180 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 180 out of 905 samples
+
+Simulation finished at 4526 ps
+Mismatches: 180 in 905 samples
+
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    parameter IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
+    reg [1:0] state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_reg;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 0;
+            data_reg <= 0;
+            done <= 0;
+        end else begin
+            state <= next_state;
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin // Start bit detected
+                        next_state <= START;
+                        bit_count <= 0;
+                    end else begin
+                        next_state <= IDLE;
+                        done <= 0;
+                    end
+                end
+                START: begin
+                    data_reg[bit_count] <= in;
+                    bit_count <= bit_count + 1;
+                    if (bit_count == 3'd7) begin // All 8 data bits received
+                        next_state <= STOP;
+                    end else begin
+                        next_state <= START;
+                    end
+                end
+                STOP: begin
+                    if (in == 1) begin // Stop bit detected
+                        next_state <= IDLE;
+                        done <= 1;
+                    end else begin
+                        next_state <= IDLE; // Stop bit not detected, wait for next start bit
+                        done <= 0;
+                    end
+                end
+                default: begin
+                    next_state <= IDLE;
+                    done <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)
+Hint: Output 'done' has 180 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 180 out of 905 samples
+
+Simulation finished at 4526 ps
+Mismatches: 180 in 905 samples
+
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    parameter IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
+    reg [1:0] state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_reg;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 0;
+            data_reg <= 0;
+            done <= 0;
+        end else begin
+            state <= next_state;
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin // Start bit detected
+                        next_state <= START;
+                        bit_count <= 0;
+                    end else begin
+                        next_state <= IDLE;
+                        done <= 0;
+                    end
+                end
+                START: begin
+                    data_reg[bit_count] <= in;
+                    bit_count <= bit_count + 1;
+                    if (bit_count == 3'd7) begin // All 8 data bits received
+                        next_state <= STOP;
+                    end else begin
+                        next_state <= START;
+                    end
+                end
+                STOP: begin
+                    if (in == 1) begin // Stop bit detected
+                        next_state <= IDLE;
+                        done <= 1;
+                    end else begin
+                        next_state <= IDLE; // Stop bit not detected, wait for next start bit
+                        done <= 0;
+                    end
+                end
+                default: begin
+                    next_state <= IDLE;
+                    done <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)
+Hint: Output 'done' has 180 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 180 out of 905 samples
+
+Simulation finished at 4526 ps
+Mismatches: 180 in 905 samples
+
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    parameter IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
+    reg [1:0] state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_reg;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 0;
+            data_reg <= 0;
+            done <= 0;
+        end else begin
+            state <= next_state;
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin // Start bit detected
+                        next_state <= START;
+                        bit_count <= 0;
+                    end else begin
+                        next_state <= IDLE;
+                        done <= 0;
+                    end
+                end
+                START: begin
+                    data_reg[bit_count] <= in;
+                    bit_count <= bit_count + 1;
+                    if (bit_count == 3'd7) begin // All 8 data bits received
+                        next_state <= STOP;
+                    end else begin
+                        next_state <= START;
+                    end
+                end
+                STOP: begin
+                    if (in == 1) begin // Stop bit detected
+                        next_state <= IDLE;
+                        done <= 1;
+                    end else begin
+                        next_state <= IDLE; // Stop bit not detected, wait for next start bit
+                        done <= 0;
+                    end
+                end
+                default: begin
+                    next_state <= IDLE;
+                    done <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)
+Hint: Output 'done' has 180 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 180 out of 905 samples
+
+Simulation finished at 4526 ps
+Mismatches: 180 in 905 samples
+
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    parameter IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
+    reg [1:0] state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_reg;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 0;
+            data_reg <= 0;
+            done <= 0;
+        end else begin
+            state <= next_state;
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin // Start bit detected
+                        next_state <= START;
+                        bit_count <= 0;
+                    end else begin
+                        next_state <= IDLE;
+                        done <= 0;
+                    end
+                end
+                START: begin
+                    data_reg[bit_count] <= in;
+                    bit_count <= bit_count + 1;
+                    if (bit_count == 3'd7) begin // All 8 data bits received
+                        next_state <= STOP;
+                    end else begin
+                        next_state <= START;
+                    end
+                end
+                STOP: begin
+                    if (in == 1) begin // Stop bit detected
+                        next_state <= IDLE;
+                        done <= 1;
+                    end else begin
+                        next_state <= IDLE; // Stop bit not detected, wait for next start bit
+                        done <= 0;
+                    end
+                end
+                default: begin
+                    next_state <= IDLE;
+                    done <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)
+Hint: Output 'done' has 180 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 180 out of 905 samples
+
+Simulation finished at 4526 ps
+Mismatches: 180 in 905 samples
+
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    parameter IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
+    reg [1:0] state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_reg;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 0;
+            data_reg <= 0;
+            done <= 0;
+        end else begin
+            state <= next_state;
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin // Start bit detected
+                        next_state <= START;
+                        bit_count <= 0;
+                    end else begin
+                        next_state <= IDLE;
+                        done <= 0;
+                    end
+                end
+                START: begin
+                    data_reg[bit_count] <= in;
+                    bit_count <= bit_count + 1;
+                    if (bit_count == 3'd7) begin // All 8 data bits received
+                        next_state <= STOP;
+                    end else begin
+                        next_state <= START;
+                    end
+                end
+                STOP: begin
+                    if (in == 1) begin // Stop bit detected
+                        next_state <= IDLE;
+                        done <= 1;
+                    end else begin
+                        next_state <= IDLE; // Stop bit not detected, wait for next start bit
+                        done <= 0;
+                    end
+                end
+                default: begin
+                    next_state <= IDLE;
+                    done <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)
+Hint: Output 'done' has 180 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 180 out of 905 samples
+
+Simulation finished at 4526 ps
+Mismatches: 180 in 905 samples
+
+Time to Generate: 43.79690742492676
+Best ranked response at iteration 0 with response number 0
+Rank of best response: 0.8961325966850828
+Best response module:
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg done
+);
+
+    parameter IDLE = 2'b00, START = 2'b01, DATA = 2'b10, STOP = 2'b11;
+    reg [1:0] state, next_state;
+    reg [2:0] bit_count;
+    reg [7:0] data_reg;
+
+    always @(posedge clk) begin
+        if (reset) begin
+            state <= IDLE;
+            bit_count <= 0;
+            data_reg <= 0;
+            done <= 0;
+        end else begin
+            state <= next_state;
+            case (state)
+                IDLE: begin
+                    if (in == 0) begin // Start bit detected
+                        next_state <= START;
+                        bit_count <= 0;
+                    end else begin
+                        next_state <= IDLE;
+                    end
+                end
+                START: begin
+                    if (bit_count == 3'd7) begin // All 8 data bits received
+                        next_state <= DATA;
+                    end else begin
+                        data_reg[bit_count] <= in;
+                        bit_count <= bit_count + 1;
+                        next_state <= START;
+                    end
+                end
+                DATA: begin
+                    if (in == 1) begin // Stop bit detected
+                        next_state <= STOP;
+                        done <= 1;
+                    end else begin
+                        next_state <= IDLE; // Stop bit not detected, wait for next start bit
+                        done <= 0;
+                    end
+                end
+                STOP: begin
+                    next_state <= IDLE;
+                    done <= 0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+

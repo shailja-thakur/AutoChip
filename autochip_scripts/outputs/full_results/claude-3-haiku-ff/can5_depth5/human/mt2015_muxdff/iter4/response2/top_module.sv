@@ -1,0 +1,33 @@
+module full_module (
+    input [2:0] r,
+    input L,
+    input clk,
+    output reg [2:0] q
+);
+
+always @(posedge clk) begin
+    if (L) begin
+        q <= r;
+    end else begin
+        q <= {q[1:0], q[2]};
+    end
+end
+
+endmodule
+module top_module(
+    input clk,
+    input L,
+    input [0:0] q_in,
+    input [0:0] r_in,
+    output reg [2:0] Q
+);
+
+always @(posedge clk) begin
+    if (L) begin
+        Q <= {2'b00, r_in};
+    end else begin
+        Q <= {Q[1:0], Q[2]};
+    end
+end
+
+endmodule

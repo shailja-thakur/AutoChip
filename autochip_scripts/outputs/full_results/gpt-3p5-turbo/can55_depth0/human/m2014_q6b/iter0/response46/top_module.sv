@@ -1,0 +1,57 @@
+module top_module(
+    input [3:1] y,
+    input w,
+    output reg Y2);
+
+    // Define constants for state codes
+    parameter A = 3'b000;
+    parameter B = 3'b001;
+    parameter C = 3'b010;
+    parameter D = 3'b011;
+    parameter E = 3'b100;
+    parameter F = 3'b101;
+
+    always @(*) begin
+        // Define next state logic based on current state and input
+        case(y)
+            A: begin
+                if (w)
+                    Y2 = 0;
+                else
+                    Y2 = 1;
+            end
+            B: begin
+                if (w)
+                    Y2 = 0;
+                else
+                    Y2 = 1;
+            end
+            C: begin
+                if (w)
+                    Y2 = 0;
+                else
+                    Y2 = 1;
+            end
+            D: begin
+                if (w)
+                    Y2 = 0;
+                else
+                    Y2 = 1;
+            end
+            E: begin
+                if (w)
+                    Y2 = 0;
+                else
+                    Y2 = 1;
+            end
+            F: begin
+                if (w)
+                    Y2 = 0;
+                else
+                    Y2 = 1;
+            end
+            default: Y2 = 0;
+        endcase
+    end
+
+endmodule

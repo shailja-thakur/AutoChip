@@ -1,0 +1,137 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// A large reservior of water serves several users. In order to keep the level of water succificently high, three sensors are placed vertically at 5-inch intervals. When the water level is above the highest sensor s[3], the input flow rate should be zero. When the level is below the lowest sensor s[1], the flow rate should be at maximum (both Nominal flow valve and Supplemental flow valve opened). The flow rate when the level is between the upper and lower sensors is determined by two factors: the water level and the level previous to the last sensor change. Each water level has a nominal flow rate associated with it as show in the table below. If the sensor change indicates that the previous level was lower than the current level, the flow rate should be increased by opening the Supplemental flow valve (controlled by dfr). \n// Water Level | Sensors Asserted | Nominal Flow Rate Inputs to be Asserted\n// Above s[3] | s[1], s[2], s[3] | None\n// Between s[3] and s[2] | s[1], s[2] | fr1\n// Between s[2] and s[1]  | s[1] | fr1, fr2\n// Below s[1] | None | fr1, fr2, fr3\n// Also include an active-high synchronous reset that resets the state machine to a state equivalent to if the water level had been low for a long time (no sensors asserted, and all four outputs asserted).\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput [3:1] s,\n\toutput reg fr3,\n\toutput reg fr2,\n\toutput reg fr1,\n\toutput reg dfr\n);'}
+{'assistant': 'module top_module (
+	input clk,
+	input reset,
+	input [3:1] s,
+	output reg fr3,
+	output reg fr2,
+	output reg fr1,
+	output reg dfr
+);
+
+// State declaration
+reg [2:0] state_reg, state_next;
+
+// Constants declaration
+parameter STATE_LOW = 3'b000;
+parameter STATE_HIGH = 3'b001;
+parameter STATE_BETWEEN_2_AND_3 = 3'b010;
+parameter STATE_BETWEEN_1_AND_2 = 3'b011;
+
+// Register declaration
+reg fr3_reg, fr2_reg, fr1_reg, dfr_reg;
+reg fr3_next, fr2_next, fr1_next, dfr_next;
+
+// Initial assignment
+initial begin
+	state_reg = STATE_LOW;
+	fr3_reg = 1'b0;
+	fr2_reg = 1'b0;
+	fr1_reg = 1'b0;
+	dfr_reg = 1'b0;
+end
+
+// State logic
+always @(posedge clk) begin
+	if (reset) begin
+		state_reg <= STATE_LOW;
+		fr3_reg <= 1'b1;
+		fr2_reg <= 1'b1;
+		fr1_reg <= 1'b1;
+		dfr_reg <= 1'b1;
+	end else begin
+		state_reg <= state_next;
+		fr3_reg <= fr3_next;
+		fr2_reg <= fr2_next;
+		fr1_reg <= fr1_next;
+		dfr_reg <= dfr_next;
+	end
+end
+
+// Next state logic
+always @* begin
+	case (state_reg)
+		STATE_LOW:
+			if (s[3]) begin
+				state_next = STATE_HIGH;
+				fr3_next = 1'b0;
+				fr2_next = 1'b0;
+				fr1_next = 1'b0;
+				dfr_next = 1'b0;
+			end else if (s[2]) begin
+				state_next = STATE_BETWEEN_2_AND_3;
+				fr3_next = 1'b0;
+				fr2_next = 1'b0;
+				fr1_next = 1'b0;
+				dfr_next = 1'b0;
+			end else if (s[1]) begin
+				state_next = STATE_BETWEEN_1_AND_2;
+				fr3_next = 1'b0;
+				fr2_next = 1'b0;
+				fr1_next = 1'b0;
+				dfr_next = 1'b0;
+			end
+		STATE_HIGH:
+			if (!s[3]) begin
+				state_next = STATE_BETWEEN_2_AND_3;
+				fr3_next = 1'b0;
+				fr2_next = 1'b0;
+				fr1_next = 1'b1;
+				dfr_next = 1'b0;
+			end else if (s[2]) begin
+				state_next = STATE_BETWEEN_2_AND_3;
+				fr3_next = 1'b0;
+				fr2_next = 1'b0;
+				fr1_next = 1'b0;
+				dfr_next = 1'b0;
+			end else if (s[1]) begin
+				state_next = STATE_BETWEEN_1_AND_2;
+				fr3_next = 1'b0;
+				fr2_next = 1'b0;
+				fr1_next = 1'b0;
+				dfr_next = 1'b0;
+			end
+		STATE_BETWEEN_2_AND_3:
+			if (!s[3]) begin
+				state_next = STATE_BETWEEN_1_AND_2;
+				fr3_next = 1'b0;
+				fr2_next = 1'b0;
+				fr1_next = 1'b1;
+				dfr_next = 1'b0;
+			end else if (!s[2]) begin
+				state_next = STATE_LOW;
+				fr3_next = 1'b1;
+				fr2_next = 1'b1;
+				fr1_next = 1'b1;
+				dfr_next = 1'b1;
+			end
+		STATE_BETWEEN_1_AND_2:
+			if (!s[2]) begin
+				state_next = STATE_LOW;
+				fr3_next = 1'b1;
+				fr2_next = 1'b1;
+				fr1_next = 1'b1;
+				dfr_next = 1'b1;
+			end else if (!s[1]) begin
+				state_next = STATE_LOW;
+				fr3_next = 1'b1;
+				fr2_next = 1'b1;
+				fr1_next = 1'b1;
+				dfr_next = 1'b1;
+			end
+	endcase
+end
+
+// Output assignment
+always @(posedge clk) begin
+	fr3 <= fr3_reg;
+	fr2 <= fr2_reg;
+	fr1 <= fr1_reg;
+	dfr <= dfr_reg;
+end
+
+endmodule
+'}
+
+ Iteration rank: 0.307843137254902

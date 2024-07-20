@@ -1,0 +1,78 @@
+module top_module (
+	input clk,
+	input in,
+	input reset,
+	output reg done
+);
+
+	// States of the FSM
+	typedef enum logic [2:0] {
+		IDLE,
+		START_BIT,
+		DATA_BITS,
+		STOP_BIT,
+		ERROR
+	} state_t;
+
+	state_t state, next_state;
+	reg [2:0] bit_count;
+	reg [7:0] data;
+
+	always @(posedge clk or posedge reset) begin
+		if (reset) begin
+			state <= IDLE;
+			bit_count <= 3'd0;
+			done <= 1'b0;
+			data <= 8'd0;
+		end else begin
+			state <= next_state;
+			if (state == DATA_BITS && state == next_state) begin
+				data[bit_count] <= in;
+				bit_count <= bit_count + 1;
+			end else if (state != DATA_BITS) begin
+				bit_count <= 3'd0;
+				data <= 8'd0;
+			end
+			if (state == STOP_BIT && next_state == IDLE) done <= 1'b1;
+			else done <= 1'b0;
+		end
+	end
+
+	always @(*) begin
+		next_state = state;
+		case(state)
+			IDLE: begin
+				if (in == 1'b0) begin
+					next_state = START_BIT;
+				end
+			end
+			
+			START_BIT: begin
+				next_state = DATA_BITS;
+			end
+			
+			DATA_BITS: begin
+				if (bit_count == 3'b111) begin
+					next_state = STOP_BIT;
+				end
+			end
+			
+			STOP_BIT: begin
+				if (in == 1'b1) begin
+					next_state = IDLE;
+				end else begin
+					next_state = ERROR;
+				end
+			end
+			
+			ERROR: begin
+				if (in == 1'b1) begin
+					next_state = IDLE;
+				end
+			end
+			
+			default: next_state = IDLE;
+		endcase
+	end
+
+endmodule

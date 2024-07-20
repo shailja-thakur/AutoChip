@@ -1,0 +1,52 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the follow Moore machine with the diagram described below:\n\n// B (1) --0--> A\n// B (1) --1--> B\n// A (0) --0--> B\n// A (0) --1--> A\n\n// Write Verilog implementing this state machine. It should asynchronously reset into state B if reset if high.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output out
+);
+
+reg state;
+parameter A = 1'b0, B = 1'b1;
+
+always @(posedge clk or posedge areset) begin
+    if (areset) begin
+        state <= B;
+    end
+    else begin
+        case (state)
+            A: begin
+                if (in) begin
+                    state <= A;
+                end
+                else begin
+                    state <= B;
+                end
+            end
+            B: begin
+                if (in) begin
+                    state <= B;
+                end
+                else begin
+                    state <= A;
+                end
+            end
+        endcase
+    end
+end
+
+assign out = (state == A) ? 1'b0 : 1'b1;
+
+endmodule
+```
+
+The Verilog code implements the given Moore state machine. It has the following features:
+
+1. The state is stored in the `state` register, which can take values `A` (0) or `B` (1).
+2. The `always` block handles the state transition logic based on the current state and the input `in`.
+3. If the `areset` signal is high, the state is asynchronously reset to `B`.
+4. The output `out` is assigned based on the current state, where `out` is 0 when the state is `A`, and 1 when the state is `B`.'}
+
+ Iteration rank: 1.0

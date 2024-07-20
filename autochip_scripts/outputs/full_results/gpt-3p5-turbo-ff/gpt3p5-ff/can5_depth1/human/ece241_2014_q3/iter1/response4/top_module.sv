@@ -1,0 +1,17 @@
+module top_module (
+    input c,
+    input d,
+    output [3:0] mux_in
+);
+
+wire [1:0] ab;
+
+assign ab[0] = c & d;    // Previously used "and #(1) u1", but not needed since there are no delays specified
+assign ab[1] = ~c;
+
+assign mux_in[0] = ab[1] & ~ab[0];    // 00
+assign mux_in[1] = ab[1] & ab[0];     // 01
+assign mux_in[2] = ~ab[1] & ~ab[0];   // 11
+assign mux_in[3] = ~ab[1] & ab[0];    // 10
+
+endmodule

@@ -1,0 +1,32 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// Build a priority encoder for 8-bit inputs. Given an 8-bit vector, the output should report the first (least significant) bit in the vector that is 1. Report zero if the input vector has no bits that are high. For example, the input 8'b10010000 should output 3'd4, because bit[4] is first bit that is high.\n\nmodule top_module (\n\tinput [7:0] in,\n\toutput reg [2:0] pos\n);"}
+{'assistant': '```verilog
+module top_module (
+    input [7:0] in,
+    output reg [2:0] pos
+);
+
+always @(*) begin
+    casez (in)
+        8'b1??????????:   pos = 3'd0;
+        8'b01????????:   pos = 3'd1;
+        8'b001???????:   pos = 3'd2;
+        8'b0001??????:   pos = 3'd3;
+        8'b00001?????:   pos = 3'd4;
+        8'b000001????:   pos = 3'd5;
+        8'b0000001???:   pos = 3'd6;
+        8'b00000001??:   pos = 3'd7;
+        default:       pos = 3'd0;
+    endcase
+end
+
+endmodule
+```
+
+The provided Verilog module is a priority encoder that takes an 8-bit input vector `in` and outputs a 3-bit value `pos` representing the position of the first (least significant) bit that is high. If the input vector has no high bits, the output is set to 0.
+
+The `always @(*)` block uses a `casez` statement to check the input vector and assign the appropriate value to the `pos` output. The `casez` statement allows for wildcards (`?`) in the case conditions, which makes it easier to check for the different bit positions.
+
+The case conditions are checked in order of decreasing bit significance, so the first condition that matches will be used to set the `pos` output. If none of the conditions match (i.e., the input vector is all zeros), the `default` case is used to set `pos` to 0.'}
+
+ Iteration rank: -0.5

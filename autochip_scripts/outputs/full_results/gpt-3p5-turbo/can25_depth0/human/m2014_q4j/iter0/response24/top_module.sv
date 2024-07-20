@@ -1,0 +1,67 @@
+module top_module (
+	input [3:0] x,
+	input [3:0] y,
+	output [4:0] sum
+);
+
+	// Create the internal signals
+	wire [3:0] carry;
+	wire [3:0] sum_temp;
+	wire overflow;
+	
+	// Instantiate the full adders
+	full_adder fa0(.a(x[0]), .b(y[0]), .cin(1'b0), .sum(sum_temp[0]), .cout(carry[0]));
+	full_adder fa1(.a(x[1]), .b(y[1]), .cin(carry[0]), .sum(sum_temp[1]), .cout(carry[1]));
+	full_adder fa2(.a(x[2]), .b(y[2]), .cin(carry[1]), .sum(sum_temp[2]), .cout(carry[2]));
+	full_adder fa3(.a(x[3]), .b(y[3]), .cin(carry[2]), .sum(sum_temp[3]), .cout(overflow));
+	
+	// Assign outputs
+	assign sum = {overflow, sum_temp};
+	
+endmodule
+module full_adder (
+	input a,
+	input b,
+	input cin,
+	output sum,
+	output cout
+);
+	
+	// Create the internal signals
+	wire s1, s2, s;
+	
+	// Implement the full adder logic
+	xor_gate x1(.a(a), .b(b), .y(s1));
+	xor_gate x2(.a(s1), .b(cin), .y(s));
+	and_gate a1(.a(a), .b(b), .y(s2));
+	and_gate a2(.a(s1), .b(cin), .y(cout));
+	or_gate o1(.a(s2), .b(s), .y(sum));
+	
+endmodule
+module xor_gate (
+	input a,
+	input b,
+	output y
+);
+	
+	assign y = a ^ b;
+	
+endmodule
+module and_gate (
+	input a,
+	input b,
+	output y
+);
+	
+	assign y = a & b;
+	
+endmodule
+module or_gate (
+	input a,
+	input b,
+	output y
+);
+	
+	assign y = a | b;
+	
+endmodule

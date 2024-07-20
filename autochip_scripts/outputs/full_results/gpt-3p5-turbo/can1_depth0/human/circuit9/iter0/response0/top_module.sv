@@ -1,0 +1,19 @@
+module top_module (
+    input wire clk,
+    input wire a,
+    output reg [2:0] q
+);
+    always @(posedge clk) begin
+        if (a == 0) begin
+            q <= 0;
+        end else begin
+            case (q)
+                0: q <= 4;
+                4: q <= 5;
+                5: q <= 6;
+                6: q <= 0;
+                default: q <= 1;
+            endcase
+        end
+    end
+endmodule

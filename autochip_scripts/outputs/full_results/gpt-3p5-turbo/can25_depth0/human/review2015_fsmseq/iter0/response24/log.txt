@@ -1,0 +1,31 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a finite-state machine that searches for the sequence 1101 in an input bit stream. When the sequence is found, it should set start_shifting to 1, forever, until reset. Reset is active high synchronous.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\tinput data,\n\toutput start_shifting);'}
+{'assistant': 'module top_module(
+  input clk,
+  input reset,
+  input data,
+  output reg start_shifting);
+
+  // internal signal
+  reg [3:0] state;
+  
+  always @(posedge clk or posedge reset) begin
+    if (reset)
+      state <= 0;
+    else begin
+      case (state)
+        4'b0000: if (data) state <= 4'b0001; else state <= 4'b0000;
+        4'b0001: if (data) state <= 4'b0011; else state <= 4'b0000;
+        4'b0011: if (data) state <= 4'b0111; else state <= 4'b0000;
+        4'b0111: if (!data) state <= 4'b0000; else state <= 4'b1000;
+        4'b1000: if (data) state <= 4'b1001; else state <= 4'b1000;
+        4'b1001: if (data) state <= 4'b1011; else state <= 4'b1000;
+        4'b1011: if (data) state <= 4'b1111; else state <= 4'b0000;
+        4'b1111: if (!data) state <= 4'b0000; else start_shifting <= 1;
+      endcase
+    end
+  end
+  
+endmodule'}
+
+ Iteration rank: 0.16951788491446346

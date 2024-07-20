@@ -1,0 +1,24 @@
+module top_module (
+    input clk,
+    input resetn,
+    input in,
+    output reg out
+);
+
+    reg [3:0] sr;
+
+    always @(posedge clk or negedge resetn) begin
+        if (!resetn)
+            sr <= 4'b0000;
+        else
+            sr <= {sr[2:0], in};
+    end
+
+    always @(posedge clk or negedge resetn) begin
+        if (!resetn)
+            out <= 1'b0;
+        else
+            out <= sr[3];
+    end
+
+endmodule

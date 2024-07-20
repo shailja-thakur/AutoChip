@@ -1,0 +1,77 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a finite-state machine that searches for the sequence 1101 in an input bit stream. When the sequence is found, it should set start_shifting to 1, forever, until reset. Reset is active high synchronous.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\tinput data,\n\toutput start_shifting);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    input data,
+    output reg start_shifting
+);
+
+// Define the states of the finite-state machine
+parameter [1:0] 
+    IDLE = 2'b00,
+    SEARCH_1 = 2'b01,
+    SEARCH_10 = 2'b10,
+    SEARCH_101 = 2'b11;
+
+// Internal state register
+reg [1:0] state, next_state;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= IDLE;
+        start_shifting <= 0;
+    end
+    else begin
+        state <= next_state;
+        if (state == SEARCH_101 && data == 1)
+            start_shifting <= 1;
+    end
+end
+
+always @(*) begin
+    case (state)
+        IDLE: begin
+            if (data == 1)
+                next_state = SEARCH_1;
+            else
+                next_state = IDLE;
+        end
+        SEARCH_1: begin
+            if (data == 0)
+                next_state = SEARCH_10;
+            else
+                next_state = SEARCH_1;
+        end
+        SEARCH_10: begin
+            if (data == 1)
+                next_state = SEARCH_101;
+            else
+                next_state = IDLE;
+        end
+        SEARCH_101: begin
+            if (data == 0)
+                next_state = IDLE;
+            else
+                next_state = SEARCH_1;
+        end
+    endcase
+end
+
+endmodule
+```
+
+The above Verilog code implements a finite-state machine that searches for the sequence 1101 in an input bit stream. When the sequence is found, it sets the `start_shifting` signal to 1, which remains high until the module is reset.
+
+The FSM has four states:
+1. `IDLE`: Waits for the first '1' in the input sequence.
+2. `SEARCH_1`: Looks for the next '0' after the first '1'.
+3. `SEARCH_10`: Looks for the next '1' after the '0'.
+4. `SEARCH_101`: Looks for the final '1' to complete the sequence 1101.
+
+The `next_state` logic transitions the FSM between these states based on the current state and the input data. When the final '1' is detected in the `SEARCH_101` state, the `start_shifting` signal is set to 1.
+
+The reset signal is handled synchronously, and upon reset, the FSM returns to the `IDLE` state and the `start_shifting` signal is cleared.'}
+
+ Iteration rank: 0.776049766718507

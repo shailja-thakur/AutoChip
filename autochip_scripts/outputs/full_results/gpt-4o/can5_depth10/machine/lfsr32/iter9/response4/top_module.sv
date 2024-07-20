@@ -1,0 +1,19 @@
+module top_module(
+    input clk,
+    input reset,
+    output reg [31:0] q
+);
+
+    wire feedback;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            q <= 32'h1;
+        end else begin
+            q <= {q[30:0], feedback};
+        end
+    end
+
+    assign feedback = q[0] ^ q[1] ^ q[21];
+    
+endmodule

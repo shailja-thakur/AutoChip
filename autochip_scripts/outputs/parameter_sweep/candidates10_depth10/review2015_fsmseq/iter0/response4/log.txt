@@ -1,0 +1,60 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a finite-state machine that searches for the sequence 1101 in an input bit stream. When the sequence is found, it should set start_shifting to 1, forever, until reset. Reset is active high synchronous.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\tinput data,\n\toutput start_shifting);'}
+{'assistant': '// Build a finite-state machine that searches for the sequence 1101 in an input bit stream.
+// When the sequence is found, it should set start_shifting to 1, forever, until reset.
+// Reset is active high synchronous.
+
+module top_module(
+	input clk,
+	input reset,
+	input data,
+	output reg start_shifting);
+
+	parameter S0 = 2'b00;  // State 0
+	parameter S1 = 2'b01;  // State 1
+	parameter S2 = 2'b10;  // State 2
+	parameter S3 = 2'b11;  // State 3
+	
+	reg [1:0] state;  // Current state register
+
+	always @(posedge clk or posedge reset) begin
+		if (reset) begin
+			state <= S0;  // Reset the state to S0
+			start_shifting <= 0;  // Set start_shifting to 0
+		end else begin
+			case(state)
+				S0: begin
+					if (data) begin
+						state <= S1;  // Transition to State 1 if data is 1
+					end
+				end
+				S1: begin
+					if (data) begin
+						state <= S1;  // Stay in State 1 if data is 1
+					end else begin
+						state <= S2;  // Transition to State 2 if data is 0
+					end
+				end
+				S2: begin
+					if (data) begin
+						state <= S1;  // Transition to State 1 if data is 1
+					end else begin
+						state <= S3;  // Transition to State 3 if data is 0
+					end
+				end
+				S3: begin
+					if (data) begin
+						state <= S1;  // Transition to State 1 if data is 1
+						start_shifting <= 1;  // Set start_shifting to 1
+					end else begin
+						state <= S2;  // Transition to State 2 if data is 0
+					end
+				end
+				default: state <= S0;
+			endcase
+		end
+	end
+	
+endmodule'}
+
+ Iteration rank: 0.7558320373250389

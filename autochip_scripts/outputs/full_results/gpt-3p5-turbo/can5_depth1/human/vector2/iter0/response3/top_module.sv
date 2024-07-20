@@ -1,0 +1,37 @@
+module top_module (
+	input [31:0] in,
+	output [31:0] out
+);
+	
+	// Instantiate the byte reversal module
+	byte_reversal_module byte_reversal_inst (
+		.in(in),
+		.out(out)
+	);
+	
+endmodule
+module byte_reversal_module (
+	input [31:0] in,
+	output [31:0] out
+);
+	
+	// Wire connections for individual byte reversal
+	wire [7:0] byte0_in, byte1_in, byte2_in, byte3_in;
+	wire [7:0] byte0_out, byte1_out, byte2_out, byte3_out;
+	
+	// Split the input into individual bytes
+	assign byte0_in = in[7:0];
+	assign byte1_in = in[15:8];
+	assign byte2_in = in[23:16];
+	assign byte3_in = in[31:24];
+	
+	// Reverse the order of the bytes
+	assign byte0_out = byte3_in;
+	assign byte1_out = byte2_in;
+	assign byte2_out = byte1_in;
+	assign byte3_out = byte0_in;
+	
+	// Combine the reversed bytes
+	assign out = {byte0_out, byte1_out, byte2_out, byte3_out};
+	
+endmodule

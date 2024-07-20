@@ -1,0 +1,102 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // Build a finite-state machine that searches for the sequence 1101 in an input bit stream. When the sequence is found, it should set start_shifting to 1, forever, until reset. Reset is active high synchronous.
+
+module top_module(
+	input clk,
+	input reset,
+	input data,
+	output start_shifting);
+assistant: module top_module(
+	input clk,
+	input reset,
+	input data,
+	output reg start_shifting
+	);
+	
+	// State definitions
+	parameter IDLE = 0;
+	parameter CHECKING = 1;
+	
+	// Internal signals
+	reg [1:0] state;
+	reg [3:0] shift_buffer;
+	
+	// Sequential logic
+	always @(posedge clk, posedge reset) begin
+		if (reset) begin
+			state <= IDLE;
+			start_shifting <= 0;
+		end else begin
+			case (state)
+				IDLE: begin
+					shift_buffer <= {shift_buffer[2:0], data};
+					if (shift_buffer == 4'b1101)
+						state <= CHECKING;
+				end
+				CHECKING: begin
+					shift_buffer <= {shift_buffer[2:0], data};
+					start_shifting <= 1;
+					if (shift_buffer != 4'b1101)
+						state <= IDLE;
+				end
+			endcase
+		end
+	end
+	
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your reset should be synchronous, but doesn't appear to be.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/review2015_fsmseq/review2015_fsmseq_tb.sv:102: $finish called at 3216 (1ps)
+Hint: Output 'start_shifting' has 42 mismatches. First mismatch occurred at time 50.
+Hint: Total mismatched samples is 42 out of 643 samples
+
+Simulation finished at 3216 ps
+Mismatches: 42 in 643 samples
+
+Time to Generate: 12.66112232208252
+Best ranked response at iteration 0 with response number 2
+Rank of best response: 0.9346811819595645
+Best response module:
+module top_module(
+	input clk,
+	input reset,
+	input data,
+	output reg start_shifting
+	);
+	
+	// State definitions
+	parameter IDLE = 0;
+	parameter CHECKING = 1;
+	
+	// Internal signals
+	reg [1:0] state;
+	reg [3:0] shift_buffer;
+	
+	// Sequential logic
+	always @(posedge clk, posedge reset) begin
+		if (reset) begin
+			state <= IDLE;
+			start_shifting <= 0;
+		end else begin
+			case (state)
+				IDLE: begin
+					shift_buffer <= {shift_buffer[2:0], data};
+					if (shift_buffer == 4'b1101)
+						state <= CHECKING;
+				end
+				CHECKING: begin
+					shift_buffer <= {shift_buffer[2:0], data};
+					start_shifting <= 1;
+					if (shift_buffer != 4'b1101)
+						state <= IDLE;
+				end
+			endcase
+		end
+	end
+	
+endmodule
+
+

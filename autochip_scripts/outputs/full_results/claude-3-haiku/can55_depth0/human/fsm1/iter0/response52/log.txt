@@ -1,0 +1,53 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the follow Moore machine with the diagram described below:\n\n// B (1) --0--> A\n// B (1) --1--> B\n// A (0) --0--> B\n// A (0) --1--> A\n\n// Write Verilog implementing this state machine. It should asynchronously reset into state B if reset if high.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+    reg state;
+    parameter A = 1'b0, B = 1'b1;
+
+    always @(posedge clk, posedge areset) begin
+        if (areset)
+            state <= B;
+        else begin
+            case (state)
+                A: begin
+                    if (in)
+                        state <= A;
+                    else
+                        state <= B;
+                end
+                B: begin
+                    if (in)
+                        state <= B;
+                    else
+                        state <= A;
+                end
+            endcase
+        end
+    end
+
+    always @(*) begin
+        out = (state == A) ? 0 : 1;
+    end
+
+endmodule
+```
+
+The provided Verilog code implements the given Moore machine state diagram. The key aspects are:
+
+1. The module has an input `clk` for the clock, `in` for the input signal, `areset` for the asynchronous reset, and `out` for the output.
+2. The state is represented using a single-bit register `state`, with the states defined as parameters `A` and `B`.
+3. The `always` block on `posedge clk, posedge areset` handles the state transitions:
+   - If `areset` is high, the state is set to `B`.
+   - Otherwise, the state transitions based on the current state and the input `in`.
+4. The `always` block on `(*)` sets the output `out` based on the current state, with `out = 0` when in state `A`, and `out = 1` when in state `B`.
+
+This Verilog code correctly implements the given Moore machine state diagram.'}
+
+ Iteration rank: 1.0

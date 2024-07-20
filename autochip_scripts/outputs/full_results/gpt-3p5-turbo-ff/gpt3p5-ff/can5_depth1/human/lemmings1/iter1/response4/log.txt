@@ -1,0 +1,55 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The game Lemmings involves critters with fairly simple brains. So simple that we are going to model it using a finite state machine. In the Lemmings' 2D world, Lemmings can be in one of two states: walking left (walk_left is 1) or walking right (walk_right is 1). It will switch directions if it hits an obstacle. In particular, if a Lemming is bumped on the left (by receiving a 1 on bump_left), it will walk right. If it's bumped on the right (by receiving a 1 on bump_right), it will walk left. If it's bumped on both sides at the same time, it will still switch directions. Implement a Moore state machine with two states, two inputs, and one output (internal to the module) that models this behaviour. areset is positive edge triggered asynchronous reseting the Lemming machine to walk left.\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput bump_left,\n\tinput bump_right,\n\toutput walk_left,\n\toutput walk_right\n);"}
+{'role': 'assistant', 'content': "module top_module (\n    input clk,\n    input areset,\n    input bump_left,\n    input bump_right,\n    output walk_left,\n    output walk_right\n);\n\n    // Define states\n    parameter WALK_LEFT = 1'b0;\n    parameter WALK_RIGHT = 1'b1;\n    \n    reg state;\n    \n    always @(posedge clk or posedge areset) begin\n        if (areset) begin\n            state <= WALK_LEFT;\n        end else begin\n            case (state)\n                WALK_LEFT: begin\n                    if (bump_right) begin\n                        state <= WALK_RIGHT;\n                    end\n                end\n                WALK_RIGHT: begin\n                    if (bump_left) begin\n                        state <= WALK_LEFT;\n                    end\n                end\n            endcase\n        end\n    end\n    \n    // Output logic\n    assign walk_left = (state == WALK_LEFT);\n    assign walk_right = (state == WALK_RIGHT);\n\nendmodule\n\n"}
+{'role': 'user', 'content': "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\nVCD info: dumpfile wave.vcd opened for output.\n/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/lemmings1/lemmings1_tb.sv:102: $finish called at 1146 (1ps)\nHint: Output 'walk_left' has 186 mismatches. First mismatch occurred at time 110.\nHint: Output 'walk_right' has 186 mismatches. First mismatch occurred at time 110.\nHint: Total mismatched samples is 186 out of 229 samples\n\nSimulation finished at 1146 ps\nMismatches: 186 in 229 samples\n"}
+{'assistant': 'module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    output walk_left,
+    output walk_right
+);
+
+    // Define states
+    parameter WALK_LEFT = 1'b0;
+    parameter WALK_RIGHT = 1'b1;
+    
+    reg state;
+    wire opposite_bump;
+    
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            // Reset to walk left
+            state <= WALK_LEFT;
+        end else begin
+            case (state)
+                WALK_LEFT: begin
+                    if (bump_right) begin
+                        state <= WALK_RIGHT;
+                    end
+                end
+                WALK_RIGHT: begin
+                    if (bump_left) begin
+                        state <= WALK_LEFT;
+                    end
+                end
+            endcase
+        end
+    end
+    
+    // Output logic
+    assign walk_left = (state == WALK_LEFT);
+    assign walk_right = (state == WALK_RIGHT);
+    assign opposite_bump = bump_left & bump_right;
+    
+    always @(posedge clk) begin
+        if (opposite_bump) begin
+            // Switch directions if bumped on both sides
+            state <= ~state;
+        end
+    end
+
+endmodule'}
+
+ Iteration rank: 0.18777292576419213

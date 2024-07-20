@@ -1,0 +1,53 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, two inputs, and one output. Implement this state machine in Verilog. Reset is an active-high synchronous reset to state OFF.\n\n// OFF (out=0) --j=0--> OFF\n// OFF (out=0) --j=1--> ON\n// ON (out=1) --k=0--> ON\n// ON (out=1) --k=1--> OFF\n\nmodule top_module (\n\tinput clk,\n\tinput j,\n\tinput k,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input j,
+    input k,
+    input reset,
+    output reg out
+);
+
+localparam STATE_OFF = 1'b0;
+localparam STATE_ON = 1'b1;
+
+reg state;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= STATE_OFF;
+        out <= 1'b0;
+    end
+    else begin
+        case (state)
+            STATE_OFF: begin
+                out <= 1'b0;
+                if (j)
+                    state <= STATE_ON;
+                else
+                    state <= STATE_OFF;
+            end
+            STATE_ON: begin
+                out <= 1'b1;
+                if (k)
+                    state <= STATE_OFF;
+                else
+                    state <= STATE_ON;
+            end
+            default: begin
+                state <= STATE_OFF;
+                out <= 1'b0;
+            end
+        endcase
+    end
+end
+
+endmodule
+```
+
+The Verilog code above implements the given Moore state machine. The state machine has two states: `STATE_OFF` (output `out` is 0) and `STATE_ON` (output `out` is 1). The state transitions are determined by the input signals `j` and `k` as described in the problem statement. The synchronous reset signal `reset` sets the state to `STATE_OFF` and the output `out` to 0.
+
+The `always` block handles the state transitions and output updates based on the current state and input signals. The `case` statement is used to implement the state machine logic.'}
+
+ Iteration rank: 0.6099585062240664

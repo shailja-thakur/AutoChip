@@ -1,0 +1,67 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This module is a part of the FSM for controlling the shift register, we want the ability to enable the shift register for exactly 4 clock cycles whenever the proper bit pattern is detected. Whenever the FSM is reset, assert shift_ena for 4 cycles, then 0 forever (until reset). Reset should be active high synchronous.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput shift_ena);'}
+{'assistant': 'module top_module(
+    input clk,
+    input reset,
+    output shift_ena);
+
+    reg [1:0] state_reg;
+    reg [2:0] count_reg;
+    wire pattern_detected;
+
+    parameter IDLE_STATE = 2'b00;
+    parameter DETECT_STATE = 2'b01;
+    parameter ENABLE_STATE = 2'b10;
+
+    assign pattern_detected = (state_reg == DETECT_STATE);
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state_reg <= IDLE_STATE;
+            count_reg <= 3'b0;
+            shift_ena <= 0;
+        end else begin
+            case (state_reg)
+                IDLE_STATE: begin
+                    if (pattern_detected)
+                        state_reg <= DETECT_STATE;
+                    else
+                        state_reg <= IDLE_STATE;
+                end
+                DETECT_STATE: begin
+                    if (count_reg == 3'b111)
+                        state_reg <= ENABLE_STATE;
+                    else
+                        state_reg <= DETECT_STATE;
+                end
+                ENABLE_STATE: begin
+                    state_reg <= IDLE_STATE;
+                end
+                default: begin
+                    state_reg <= IDLE_STATE;
+                end
+            endcase
+        end
+    end
+
+    always @(posedge clk) begin
+        if (reset)
+            count_reg <= 3'b0;
+        else if (state_reg == DETECT_STATE)
+            count_reg <= count_reg + 1;
+        else
+            count_reg <= 3'b0;
+    end
+
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            shift_ena <= 0;
+        else if (state_reg == ENABLE_STATE)
+            shift_ena <= 1;
+        else
+            shift_ena <= 0;
+    end
+
+endmodule'}
+
+ Iteration rank: -1

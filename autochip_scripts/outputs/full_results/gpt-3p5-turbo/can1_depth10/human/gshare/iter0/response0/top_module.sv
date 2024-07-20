@@ -1,0 +1,67 @@
+module top_module(
+    input clk,
+    input areset, 
+
+    input predict_valid,
+    input [6:0] predict_pc,
+    output predict_taken, 
+    output [6:0] predict_history,
+
+    input train_valid,
+    input train_taken,
+    input train_mispredicted,
+    input [6:0] train_history, 
+    input [6:0] train_pc
+);
+    // Define parameters
+    parameter HISTORY_SIZE = 128;
+    parameter PHT_SIZE = 256;
+    parameter INDEX_SIZE = 7;
+    parameter PC_SIZE = 7;
+    parameter HISTORY_SIZE = 7;
+
+    // Declare internal signals
+    reg [6:0] history_reg;
+    reg [6:0] index;
+    reg [1:0] pht[PHT_SIZE-1:0];
+
+    // Prediction logic
+    reg predict_taken_reg;
+    reg [6:0] predict_history_reg;
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            history_reg <= 0;
+            predict_taken_reg <= 0;
+            predict_history_reg <= 0;
+        end else begin
+            if (predict_valid) begin
+                index <= predict_pc ^ history_reg;
+                predict_taken_reg <= (pht[index] == 2) || (pht[index] == 3);
+                predict_history_reg <= history_reg;
+            end
+        end
+    end
+
+    // Training logic
+    always @(posedge clk or posedge areset) begin
+        if (areset) begin
+            history_reg <= 0;
+        end else begin
+            if (train_valid) begin
+                index <= train_pc ^ train_history;
+                if (train_mispredicted) begin
+                    pht[index] <= (pht[index] == 0) ? 0 : (pht[index] == 1) ? 0 : (pht[index] == 2) ? 1 : 2;
+                    history_reg <= train_history;
+                end else begin
+                    pht[index] <= (train_taken) ? (pht[index] == 0) ? 0 : (pht[index] == 1) ? 1 : (pht[index] == 2) ? 2 : 3 : (pht[index] == 0) ? 0 : (pht[index] == 1) ? 0 : (pht[index] == 2) ? 1 : 2;
+                    history_reg <= train_history;
+                end
+            end
+        end
+    end
+
+    // Assign outputs
+    assign predict_taken = predict_taken_reg;
+    assign predict_history = predict_history_reg;
+
+endmodule

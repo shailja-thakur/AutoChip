@@ -1,0 +1,14 @@
+module top_module (
+	input [99:0] in,
+	output [98:0] out_both,
+	output [99:1] out_any,
+	output [99:0] out_different
+);
+
+	assign out_both = in[98:0] & in[99:1];   // Perform bitwise AND operation between the two input signals
+
+	assign out_any = in | (in << 1);   // Perform bitwise OR operation between the two input signals
+
+	assign out_different = {in[0] ^ in[99], in ^ (in << 1)};  // Perform bitwise XOR operation between the two input signals
+
+endmodule

@@ -1,0 +1,108 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // Consider the follow Moore machine with the diagram described below:
+
+// B (1) --0--> A
+// B (1) --1--> B
+// A (0) --0--> B
+// A (0) --1--> A
+
+// Write Verilog implementing this state machine. It should asynchronously reset into state B if reset if high.
+
+module top_module (
+	input clk,
+	input in,
+	input areset,
+	output out
+);
+assistant: module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+reg state;
+parameter A = 1'b0, B = 1'b1;
+
+always @(posedge clk or posedge areset) begin
+    if (areset) begin
+        state <= B;
+        out <= 1'b1;
+    end
+    else begin
+        case (state)
+            B: begin
+                if (in) begin
+                    state <= B;
+                    out <= 1'b1;
+                end
+                else begin
+                    state <= A;
+                    out <= 1'b0;
+                end
+            end
+            A: begin
+                if (in) begin
+                    state <= A;
+                    out <= 1'b0;
+                end
+                else begin
+                    state <= B;
+                    out <= 1'b1;
+                end
+            end
+        endcase
+    end
+end
+
+endmodule
+
+
+Time to Generate: 2.222017526626587
+Best ranked response at iteration 0 with response number 0
+Rank of best response: 1.0
+Best response module:
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+reg state;
+parameter A = 1'b0, B = 1'b1;
+
+always @(posedge clk or posedge areset) begin
+    if (areset) begin
+        state <= B;
+        out <= 1'b1;
+    end
+    else begin
+        case (state)
+            B: begin
+                if (in) begin
+                    state <= B;
+                    out <= 1'b1;
+                end
+                else begin
+                    state <= A;
+                    out <= 1'b0;
+                end
+            end
+            A: begin
+                if (in) begin
+                    state <= A;
+                    out <= 1'b0;
+                end
+                else begin
+                    state <= B;
+                    out <= 1'b1;
+                end
+            end
+        endcase
+    end
+end
+
+endmodule
+
+

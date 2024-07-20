@@ -1,0 +1,72 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the follow Moore machine with the diagram described below:\n\n// B (1) --0--> A\n// B (1) --1--> B\n// A (0) --0--> B\n// A (0) --1--> A\n\n// Write Verilog implementing this state machine. It should asynchronously reset into state B if reset if high.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input areset,
+    output reg out
+);
+
+    // Define the states
+    parameter A = 1'b0;
+    parameter B = 1'b1;
+
+    // Internal state register
+    reg state;
+
+    always @(posedge clk, posedge areset) begin
+        if (areset) begin
+            state <= B; // Asynchronous reset to state B
+            out <= 1'b1; // Output high when in state B
+        end
+        else begin
+            case (state)
+                A: begin
+                    if (in == 1'b0) begin
+                        state <= B;
+                        out <= 1'b1;
+                    end
+                    else begin
+                        state <= A;
+                        out <= 1'b0;
+                    end
+                end
+                B: begin
+                    if (in == 1'b0) begin
+                        state <= B;
+                        out <= 1'b1;
+                    end
+                    else begin
+                        state <= A;
+                        out <= 1'b0;
+                    end
+                end
+                default: begin
+                    state <= B;
+                    out <= 1'b1;
+                end
+            endcase
+        end
+    end
+
+endmodule
+```
+
+The provided Verilog code implements the Moore state machine with the given state diagram. Here's a breakdown of the code:
+
+1. The `top_module` takes three inputs (`clk`, `in`, and `areset`) and one output (`out`).
+2. The states `A` and `B` are defined as parameters.
+3. The `state` register is used to store the current state of the machine.
+4. The `always` block is triggered on the positive edge of `clk` or when `areset` is high.
+5. When `areset` is high, the state is set to `B` (the asynchronous reset state), and the output `out` is set to 1.
+6. When `areset` is low, the state transitions are handled based on the current state and the input `in`:
+   - If the current state is `A` and `in` is 0, the next state is `B`, and `out` is set to 1.
+   - If the current state is `A` and `in` is 1, the next state is `A`, and `out` is set to 0.
+   - If the current state is `B` and `in` is 0, the next state is `B`, and `out` is set to 1.
+   - If the current state is `B` and `in` is 1, the next state is `A`, and `out` is set to 0.
+   - The `default` case is provided to handle any unexpected states and sets the state to `B` and `out` to 1.
+
+This Verilog code correctly implements the given Moore state machine.'}
+
+ Iteration rank: 0.6403508771929824

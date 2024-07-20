@@ -1,0 +1,72 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The following is the state transition table for a Moore state machine with one input, one output, and four states. Implement this state machine. Include a positive edge triggered asynchronous reset that resets the FSM to state A.\n \n// state | next state in=0, next state in=1 | output\n// A | A, B | 0\n// B | C, B | 0\n// C | A, D | 0\n// D | C, B | 1\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput areset,\n\toutput out\n);'}
+{'assistant': 'module top_module (
+    input clk,
+    input in,
+    input areset,
+    output out
+);
+
+reg [1:0] state, next_state; // Define a 2-bit register for the state and the next state
+reg out_reg; // Define a register to hold the output value
+
+parameter A = 2'b00; // Define the values for each state
+parameter B = 2'b01;
+parameter C = 2'b10;
+parameter D = 2'b11;
+
+always @(posedge clk or negedge areset) begin
+    if (areset == 0) begin // Asynchronous reset
+        state <= A; // Reset the state to A
+    end
+    else begin
+        state <= next_state; // Update the state based on the next state
+    end
+end
+
+always @(state, in) begin
+    case (state)
+        A: begin
+            if (in == 0) begin
+                next_state = A; // Next state is A when input is 0
+            end
+            else begin
+                next_state = B; // Next state is B when input is 1
+            end
+            out_reg = 0; // Output is always 0 in state A
+        end
+        B: begin
+            if (in == 0) begin
+                next_state = C; // Next state is C when input is 0
+            end
+            else begin
+                next_state = B; // Next state is B when input is 1
+            end
+            out_reg = 0; // Output is always 0 in state B
+        end
+        C: begin
+            if (in == 0) begin
+                next_state = A; // Next state is A when input is 0
+            end
+            else begin
+                next_state = D; // Next state is D when input is 1
+            end
+            out_reg = 0; // Output is always 0 in state C
+        end
+        D: begin
+            if (in == 0) begin
+                next_state = C; // Next state is C when input is 0
+            end
+            else begin
+                next_state = B; // Next state is B when input is 1
+            end
+            out_reg = 1; // Output is always 1 in state D
+        end
+    endcase
+end
+
+assign out = out_reg;
+
+endmodule'}
+
+ Iteration rank: 0.8695652173913043

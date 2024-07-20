@@ -1,0 +1,20 @@
+module top_module (
+    input clk,
+    input d,
+    input r,
+    output logic q
+);
+
+reg q_reg;
+
+always_ff @(posedge clk) begin
+    if (r) begin
+        q_reg <= 0;
+    end else begin
+        q_reg <= d;
+    end
+end
+
+assign q = q_reg;
+
+endmodule

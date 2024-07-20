@@ -1,0 +1,114 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Synchronous HDLC framing involves decoding a continuous bit stream of data to look for bit patterns that indicate the beginning and end of frames (packets). Seeing exactly 6 consecutive 1s (i.e., 01111110) is a "flag" that indicate frame boundaries. To avoid the data stream from accidentally containing "flags", the sender inserts a zero after every 5 consecutive 1s which the receiver must detect and discard. We also need to signal an error if there are 7 or more consecutive 1s. Create a Moore-type finite state machine to recognize these three sequences:\n\n// (1) 0111110: Signal a bit needs to be discarded (disc).\n// (2) 01111110: Flag the beginning/end of a frame (flag).\n// (3) 01111111...: Error (7 or more 1s) (err).\n\n// When the FSM is reset, it should be in a state that behaves as though the previous input were 0. The reset signal is active high synchronous. The output signals should be asserted for a complete cycle beginning on the clock cycle after the condition occurs.\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput in,\n\toutput disc,\n\toutput flag,\n\toutput err);'}
+{'assistant': '```verilog
+module top_module (
+	input clk,
+	input reset,
+	input in,
+	output reg disc,
+	output reg flag,
+	output reg err);
+
+	reg [3:0] state, next_state;
+
+	localparam [3:0]
+		IDLE       = 4'd0,
+		BIT_0      = 4'd1,
+		BIT_01     = 4'd2,
+		BIT_011    = 4'd3,
+		BIT_0111   = 4'd4,
+		BIT_01111  = 4'd5,
+		BIT_011111 = 4'd6,
+		BIT_0111110= 4'd7,
+		BIT_0111111= 4'd8,
+		ERROR      = 4'd9;
+
+	// State transition
+	always @ (posedge clk) begin
+		if (reset)
+			state <= IDLE;
+		else
+			state <= next_state;
+	end
+
+	// Next state logic
+	always @ (*) begin
+		next_state = state;
+		case (state)
+			IDLE: begin
+				if (in == 1'b0) next_state = BIT_0;
+				// implicitly stays in IDLE if (in == 1'b1)
+			end
+
+			BIT_0: begin
+				if (in == 1'b1) next_state = BIT_01;
+				else next_state = BIT_0;
+			end
+
+			BIT_01: begin
+				if (in == 1'b1) next_state = BIT_011;
+				else next_state = BIT_0;
+			end
+
+			BIT_011: begin
+				if (in == 1'b1) next_state = BIT_0111;
+				else next_state = BIT_0;
+			end
+
+			BIT_0111: begin
+				if (in == 1'b1) next_state = BIT_01111;
+				else next_state = BIT_0;
+			end
+
+			BIT_01111: begin
+				if (in == 1'b1) next_state = BIT_011111;
+				else next_state = BIT_0;
+			end
+
+			BIT_011111: begin
+				if (in == 1'b0) next_state = BIT_0111110;
+				else next_state = BIT_0111111;
+			end
+
+			BIT_0111110: begin
+				if (in == 1'b0) next_state = BIT_0;
+				else next_state = BIT_01;
+			end
+			
+			BIT_0111111: begin
+				if (in == 1'b1) next_state = ERROR;
+				else next_state = BIT_0;
+			end
+			
+			ERROR: begin
+				if (in == 1'b0) next_state = BIT_0;
+				// implicitly stays in ERROR if (in == 1'b1)
+			end
+
+			default: next_state = IDLE;
+		endcase
+	end
+
+	// Output logic
+	always @ (posedge clk) begin
+		if (reset) begin
+			disc <= 1'b0;
+			flag <= 1'b0;
+			err  <= 1'b0;
+		end
+		else begin
+			disc <= 1'b0;
+			flag <= 1'b0;
+			err  <= 1'b0;
+			case (next_state)
+				BIT_0111110: disc <= 1'b1;
+				BIT_0111111: flag <= 1'b1;
+				ERROR: err <= 1'b1;
+			endcase
+		end
+	end
+
+endmodule
+```'}
+
+ Iteration rank: 0.9026217228464419

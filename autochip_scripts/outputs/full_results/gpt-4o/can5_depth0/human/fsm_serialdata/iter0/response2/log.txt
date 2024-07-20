@@ -1,0 +1,109 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. The module will also output the correctly-received data byte. out_byte needs to be valid when done is 1, and is don't-care otherwise.If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first. It should assert done each time it finds a stop bit.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput [7:0] out_byte,\n\toutput done\n);"}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg [7:0] out_byte,
+    output reg done
+);
+
+    typedef enum reg [2:0] {
+        IDLE = 3'b000,
+        START = 3'b001,
+        BIT0 = 3'b010,
+        BIT1 = 3'b011,
+        BIT2 = 3'b100,
+        BIT3 = 3'b101,
+        BIT4 = 3'b110,
+        BIT5 = 3'b111,
+        BIT6 = 3'b000,
+        BIT7 = 3'b001,
+        STOP = 3'b010
+    } state_t;
+
+    reg [2:0] state, next_state;
+    reg [7:0] data_byte;
+    reg [2:0] bit_count;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= IDLE;
+            data_byte <= 8'b0;
+            bit_count <= 3'b0;
+            done <= 1'b0;
+        end else begin
+            state <= next_state;
+            
+            case (state)
+                IDLE: begin
+                    done <= 1'b0;
+                    if (in == 1'b0)
+                        next_state <= START;
+                    else
+                        next_state <= IDLE;
+                end
+                
+                START: begin
+                    if (in == 1'b0)
+                        next_state <= BIT0;
+                    else
+                        next_state <= IDLE;
+                end
+                
+                BIT0: begin
+                    data_byte[0] <= in;
+                    next_state <= BIT1;
+                end
+                
+                BIT1: begin
+                    data_byte[1] <= in;
+                    next_state <= BIT2;
+                end
+                
+                BIT2: begin
+                    data_byte[2] <= in;
+                    next_state <= BIT3;
+                end
+                
+                BIT3: begin
+                    data_byte[3] <= in;
+                    next_state <= BIT4;
+                end
+                
+                BIT4: begin
+                    data_byte[4] <= in;
+                    next_state <= BIT5;
+                end
+                
+                BIT5: begin
+                    data_byte[5] <= in;
+                    next_state <= BIT6;
+                end
+                
+                BIT6: begin
+                    data_byte[6] <= in;
+                    next_state <= BIT7;
+                end
+                
+                BIT7: begin
+                    data_byte[7] <= in;
+                    next_state <= STOP;
+                end
+                
+                STOP: begin
+                    if (in == 1'b1) begin
+                        out_byte <= data_byte;
+                        done <= 1'b1;
+                        next_state <= IDLE;
+                    end else
+                        next_state <= IDLE;
+                end
+            endcase
+        end
+    end
+endmodule
+```'}
+
+ Iteration rank: -1

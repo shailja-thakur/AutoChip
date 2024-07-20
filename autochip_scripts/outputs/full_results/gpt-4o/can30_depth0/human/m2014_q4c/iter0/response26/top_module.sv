@@ -1,0 +1,13 @@
+module top_module (
+    input clk,
+    input d,
+    input r,
+    output logic q
+);
+    always_ff @(posedge clk) begin
+        if (r)
+            q <= 1'b0; // reset output to 0
+        else
+            q <= d; // output follows input d
+    end
+endmodule

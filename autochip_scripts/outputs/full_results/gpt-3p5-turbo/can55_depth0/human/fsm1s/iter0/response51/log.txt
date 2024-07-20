@@ -1,0 +1,63 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, one input, and one output. Implement this state machine in Verilog. The reset state is B and reset is active-high synchronous.\n\n// B (out=1) --in=0--> A\n// B (out=1) --in=1--> B\n// A (out=0) --in=0--> B\n// A (out=0) --in=1--> A\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output out
+);
+
+    reg [1:0] state;
+    reg out_reg;
+    parameter B = 2'b00;
+    parameter A = 2'b01;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= B;
+        end else begin
+            case(state)
+                B: begin
+                    if (in) begin
+                        state <= B;
+                    end else begin
+                        state <= A;
+                    end
+                end
+                A: begin
+                    if (in) begin
+                        state <= A;
+                    end else begin
+                        state <= B;
+                    end
+                end
+                default: state <= B;
+            endcase
+        end
+    end
+
+    always @(state) begin
+        case(state)
+            B: out_reg = 1'b1;
+            A: out_reg = 1'b0;
+            default: out_reg = 1'b1;
+        endcase
+    end
+
+    assign out = out_reg;
+
+endmodule
+```
+
+Here's the completed Verilog module for the given Moore state machine. The module includes four inputs (`clk`, `in`, `reset`) and one output (`out`).
+
+The `state` variable is a 2-bit register used to represent the current state of the state machine. The states are defined using the `parameter` directive.
+
+The first `always` block is sensitive to the positive edge of the clock (`posedge clk`) and the positive edge of the reset signal (`posedge reset`). When the reset signal is active-high, the state machine is reset to state B, otherwise, it transitions between states based on the input value.
+
+The second `always` block is sensitive to changes in the `state` variable. It assigns the output value (`out_reg`) based on the current state.
+
+Finally, the `out` output is assigned the value of `out_reg` using the `assign` statement.'}
+
+ Iteration rank: 0.7521739130434782

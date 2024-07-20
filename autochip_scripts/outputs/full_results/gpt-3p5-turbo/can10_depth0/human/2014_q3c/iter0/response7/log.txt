@@ -1,0 +1,50 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Given the state-assigned table shown below, implement the logic functions Y[0] and z.\n// Present state y[2:0] | Next state Y[2:0] x=0, Next state Y[2:0] x=1 | Output z\n// 000 | 000, 001 | 0\n// 001 | 001, 100 | 0\n// 010 | 010, 001 | 0\n// 011 | 001, 010 | 1\n// 100 | 011, 100 | 1\n\n\nmodule top_module (\n\tinput clk,\n\tinput x,\n\tinput [2:0] y,\n\toutput reg Y0,\n\toutput reg z\n);'}
+{'assistant': 'module top_module (
+	input clk,
+	input x,
+	input [2:0] y,
+	output reg Y0,
+	output reg z
+);
+
+always @(posedge clk) begin
+	case ({y, x})
+		3'b000_0: begin
+			Y0 <= 1'b0;
+			z <= 1'b0;
+		end
+		3'b001_0: begin
+			Y0 <= 1'b0;
+			z <= 1'b0;
+		end
+		3'b010_0: begin
+			Y0 <= 1'b0;
+			z <= 1'b0;
+		end
+		3'b011_0: begin
+			Y0 <= 1'b0;
+			z <= 1'b1;
+		end
+		3'b011_1: begin
+			Y0 <= 1'b0;
+			z <= 1'b1;
+		end
+		3'b100_0: begin
+			Y0 <= 1'b1;
+			z <= 1'b0;
+		end
+		3'b100_1: begin
+			Y0 <= 1'b1;
+			z <= 1'b0;
+		end
+		3'b011_1: begin
+			Y0 <= 1'b1;
+			z <= 1'b1;
+		end
+	endcase
+end
+
+endmodule'}
+
+ Iteration rank: -0.5

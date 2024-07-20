@@ -1,0 +1,31 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a counter that counts from 0 to 999, inclusive, with a period of 1000 cycles. The reset input is active high synchronous, and should reset the counter to 0.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput reg [9:0] q);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    output reg [9:0] q
+);
+
+always @(posedge clk) begin
+    if (reset)
+        q <= 0;
+    else
+        q <= (q == 10'd999) ? 10'd0 : q + 1;
+end
+
+endmodule
+```
+
+The module above implements a 10-bit counter that counts from 0 to 999, inclusive, with a period of 1000 cycles. The reset input is active high synchronous and resets the counter to 0.
+
+Here's how the code works:
+
+1. The counter value is stored in the 10-bit register `q`.
+2. On each positive edge of the clock signal `clk`, the counter logic is executed.
+3. If the `reset` input is high, the counter is reset to 0.
+4. Otherwise, the counter is incremented by 1. When the counter reaches 999 (the maximum value), it is reset to 0 for the next cycle.
+
+This implementation ensures that the counter counts from 0 to 999, inclusive, and resets to 0 when the maximum value is reached, providing the desired behavior.'}
+
+ Iteration rank: 1.0

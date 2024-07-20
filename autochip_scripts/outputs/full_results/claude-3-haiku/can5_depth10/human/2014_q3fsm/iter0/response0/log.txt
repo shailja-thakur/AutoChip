@@ -1,0 +1,76 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider a finite state machine with inputs s and w. Assume that the FSM begins in a reset state called A, as depicted below. The FSM remains in state A as long as s = 0, and it moves to state B when s = 1. Once in state B the FSM examines the value of the input w in the next three clock cycles. If w = 1 in exactly two of these clock cycles, then the FSM has to set an output z to 1 in the following clock cycle. Otherwise z has to be 0. The FSM continues checking w for the next three clock cycles, and so on. Use as few states as possible. Note that the s input is used only in state A, so you need to consider just the w input. Assume reset is active high synchronous.\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput s,\n\tinput w,\n\toutput reg z\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+localparam STATE_A = 2'b00, STATE_B = 2'b01, STATE_C = 2'b10;
+reg [1:0] state, next_state;
+reg [1:0] w_count;
+
+always @(posedge clk) begin
+    if (reset)
+        state <= STATE_A;
+    else
+        state <= next_state;
+end
+
+always @(*) begin
+    next_state = state;
+    case (state)
+        STATE_A: begin
+            if (s)
+                next_state = STATE_B;
+            else
+                next_state = STATE_A;
+        end
+        STATE_B: begin
+            if (w_count == 2)
+                next_state = STATE_C;
+            else
+                next_state = STATE_B;
+        end
+        STATE_C: begin
+            next_state = STATE_B;
+        end
+    endcase
+end
+
+always @(posedge clk) begin
+    if (reset)
+        w_count <= 0;
+    else if (state == STATE_B) begin
+        if (w)
+            w_count <= w_count + 1;
+        else
+            w_count <= w_count;
+    end
+    else
+        w_count <= 0;
+end
+
+always @(posedge clk) begin
+    if (reset)
+        z <= 0;
+    else if (state == STATE_C)
+        z <= 1;
+    else
+        z <= 0;
+end
+
+endmodule
+```
+
+The module has three states:
+1. **State A**: This is the reset state. The FSM remains in this state as long as `s = 0`. When `s = 1`, it moves to State B.
+2. **State B**: In this state, the FSM checks the value of `w` for the next three clock cycles. It keeps track of the number of times `w = 1` using the `w_count` variable. If `w = 1` in exactly two of these clock cycles, it moves to State C in the next clock cycle.
+3. **State C**: In this state, the output `z` is set to 1 for the next clock cycle, and then the FSM moves back to State B to continue checking the input `w`.
+
+The module uses a `next_state` register to keep track of the next state based on the current state and the input `s` and `w`. The `w_count` register is used to keep track of the number of times `w = 1` in the three clock cycles. The output `z` is set to 1 in State C and 0 otherwise.'}
+
+ Iteration rank: 0.7673267326732673

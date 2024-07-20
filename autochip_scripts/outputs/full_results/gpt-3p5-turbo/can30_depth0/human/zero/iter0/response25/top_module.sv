@@ -1,0 +1,6 @@
+module top_module(
+	output zero);
+
+	assign zero = 0; // Always output a LOW
+
+endmodule

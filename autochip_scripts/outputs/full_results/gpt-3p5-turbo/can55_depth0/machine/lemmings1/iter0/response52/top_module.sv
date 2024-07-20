@@ -1,0 +1,38 @@
+module top_module (
+  input clk,
+  input areset,
+  input bump_left,
+  input bump_right,
+  output walk_left,
+  output walk_right
+);
+  
+  reg [1:0] state;
+  
+  parameter WL = 2'b00;
+  parameter WR = 2'b01;
+  
+  always @(posedge clk) begin
+    if (areset) begin
+      state <= WL;
+    end else begin
+      if (state == WL) begin
+        if (bump_left) begin
+          state <= WR;
+        end else begin
+          state <= WL;
+        end
+      end else if (state == WR) begin
+        if (bump_right) begin
+          state <= WL;
+        end else begin
+          state <= WR;
+        end
+      end
+    end
+  end
+  
+  assign walk_left = (state == WL) ? 1'b1 : 1'b0;
+  assign walk_right = (state == WR) ? 1'b1 : 1'b0;
+  
+endmodule

@@ -1,0 +1,58 @@
+module top_module(
+	input clk,
+	input load,
+	input [255:0] data,
+	output reg [255:0] q);
+	
+	// Extract the state of a specific cell
+	function [0:0] get_cell;
+		input [255:0] grid;
+		input integer row, col;
+		begin
+			// Perform wrap-around using modulo operations
+			get_cell = grid[((row + 16) % 16) * 16 + ((col + 16) % 16)];
+		end
+	endfunction
+
+	// Count the number of alive neighbors for a specific cell
+	function [3:0] count_neighbors;
+		input [255:0] grid;
+		input integer row, col;
+		integer i, j;
+		reg [3:0] count;
+		begin
+			count = 0;
+			for (i = -1; i <= 1; i = i + 1) begin
+				for (j = -1; j <= 1; j = j + 1) begin
+					if (!(i == 0 && j == 0)) begin
+						count = count + get_cell(grid, row + i, col + j);
+					end
+				end
+			end
+			count_neighbors = count;
+		end
+	endfunction
+	
+	reg [255:0] next_state;
+
+	always @(*) begin
+		integer r, c;
+		for (r = 0; r < 16; r = r + 1) begin
+			for (c = 0; c < 16; c = c + 1) begin
+				case (count_neighbors(q, r, c))
+					4'd2: next_state[r*16 + c] = q[r*16 + c]; // State does not change
+					4'd3: next_state[r*16 + c] = 1'b1;        // Becomes alive
+					default: next_state[r*16 + c] = 1'b0;     // Becomes dead
+				endcase
+			end
+		end
+	end
+	
+	always @(posedge clk) begin
+		if (load) begin
+			q <= data;
+		end else begin
+			q <= next_state;
+		end
+	end
+endmodule

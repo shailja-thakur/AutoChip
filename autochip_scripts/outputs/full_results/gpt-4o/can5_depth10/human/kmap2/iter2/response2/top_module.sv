@@ -1,0 +1,12 @@
+module top_module (
+    input a, 
+    input b,
+    input c,
+    input d,
+    output out
+);
+
+    assign out = (~a & ~b & ~d) | (~a & c & ~d) | (~a & c & d) | (b & c & ~d) | 
+                 (b & ~c & d) | (b & d & a) | (a & ~b & ~d) | (a & c & d);
+
+endmodule

@@ -1,0 +1,113 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Create a 4-bit wide, 256-to-1 multiplexer. The 256 4-bit inputs are all packed into a single 1024-bit input vector. sel=0 should select bits in[3:0], sel=1 selects bits in[7:4], sel=2 selects bits in[11:8], etc.\n\nmodule top_module (\n\tinput [1023:0] in,\n\tinput [7:0] sel,\n\toutput [3:0] out\n);'}
+{'assistant': 'module top_module (
+	input [1023:0] in,
+	input [7:0] sel,
+	output [3:0] out
+);
+
+wire [255:0] in_sub;
+wire [255:0] out_sub;
+
+// Splitting the input into 256 4-bit subgroups
+generate 
+  genvar i;
+  for(i=0; i<256; i=i+1) begin: SPLIT
+  	assign in_sub[i] = in[(i+1)*4-1 : i*4];
+  end
+endgenerate
+
+mux_256to1 mux_ip (
+	.in(in_sub),
+	.sel(sel),
+	.out(out_sub)
+);
+
+// Combining 256 1-bit outputs into a 4-bit output
+generate
+  genvar j;
+  for (j=0; j<256; j=j+1) begin: COMBINE
+  	assign out[j*4 +: 4] = out_sub[j];
+  end
+endgenerate
+
+endmodule
+
+module mux_256to1 (
+	input [255:0] in,
+	input [7:0] sel,
+	output reg out
+);
+  always @(*) begin
+  	case (sel)
+  		0: out = in[3:0];
+  		1: out = in[7:4];
+  		2: out = in[11:8];
+  		3: out = in[15:12];
+  		4: out = in[19:16];
+  		5: out = in[23:20];
+  		6: out = in[27:24];
+  		7: out = in[31:28];
+  		8: out = in[35:32];
+  		9: out = in[39:36];
+  		10: out = in[43:40];
+  		11: out = in[47:44];
+  		12: out = in[51:48];
+  		13: out = in[55:52];
+  		14: out = in[59:56];
+  		15: out = in[63:60];
+  		16: out = in[67:64];
+  		17: out = in[71:68];
+  		18: out = in[75:72];
+  		19: out = in[79:76];
+  		20: out = in[83:80];
+  		21: out = in[87:84];
+  		22: out = in[91:88];
+  		23: out = in[95:92];
+  		24: out = in[99:96];
+  		25: out = in[103:100];
+  		26: out = in[107:104];
+  		27: out = in[111:108];
+  		28: out = in[115:112];
+  		29: out = in[119:116];
+  		30: out = in[123:120];
+  		31: out = in[127:124];
+  		32: out = in[131:128];
+  		33: out = in[135:132];
+  		34: out = in[139:136];
+  		35: out = in[143:140];
+  		36: out = in[147:144];
+  		37: out = in[151:148];
+  		38: out = in[155:152];
+  		39: out = in[159:156];
+  		40: out = in[163:160];
+  		41: out = in[167:164];
+  		42: out = in[171:168];
+  		43: out = in[175:172];
+  		44: out = in[179:176];
+  		45: out = in[183:180];
+  		46: out = in[187:184];
+  		47: out = in[191:188];
+  		48: out = in[195:192];
+  		49: out = in[199:196];
+  		50: out = in[203:200];
+  		51: out = in[207:204];
+  		52: out = in[211:208];
+  		53: out = in[215:212];
+  		54: out = in[219:216];
+  		55: out = in[223:220];
+  		56: out = in[227:224];
+  		57: out = in[231:228];
+  		58: out = in[235:232];
+  		59: out = in[239:236];
+  		60: out = in[243:240];
+  		61: out = in[247:244];
+  		62: out = in[251:248];
+  		63: out = in[255:252];
+  		default: out = in[3:0];
+  	endcase
+  end
+  
+endmodule'}
+
+ Iteration rank: -0.5

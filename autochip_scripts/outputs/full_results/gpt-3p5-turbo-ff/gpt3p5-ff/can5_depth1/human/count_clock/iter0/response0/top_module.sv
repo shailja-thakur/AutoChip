@@ -1,0 +1,254 @@
+module top_module(
+    input clk,
+    input reset,
+    input ena,
+    output reg pm,
+    output reg [7:0] hh,
+    output reg [7:0] mm,
+    output reg [7:0] ss);
+	
+    reg [3:0] hour_tens;
+	reg [3:0] hour_units;
+	reg [5:0] min_tens;
+	reg [3:0] min_units;
+	reg [5:0] sec_tens;
+	reg [3:0] sec_units;
+	reg [1:0] am_pm;
+	
+    always @(posedge clk) begin
+        if (reset) begin
+            hh <= 8'b00000000;
+            mm <= 8'b00000000;
+            ss <= 8'b00000000;
+            am_pm <= 2'b00;
+        end else begin
+            if (ena) begin
+                if (ss == 8'b01101001) begin
+                    if (mm == 8'b00111011) begin
+                        if (am_pm == 2'b00) begin
+                            if (hh == 8'b00001111) begin
+                                hh <= 8'b00000000;
+                                am_pm <= ~am_pm;
+                            end else begin
+                                hh <= hh + 1;
+                            end
+                        end else begin
+                            if (hh == 8'b00001011) begin
+                                hh <= 8'b00000000;
+                                am_pm <= ~am_pm;
+                            end else begin
+                                hh <= hh + 1;
+                            end
+                        end
+                        mm <= 8'b00000000;
+                    end else begin
+                        mm <= mm + 1;
+                    end
+                    ss <= 8'b00000000;
+                end else begin
+                    ss <= ss + 1;
+                end
+            end
+        end
+    end
+    
+    always @* begin
+        case(hh)
+            8'b00000000: begin
+                hour_tens = 4'b0000;
+                hour_units = 4'b0000;
+            end
+            8'b00000001: begin
+                hour_tens = 4'b0000;
+                hour_units = 4'b0001;
+            end
+            8'b00000010: begin
+                hour_tens = 4'b0000;
+                hour_units = 4'b0010;
+            end
+            8'b00000011: begin
+                hour_tens = 4'b0000;
+                hour_units = 4'b0011;
+            end
+            8'b00000100: begin
+                hour_tens = 4'b0000;
+                hour_units = 4'b0100;
+            end
+            8'b00000101: begin
+                hour_tens = 4'b0000;
+                hour_units = 4'b0101;
+            end
+            8'b00000110: begin
+                hour_tens = 4'b0000;
+                hour_units = 4'b0110;
+            end
+            8'b00000111: begin
+                hour_tens = 4'b0000;
+                hour_units = 4'b0111;
+            end
+            8'b00001000: begin
+                hour_tens = 4'b0000;
+                hour_units = 4'b1000;
+            end
+            8'b00001001: begin
+                hour_tens = 4'b0000;
+                hour_units = 4'b1001;
+            end
+            8'b00001010: begin
+                hour_tens = 4'b0000;
+                hour_units = 4'b0000;
+            end
+            8'b00001011: begin
+                hour_tens = 4'b0000;
+                hour_units = 4'b0001;
+            end
+        endcase
+        
+        case(mm)
+            8'b00000000: begin
+                min_tens = 6'b000000;
+                min_units = 4'b0000;
+            end
+            8'b00000001: begin
+                min_tens = 6'b000000;
+                min_units = 4'b0001;
+            end
+            8'b00000010: begin
+                min_tens = 6'b000000;
+                min_units = 4'b0010;
+            end
+            8'b00000011: begin
+                min_tens = 6'b000000;
+                min_units = 4'b0011;
+            end
+            8'b00000100: begin
+                min_tens = 6'b000000;
+                min_units = 4'b0100;
+            end
+            8'b00000101: begin
+                min_tens = 6'b000000;
+                min_units = 4'b0101;
+            end
+            8'b00000110: begin
+                min_tens = 6'b000000;
+                min_units = 4'b0110;
+            end
+            8'b00000111: begin
+                min_tens = 6'b000000;
+                min_units = 4'b0111;
+            end
+            8'b00001000: begin
+                min_tens = 6'b000000;
+                min_units = 4'b1000;
+            end
+            8'b00001001: begin
+                min_tens = 6'b000000;
+                min_units = 4'b1001;
+            end
+            8'b00001010: begin
+                min_tens = 6'b000000;
+                min_units = 4'b0000;
+            end
+            8'b00001011: begin
+                min_tens = 6'b000000;
+                min_units = 4'b0001;
+            end
+            8'b00111000: begin
+                min_tens = 6'b000011;
+                min_units = 4'b1000;
+            end
+            8'b00111001: begin
+                min_tens = 6'b000011;
+                min_units = 4'b1001;
+            end
+            8'b00111010: begin
+                min_tens = 6'b000011;
+                min_units = 4'b0000;
+            end
+            8'b00111011: begin
+                min_tens = 6'b000011;
+                min_units = 4'b0001;
+            end
+        endcase
+        
+        case(ss)
+            8'b00000000: begin
+                sec_tens = 6'b000000;
+                sec_units = 4'b0000;
+            end
+            8'b00000001: begin
+                sec_tens = 6'b000000;
+                sec_units = 4'b0001;
+            end
+            8'b00000010: begin
+                sec_tens = 6'b000000;
+                sec_units = 4'b0010;
+            end
+            8'b00000011: begin
+                sec_tens = 6'b000000;
+                sec_units = 4'b0011;
+            end
+            8'b00000100: begin
+                sec_tens = 6'b000000;
+                sec_units = 4'b0100;
+            end
+            8'b00000101: begin
+                sec_tens = 6'b000000;
+                sec_units = 4'b0101;
+            end
+            8'b00000110: begin
+                sec_tens = 6'b000000;
+                sec_units = 4'b0110;
+            end
+            8'b00000111: begin
+                sec_tens = 6'b000000;
+                sec_units = 4'b0111;
+            end
+            8'b00001000: begin
+                sec_tens = 6'b000000;
+                sec_units = 4'b1000;
+            end
+            8'b00001001: begin
+                sec_tens = 6'b000000;
+                sec_units = 4'b1001;
+            end
+            8'b00001010: begin
+                sec_tens = 6'b000000;
+                sec_units = 4'b0000;
+            end
+            8'b00001011: begin
+                sec_tens = 6'b000000;
+                sec_units = 4'b0001;
+            end
+            8'b00111000: begin
+                sec_tens = 6'b000011;
+                sec_units = 4'b1000;
+            end
+            8'b00111001: begin
+                sec_tens = 6'b000011;
+                sec_units = 4'b1001;
+            end
+            8'b00111010: begin
+                sec_tens = 6'b000011;
+                sec_units = 4'b0000;
+            end
+            8'b00111011: begin
+                sec_tens = 6'b000011;
+                sec_units = 4'b0001;
+            end
+        endcase
+    end
+    
+    always @* begin
+        if (am_pm == 2'b00) begin
+            pm = 0;
+        end else begin
+            pm = 1;
+        end
+    end
+    
+    assign hh = {hour_tens, hour_units};
+    assign mm = {min_tens, min_units};
+    assign ss = {sec_tens, sec_units};
+    
+endmodule

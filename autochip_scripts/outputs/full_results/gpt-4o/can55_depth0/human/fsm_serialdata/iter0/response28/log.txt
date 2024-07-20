@@ -1,0 +1,105 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. The module will also output the correctly-received data byte. out_byte needs to be valid when done is 1, and is don't-care otherwise.If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first. It should assert done each time it finds a stop bit.\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput [7:0] out_byte,\n\toutput done\n);"}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output reg [7:0] out_byte,
+    output reg done
+);
+    reg [3:0] state, next_state;
+    reg [7:0] buffer;
+    reg [2:0] bit_counter;
+
+    localparam IDLE      = 4'b0000;
+    localparam START     = 4'b0001;
+    localparam DATA_BITS = 4'b0010;
+    localparam STOP      = 4'b0011;
+
+    // State register
+    always @(posedge clk or posedge reset)
+    begin
+        if (reset)
+            state <= IDLE;
+        else
+            state <= next_state;
+    end
+
+    // Next state logic
+    always @(*)
+    begin
+        case (state)
+            IDLE: 
+                if (in == 1'b0)
+                    next_state = START;
+                else
+                    next_state = IDLE;
+            START:
+                next_state = DATA_BITS;
+            DATA_BITS:
+                if (bit_counter == 3'b111)
+                    next_state = STOP;
+                else
+                    next_state = DATA_BITS;
+            STOP:
+                if (in == 1'b1)
+                    next_state = IDLE;
+                else
+                    next_state = STOP;
+            default:
+                next_state = IDLE;
+        endcase
+    end
+
+    // Output and state-dependent operations
+    always @(posedge clk or posedge reset)
+    begin
+        if (reset) 
+        begin
+            buffer <= 8'b0;
+            bit_counter <= 3'b0;
+            out_byte <= 8'b0;
+            done <= 1'b0;
+        end 
+        else 
+        begin
+            case (state)
+                IDLE: 
+                begin
+                    done <= 1'b0;
+                    bit_counter <= 3'b0;
+                end
+                START: 
+                begin
+                    // Nothing specific to do
+                end
+                DATA_BITS: 
+                begin
+                    buffer <= {in, buffer[7:1]}; // Shift in the incoming bit
+                    bit_counter <= bit_counter + 1;
+                end
+                STOP:
+                begin
+                    if (in == 1'b1) // Stop bit validation
+                    begin
+                        out_byte <= buffer;
+                        done <= 1'b1;
+                    end
+                    else
+                    begin
+                        // In case stop bit is wrong, wait here until we read a correct one
+                        done <= 1'b0;
+                    end
+                end
+                default: 
+                begin
+                    // Nothing to do here
+                end
+            endcase
+        end
+    end
+endmodule
+```'}
+
+ Iteration rank: 0.9104972375690608

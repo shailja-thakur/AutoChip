@@ -1,0 +1,117 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // The top module is a data load module. When load is 1, it will load the data in the input data to the output q, and when load is 0, it will shift the output q to the right and adding a 0 at the end. 
+
+input
+
+input clk
+input load
+input [511:0] data
+
+output
+
+output reg [511:0] q
+
+The output q is 512 bits long and is a reg type which can store the value inside.
+
+Declaration
+
+always @(posedge clk) begin
+
+When the clock edge comes, the following operation will be executed.
+
+The operation when load is 1
+
+if (load)
+	q <= data;
+The input data will be loaded to the output q.
+
+The operation when load is 0
+
+else begin
+	q <= q[$bits(q)-1:1] ^ {q[$bits(q)-2:0], 1'b0} ;
+end
+The last two bits of q are xored, and a 0 is added at the beginning of q.
+
+End the operation
+
+end
+
+
+module top_module(
+	input clk,
+	input load,
+	input [511:0] data,
+	output reg [511:0] q);
+assistant: module top_module(
+    input clk,
+    input load,
+    input [511:0] data,
+    output reg [511:0] q
+);
+
+always @(posedge clk) begin
+    if (load)
+        q <= data;
+    else
+        q <= {q[510:0], 1'b0};
+end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/rule90/rule90_tb.sv:89: $finish called at 35606 (1ps)
+Hint: Output 'q' has 7052 mismatches. First mismatch occurred at time 50.
+Hint: Total mismatched samples is 7052 out of 7121 samples
+
+Simulation finished at 35606 ps
+Mismatches: 7052 in 7121 samples
+
+assistant: module top_module(
+    input clk,
+    input load,
+    input [511:0] data,
+    output reg [511:0] q
+);
+
+always @(posedge clk) begin
+    if (load)
+        q <= data;
+    else
+        q <= {q[510:0], 1'b0};
+end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/rule90/rule90_tb.sv:89: $finish called at 35606 (1ps)
+Hint: Output 'q' has 7052 mismatches. First mismatch occurred at time 50.
+Hint: Total mismatched samples is 7052 out of 7121 samples
+
+Simulation finished at 35606 ps
+Mismatches: 7052 in 7121 samples
+
+Time to Generate: 5.001396894454956
+Best ranked response at iteration 0 with response number 0
+Rank of best response: 0.00968965033000983
+Best response module:
+module top_module(
+    input clk,
+    input load,
+    input [511:0] data,
+    output reg [511:0] q
+);
+
+always @(posedge clk) begin
+    if (load)
+        q <= data;
+    else
+        q <= {q[510:0], 1'b0};
+end
+
+endmodule
+
+

@@ -1,0 +1,26 @@
+module top_module(
+    input [3:1] y,
+    input w,
+    output reg Y2
+);
+
+    // Enumerating the state codes for easy readability
+    localparam [3:1] A = 3'b000,
+                     B = 3'b001,
+                     C = 3'b010,
+                     D = 3'b011,
+                     E = 3'b100,
+                     F = 3'b101;
+
+    always @(*) begin
+        case (y)
+            A: Y2 = 1'b0;    // State A: Y2 = 0
+            B: Y2 = 1'b0;    // State B: Y2 = 0
+            C: Y2 = 1'b1;    // State C: Y2 = 1
+            D: Y2 = 1'b1;    // State D: Y2 = 1
+            E: Y2 = 1'b0;    // State E: Y2 = 1
+            F: Y2 = 1'b1;    // State F: Y2 = 1
+            default: Y2 = 1'b0; // Default case if needed
+        endcase
+    end
+endmodule

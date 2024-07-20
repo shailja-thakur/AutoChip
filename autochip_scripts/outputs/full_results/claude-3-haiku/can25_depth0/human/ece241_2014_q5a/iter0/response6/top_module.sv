@@ -1,0 +1,75 @@
+module top_module (
+    input clk,
+    input areset,
+    input x,
+    output reg z
+);
+
+localparam [1:0] IDLE = 2'b00, CONVERT = 2'b01, DONE = 2'b10;
+reg [1:0] current_state, next_state;
+reg [7:0] input_reg, complement_reg;
+reg [3:0] bit_count;
+
+always @(posedge clk or posedge areset) begin
+    if (areset) begin
+        current_state <= IDLE;
+        input_reg <= 8'b0;
+        complement_reg <= 8'b0;
+        bit_count <= 4'b0;
+        z <= 1'b0;
+    end
+    else begin
+        current_state <= next_state;
+        case (current_state)
+            IDLE: begin
+                input_reg <= 8'b0;
+                complement_reg <= 8'b0;
+                bit_count <= 4'b0;
+                z <= 1'b0;
+            end
+            CONVERT: begin
+                input_reg <= {input_reg[6:0], x};
+                bit_count <= bit_count + 1;
+                complement_reg <= ~input_reg + 1;
+                z <= complement_reg[bit_count];
+            end
+            DONE: begin
+                z <= complement_reg[bit_count];
+            end
+        endcase
+    end
+end
+
+always @(*) begin
+    case (current_state)
+        IDLE: begin
+            if (!areset) begin
+                next_state = CONVERT;
+            end
+            else begin
+                next_state = IDLE;
+            end
+        end
+        CONVERT: begin
+            if (bit_count == 4'd7) begin
+                next_state = DONE;
+            end
+            else begin
+                next_state = CONVERT;
+            end
+        end
+        DONE: begin
+            if (areset) begin
+                next_state = IDLE;
+            end
+            else begin
+                next_state = DONE;
+            end
+        end
+        default: begin
+            next_state = IDLE;
+        end
+    endcase
+end
+
+endmodule

@@ -1,0 +1,886 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // state A: If s is asserted, next state is B
+state B: If w is asserted, next state is S11, otherwise next state is S10
+state C: If w is asserted, next state is S11, otherwise next state is S10
+state S10: If w is asserted, next state is S21, otherwise next state is S20
+state S11: If w is asserted, next state is S22, otherwise next state is S21
+state S20: next state is B
+state S21: If w is asserted, next state is C, otherwise next state is B
+state S22: If w is asserted, next state is B, otherwise next state is C
+
+
+module top_module (
+	input clk,
+	input reset,
+	input s,
+	input w,
+	output reg z
+);
+assistant: module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+    typedef enum logic [2:0] {
+        A = 3'b000,
+        B = 3'b001,
+        C = 3'b010,
+        S10 = 3'b011,
+        S11 = 3'b100,
+        S20 = 3'b101,
+        S21 = 3'b110,
+        S22 = 3'b111
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) 
+            state <= A;
+        else 
+            state <= next_state;
+    end
+
+    always_comb begin
+        case (state)
+            A: if (s) next_state = B;
+               else next_state = A;
+            B: if (w) next_state = S11;
+               else next_state = S10;
+            C: if (w) next_state = S11;
+               else next_state = S10;
+            S10: if (w) next_state = S21;
+                else next_state = S20;
+            S11: if (w) next_state = S22;
+                else next_state = S21;
+            S20: next_state = B;
+            S21: if (w) next_state = C;
+                 else next_state = B;
+            S22: if (w) next_state = B;
+                 else next_state = C;
+            default: next_state = A;
+        endcase
+    end
+
+    always_comb begin
+        // to create the output z as per the given states
+        case (state)
+            A, B, C, S10, S11, S20, S21, S22: z = 1'b0; // Modify as per the needed behavior for each state
+            default: z = 1'b0;
+        endcase
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/2014_q3fsm/2014_q3fsm_tb.sv:91: $finish called at 4576 (1ps)
+Hint: Output 'z' has 90 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 90 out of 915 samples
+
+Simulation finished at 4576 ps
+Mismatches: 90 in 915 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+    typedef enum logic [2:0] {
+        A = 3'b000,
+        B = 3'b001,
+        C = 3'b010,
+        S10 = 3'b011,
+        S11 = 3'b100,
+        S20 = 3'b101,
+        S21 = 3'b110,
+        S22 = 3'b111
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) 
+            state <= A;
+        else 
+            state <= next_state;
+    end
+
+    always_comb begin
+        case (state)
+            A: if (s) next_state = B;
+               else next_state = A;
+            B: if (w) next_state = S11;
+               else next_state = S10;
+            C: if (w) next_state = S11;
+               else next_state = S10;
+            S10: if (w) next_state = S21;
+                else next_state = S20;
+            S11: if (w) next_state = S22;
+                else next_state = S21;
+            S20: next_state = B;
+            S21: if (w) next_state = C;
+                 else next_state = B;
+            S22: if (w) next_state = B;
+                 else next_state = C;
+            default: next_state = A;
+        endcase
+    end
+
+    always_comb begin
+        // Default output value
+        z = 1'b0;
+
+        // Set output z based on the state
+        case (state)
+            // Set z to 1 in specific states if needed
+            // Currently all states have z set to 0 as per original code
+            default: z = 1'b0;
+        endcase
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/2014_q3fsm/2014_q3fsm_tb.sv:91: $finish called at 4576 (1ps)
+Hint: Output 'z' has 90 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 90 out of 915 samples
+
+Simulation finished at 4576 ps
+Mismatches: 90 in 915 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+    typedef enum logic [2:0] {
+        A = 3'b000,
+        B = 3'b001,
+        C = 3'b010,
+        S10 = 3'b011,
+        S11 = 3'b100,
+        S20 = 3'b101,
+        S21 = 3'b110,
+        S22 = 3'b111
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) 
+            state <= A;
+        else 
+            state <= next_state;
+    end
+
+    always_comb begin
+        next_state = state; // default to stay in current state
+        z = 1'b0; // default output value
+        case (state)
+            A: if (s) next_state = B;
+            B: if (w) next_state = S11;
+               else next_state = S10;
+            C: if (w) next_state = S11;
+               else next_state = S10;
+            S10: if (w) next_state = S21;
+                else next_state = S20;
+            S11: if (w) next_state = S22;
+                else next_state = S21;
+            S20: next_state = B;
+            S21: if (w) next_state = C;
+                 else next_state = B;
+            S22: if (w) next_state = B;
+                 else next_state = C;
+            default: next_state = A;
+        endcase
+    end
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset)
+            z <= 1'b0;
+        else begin
+            case (state)
+                A: z <= 1'b0;
+                B: z <= 1'b0;
+                C: z <= 1'b0;
+                S10: z <= 1'b0;
+                S11: z <= 1'b0;
+                S20: z <= 1'b0;
+                S21: z <= 1'b0;
+                S22: z <= 1'b0;
+                default: z <= 1'b0;
+            endcase
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/2014_q3fsm/2014_q3fsm_tb.sv:91: $finish called at 4576 (1ps)
+Hint: Output 'z' has 90 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 90 out of 915 samples
+
+Simulation finished at 4576 ps
+Mismatches: 90 in 915 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+    typedef enum logic [2:0] {
+        A = 3'b000,
+        B = 3'b001,
+        C = 3'b010,
+        S10 = 3'b011,
+        S11 = 3'b100,
+        S20 = 3'b101,
+        S21 = 3'b110,
+        S22 = 3'b111
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) 
+            state <= A;
+        else 
+            state <= next_state;
+    end
+
+    always_comb begin
+        next_state = state; // default to stay in current state
+        z = 1'b0; // default output value
+        case (state)
+            A: if (s) next_state = B;
+            B: if (w) next_state = S11;
+               else next_state = S10;
+            C: if (w) next_state = S11;
+               else next_state = S10;
+            S10: if (w) next_state = S21;
+                else next_state = S20;
+            S11: if (w) next_state = S22;
+                else next_state = S21;
+            S20: next_state = B;
+            S21: if (w) next_state = C;
+                 else next_state = B;
+            S22: if (w) next_state = B;
+                 else next_state = C;
+            default: next_state = A;
+        endcase
+    end
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset)
+            z <= 1'b0;
+        else begin
+            case (state)
+                S20: z <= 1'b1; // setting z to 1 in state S20
+                S21: if (!w) z <= 1'b1; // setting z to 1 in state S21 when w is 0
+                S22: if (w) z <= 1'b1; // setting z to 1 in state S22 when w is 1
+                default: z <= 1'b0;
+            endcase
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/2014_q3fsm/2014_q3fsm_tb.sv:91: $finish called at 4576 (1ps)
+Hint: Output 'z' has 90 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 90 out of 915 samples
+
+Simulation finished at 4576 ps
+Mismatches: 90 in 915 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+    typedef enum logic [2:0] {
+        A = 3'b000,
+        B = 3'b001,
+        C = 3'b010,
+        S10 = 3'b011,
+        S11 = 3'b100,
+        S20 = 3'b101,
+        S21 = 3'b110,
+        S22 = 3'b111
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) 
+            state <= A;
+        else 
+            state <= next_state;
+    end
+
+    always_comb begin
+        next_state = state; // default to stay in current state
+        z = 1'b0; // default output value
+        case (state)
+            A: if (s) next_state = B;
+            B: if (w) next_state = S11;
+               else next_state = S10;
+            C: if (w) next_state = S11;
+               else next_state = S10;
+            S10: if (w) next_state = S21;
+                else next_state = S20;
+            S11: if (w) next_state = S22;
+                else next_state = S21;
+            S20: next_state = B;
+            S21: if (w) next_state = C;
+                 else next_state = B;
+            S22: if (w) next_state = B;
+                 else next_state = C;
+            default: next_state = A;
+        endcase
+    end
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset)
+            z <= 1'b0;
+        else begin
+            case (state)
+                S20: z <= 1'b1;       // setting z to 1 in state S20
+                S21: if (!w) z <= 1'b1; // setting z to 1 in state S21 when w is 0
+                S22: if (w) z <= 1'b1;  // setting z to 1 in state S22 when w is 1
+                default: z <= 1'b0;
+            endcase
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/2014_q3fsm/2014_q3fsm_tb.sv:91: $finish called at 4576 (1ps)
+Hint: Output 'z' has 90 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 90 out of 915 samples
+
+Simulation finished at 4576 ps
+Mismatches: 90 in 915 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+    typedef enum logic [2:0] {
+        A = 3'b000,
+        B = 3'b001,
+        C = 3'b010,
+        S10 = 3'b011,
+        S11 = 3'b100,
+        S20 = 3'b101,
+        S21 = 3'b110,
+        S22 = 3'b111
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) 
+            state <= A;
+        else 
+            state <= next_state;
+    end
+
+    always_comb begin
+        next_state = state; // default to stay in current state
+        case (state)
+            A: if (s) next_state = B;
+            B: if (w) next_state = S11;
+               else next_state = S10;
+            C: if (w) next_state = S11;
+               else next_state = S10;
+            S10: if (w) next_state = S21;
+                else next_state = S20;
+            S11: if (w) next_state = S22;
+                else next_state = S21;
+            S20: next_state = B;
+            S21: if (w) next_state = C;
+                 else next_state = B;
+            S22: if (w) next_state = B;
+                 else next_state = C;
+            default: next_state = A;
+        endcase
+    end
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset)
+            z <= 1'b0;
+        else begin
+            case (state)
+                S20: z <= 1'b1;
+                default: z <= 1'b0;
+            endcase
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/2014_q3fsm/2014_q3fsm_tb.sv:91: $finish called at 4576 (1ps)
+Hint: Output 'z' has 164 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 164 out of 915 samples
+
+Simulation finished at 4576 ps
+Mismatches: 164 in 915 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+    typedef enum logic [2:0] {
+        A = 3'b000,
+        B = 3'b001,
+        C = 3'b010,
+        S10 = 3'b011,
+        S11 = 3'b100,
+        S20 = 3'b101,
+        S21 = 3'b110,
+        S22 = 3'b111
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) 
+            state <= A;
+        else 
+            state <= next_state;
+    end
+
+    always_comb begin
+        next_state = state; // default to stay in current state
+        case (state)
+            A: if (s) next_state = B;
+            B: if (w) next_state = S11;
+               else next_state = S10;
+            C: if (w) next_state = S11;
+               else next_state = S10;
+            S10: if (w) next_state = S21;
+                else next_state = S20;
+            S11: if (w) next_state = S22;
+                else next_state = S21;
+            S20: next_state = B;
+            S21: if (w) next_state = C;
+                 else next_state = B;
+            S22: if (w) next_state = B;
+                 else next_state = C;
+            default: next_state = A;
+        endcase
+    end
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset)
+            z <= 1'b0;
+        else begin
+            case (state)
+                S20: z <= 1'b1;
+                default: z <= 1'b0;
+            endcase
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/2014_q3fsm/2014_q3fsm_tb.sv:91: $finish called at 4576 (1ps)
+Hint: Output 'z' has 164 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 164 out of 915 samples
+
+Simulation finished at 4576 ps
+Mismatches: 164 in 915 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+    typedef enum logic [2:0] {
+        A = 3'b000,
+        B = 3'b001,
+        C = 3'b010,
+        S10 = 3'b011,
+        S11 = 3'b100,
+        S20 = 3'b101,
+        S21 = 3'b110,
+        S22 = 3'b111
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) 
+            state <= A;
+        else 
+            state <= next_state;
+    end
+
+    always_comb begin
+        next_state = state; // default to stay in current state
+        case (state)
+            A: if (s) next_state = B;
+            B: if (w) next_state = S11;
+               else next_state = S10;
+            C: if (w) next_state = S11;
+               else next_state = S10;
+            S10: if (w) next_state = S21;
+                else next_state = S20;
+            S11: if (w) next_state = S22;
+                else next_state = S21;
+            S20: next_state = B;
+            S21: if (w) next_state = C;
+                 else next_state = B;
+            S22: if (w) next_state = B;
+                 else next_state = C;
+            default: next_state = A;
+        endcase
+    end
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset)
+            z <= 1'b0;
+        else begin
+            case (state)
+                S20: z <= 1'b1; // Active output when in state S20
+                S21: z <= 1'b0;
+                S22: z <= 1'b0;
+                default: z <= 1'b0;
+            endcase
+        end
+    end
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/2014_q3fsm/2014_q3fsm_tb.sv:91: $finish called at 4576 (1ps)
+Hint: Output 'z' has 164 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 164 out of 915 samples
+
+Simulation finished at 4576 ps
+Mismatches: 164 in 915 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+    typedef enum logic [2:0] {
+        A = 3'b000,
+        B = 3'b001,
+        C = 3'b010,
+        S10 = 3'b011,
+        S11 = 3'b100,
+        S20 = 3'b101,
+        S21 = 3'b110,
+        S22 = 3'b111
+    } state_t;
+
+    state_t state, next_state;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) 
+            state <= A;
+        else 
+            state <= next_state;
+    end
+
+    always @(*) begin
+        next_state = state; // default to stay in current state
+        case (state)
+            A: if (s) next_state = B;
+            B: if (w) next_state = S11;
+               else next_state = S10;
+            C: if (w) next_state = S11;
+               else next_state = S10;
+            S10: if (w) next_state = S21;
+                else next_state = S20;
+            S11: if (w) next_state = S22;
+                else next_state = S21;
+            S20: next_state = B;
+            S21: if (w) next_state = C;
+                 else next_state = B;
+            S22: if (w) next_state = B;
+                 else next_state = C;
+            default: next_state = A;
+        endcase
+    end
+
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            z <= 1'b0;
+        else begin
+            case (state)
+                S20: z <= 1'b1; // Active output when in state S20
+                default: z <= 1'b0;
+            endcase
+        end
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/2014_q3fsm/2014_q3fsm_tb.sv:91: $finish called at 4576 (1ps)
+Hint: Output 'z' has 164 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 164 out of 915 samples
+
+Simulation finished at 4576 ps
+Mismatches: 164 in 915 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+    typedef enum logic [2:0] {
+        A = 3'b000,
+        B = 3'b001,
+        C = 3'b010,
+        S10 = 3'b011,
+        S11 = 3'b100,
+        S20 = 3'b101,
+        S21 = 3'b110,
+        S22 = 3'b111
+    } state_t;
+
+    state_t state, next_state;
+    reg z_next;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= A;
+            z <= 1'b0;
+        end else begin
+            state <= next_state;
+            z <= z_next;
+        end
+    end
+
+    always @(*) begin
+        next_state = state;
+        z_next = 1'b0; // default to 0
+        case (state)
+            A: if (s) next_state = B;
+            B: if (w) next_state = S11;
+               else next_state = S10;
+            C: if (w) next_state = S11;
+               else next_state = S10;
+            S10: if (w) next_state = S21;
+                else next_state = S20;
+            S11: if (w) next_state = S22;
+                else next_state = S21;
+            S20: begin
+                 next_state = B;
+                 z_next = 1'b1; // Active output when in state S20
+            end
+            S21: if (w) next_state = C;
+                 else next_state = B;
+            S22: if (w) next_state = B;
+                 else next_state = C;
+            default: next_state = A;
+        endcase
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/2014_q3fsm/2014_q3fsm_tb.sv:91: $finish called at 4576 (1ps)
+Hint: Output 'z' has 164 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 164 out of 915 samples
+
+Simulation finished at 4576 ps
+Mismatches: 164 in 915 samples
+
+assistant: module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+// State Declaration
+typedef enum logic [2:0] {
+    A   = 3'b000,
+    B   = 3'b001,
+    C   = 3'b010,
+    S10 = 3'b011,
+    S11 = 3'b100,
+    S20 = 3'b101,
+    S21 = 3'b110,
+    S22 = 3'b111
+} state_t;
+
+state_t state, next_state;
+
+// State Transition Process
+always @(posedge clk or posedge reset) begin
+    if (reset)
+        state <= A;
+    else
+        state <= next_state;
+end
+
+// Next State Logic
+always @(*) begin
+    case (state)
+        A   : if (s) next_state = B; else next_state = A;
+        B   : if (w) next_state = S11; else next_state = S10;
+        C   : if (w) next_state = S11; else next_state = S10;
+        S10 : if (w) next_state = S21; else next_state = S20;
+        S11 : if (w) next_state = S22; else next_state = S21;
+        S20 : next_state = B;
+        S21 : if (w) next_state = C; else next_state = B;
+        S22 : if (w) next_state = B; else next_state = C;
+        default: next_state = A;
+    endcase
+end
+
+// Output Logic
+always @(posedge clk or posedge reset) begin
+    if (reset)
+        z <= 1'b0;
+    else begin
+        case (state)
+            S20: z <= 1'b1; // z is asserted in state S20
+            default: z <= 1'b0;
+        endcase
+    end
+end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/2014_q3fsm/2014_q3fsm_tb.sv:91: $finish called at 4576 (1ps)
+Hint: Output 'z' has 164 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 164 out of 915 samples
+
+Simulation finished at 4576 ps
+Mismatches: 164 in 915 samples
+
+Time to Generate: 110.58990263938904
+Best ranked response at iteration 2 with response number 1
+Rank of best response: 0.9016393442622951
+Best response module:
+module top_module (
+    input clk,
+    input reset,
+    input s,
+    input w,
+    output reg z
+);
+
+    typedef enum logic [2:0] {
+        A = 3'b000,
+        B = 3'b001,
+        C = 3'b010,
+        S10 = 3'b011,
+        S11 = 3'b100,
+        S20 = 3'b101,
+        S21 = 3'b110,
+        S22 = 3'b111
+    } state_t;
+
+    state_t state, next_state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) 
+            state <= A;
+        else 
+            state <= next_state;
+    end
+
+    always_comb begin
+        next_state = state; // default to stay in current state
+        z = 1'b0; // default output value
+        case (state)
+            A: if (s) next_state = B;
+            B: if (w) next_state = S11;
+               else next_state = S10;
+            C: if (w) next_state = S11;
+               else next_state = S10;
+            S10: if (w) next_state = S21;
+                else next_state = S20;
+            S11: if (w) next_state = S22;
+                else next_state = S21;
+            S20: next_state = B;
+            S21: if (w) next_state = C;
+                 else next_state = B;
+            S22: if (w) next_state = B;
+                 else next_state = C;
+            default: next_state = A;
+        endcase
+    end
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset)
+            z <= 1'b0;
+        else begin
+            case (state)
+                A: z <= 1'b0;
+                B: z <= 1'b0;
+                C: z <= 1'b0;
+                S10: z <= 1'b0;
+                S11: z <= 1'b0;
+                S20: z <= 1'b0;
+                S21: z <= 1'b0;
+                S22: z <= 1'b0;
+                default: z <= 1'b0;
+            endcase
+        end
+    end
+endmodule
+
+

@@ -1,0 +1,39 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// A linear feedback shift register is a shift register usually with a few XOR gates to produce the next state of the shift register. A Galois LFSR is one particular arrangement where bit positions with a "tap" are XORed with the output bit to produce each bit\'s next value, while bit positions without a tap shift. Build a 32-bit Galois LFSR with taps at bit positions 32, 22, 2, and 1. Reset should be active high synchronous, and should reset the output q to 32\'h1.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput reg [31:0] q);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    output reg [31:0] q
+);
+
+reg [31:0] next_q;
+
+always @(posedge clk) begin
+    if (reset) begin
+        q <= 32'h1;
+    end
+    else begin
+        q <= next_q;
+    end
+end
+
+always @(*) begin
+    next_q = {q[30:0], q[31] ^ q[21] ^ q[1] ^ q[0]};
+end
+
+endmodule
+```
+
+The provided Verilog code implements a 32-bit Galois LFSR (Linear Feedback Shift Register) with taps at bit positions 32, 22, 2, and 1. The LFSR is reset synchronously when the `reset` input is high, setting the output `q` to `32'h1`.
+
+Here's a breakdown of the code:
+
+1. The module `top_module` has two inputs: `clk` and `reset`, and one output: `q`.
+2. The module uses a register `next_q` to store the next state of the LFSR.
+3. In the first `always` block, the current state of the LFSR (`q`) is updated on the positive edge of the `clk` signal. If `reset` is high, `q` is set to `32'h1`. Otherwise, `q` is assigned the value of `next_q`.
+4. In the second `always` block, the next state of the LFSR (`next_q`) is calculated. The new value is formed by shifting the current `q` register one bit to the left and XORing the leftmost bit with the bits at positions 21, 1, and 0.
+
+This implementation ensures that the 32-bit Galois LFSR with the specified taps is correctly generated and reset to the initial value of `32'h1` when the `reset` input is high.'}
+
+ Iteration rank: 0.00013735886376747892

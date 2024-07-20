@@ -1,0 +1,7 @@
+module top_module(
+	output zero);
+
+	// Assign the constant value 0 to the output signal
+	assign zero = 1'b0;
+
+endmodule

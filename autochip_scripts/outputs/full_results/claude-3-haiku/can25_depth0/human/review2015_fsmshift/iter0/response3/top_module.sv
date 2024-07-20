@@ -1,0 +1,57 @@
+module top_module(
+    input clk,
+    input reset,
+    output reg shift_ena
+);
+
+localparam ENABLE_CYCLES = 4;
+
+reg [1:0] state;
+localparam [1:0] IDLE = 2'b00, ENABLE = 2'b01, DONE = 2'b11;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= IDLE;
+        shift_ena <= 1'b1;
+    end
+    else begin
+        case (state)
+            IDLE: begin
+                shift_ena <= 1'b0;
+                if (reset) begin
+                    state <= IDLE;
+                end
+                else begin
+                    state <= ENABLE;
+                end
+            end
+            ENABLE: begin
+                shift_ena <= 1'b1;
+                if (reset) begin
+                    state <= IDLE;
+                end
+                else if (ENABLE_CYCLES == 1) begin
+                    state <= DONE;
+                end
+                else begin
+                    state <= ENABLE;
+                end
+            end
+            DONE: begin
+                shift_ena <= 1'b0;
+                if (reset) begin
+                    state <= IDLE;
+                end
+                else begin
+                    state <= DONE;
+                end
+            end
+            default: begin
+                state <= IDLE;
+                shift_ena <= 1'b0;
+            end
+        endcase
+    end
+end
+
+endmodule

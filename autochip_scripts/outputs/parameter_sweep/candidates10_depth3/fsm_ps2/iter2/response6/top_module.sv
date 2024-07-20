@@ -1,0 +1,42 @@
+module top_module (
+  input clk,
+  input [7:0] in,
+  input reset,
+  output done
+);
+
+reg [2:0] state;
+reg [7:0] byte1, byte2, byte3;
+wire is_first_byte;
+
+
+assign is_first_byte = in[3] && (state == 0);
+
+always @(posedge clk or posedge reset) begin
+  if (reset)
+    state <= 0;
+  else begin
+    case (state)
+      0: begin
+        state <= is_first_byte ? 1 : 0;  // Transition to state 1 if first byte
+      end
+      1: begin
+        byte1 <= in;
+        state <= 2;  // Transition to state 2
+      end
+      2: begin
+        byte2 <= in;
+        state <= 3;  // Transition to state 3
+      end
+      3: begin
+        byte3 <= in;
+        state <= 0;  // Transition back to state 0
+      end
+      default: state <= 0;
+    endcase
+  end
+end
+
+assign done = (state == 0);
+
+endmodule

@@ -1,0 +1,15 @@
+module top_module (
+    input clk,
+    input a, 
+    output reg [2:0] q
+);
+
+    always @(posedge clk) begin
+        if (a) begin
+            q <= 4; // If 'a' is 1, set q to 4
+        end else begin
+            q <= (q == 6) ? 0 : (q + 1); // If 'q' is 6, reset to 0, else increment
+        end
+    end
+
+endmodule

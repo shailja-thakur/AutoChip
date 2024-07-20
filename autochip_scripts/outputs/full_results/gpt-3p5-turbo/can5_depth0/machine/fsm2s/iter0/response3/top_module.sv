@@ -1,0 +1,31 @@
+module top_module (
+	input clk,
+	input j,
+	input k,
+	input reset,
+	output reg out
+);
+
+	reg [1:0] state;
+	always @(posedge clk or posedge reset) begin
+		if(reset) begin
+			state <= 2'b00;
+		end else begin
+			case(state)
+				2'b00: begin // State A
+					if(j) begin
+						state <= 2'b01;
+					end
+				end
+				2'b01: begin // State B
+					if(k) begin
+						state <= 2'b00;
+					end
+				end
+			endcase
+		end
+	end
+
+	assign out = (state == 2'b01);
+
+endmodule

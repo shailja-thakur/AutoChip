@@ -1,0 +1,156 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // In many (older) serial communications protocols, each data byte is sent along with a start bit and a stop bit, to help the receiver delimit bytes from the stream of bits. One common scheme is to use one start bit (0), 8 data bits, and 1 stop bit (1). The line is also at logic 1 when nothing is being transmitted (idle). Design a finite state machine that will identify when bytes have been correctly received when given a stream of bits. It needs to identify the start bit, wait for all 8 data bits, then verify that the stop bit was correct. If the stop bit does not appear when expected, the FSM must wait until it finds a stop bit before attempting to receive the next byte. Include a active-high synchronous reset. Note that the serial protocol sends the least significant bit first.
+
+module top_module (
+	input clk,
+	input in,
+	input reset,
+	output done
+);
+assistant: module top_module (
+    input clk,
+    input in,
+    input reset,
+    output done
+);
+
+reg [2:0] state;
+reg start_bit;
+reg [7:0] data;
+reg stop_bit;
+reg done_reg;
+
+parameter IDLE = 3'b000;
+parameter START_BIT = 3'b001;
+parameter DATA_BITS = 3'b010;
+parameter STOP_BIT = 3'b011;
+
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        state <= IDLE;
+        start_bit <= 0;
+        data <= 0;
+        stop_bit <= 1;
+        done_reg <= 0;
+    end else begin
+        case (state)
+            IDLE: begin
+                start_bit <= in;
+                if (start_bit) begin
+                    state <= START_BIT;
+                end
+            end
+
+            START_BIT: begin
+                if (!in) begin
+                    state <= DATA_BITS;
+                    data <= in;
+                end
+            end
+
+            DATA_BITS: begin
+                if (!in) begin
+                    data <= {data[6:0], in};
+                end
+
+                if (!$isunknown(data[7]) && $isunknown(data[0])) begin
+                    state <= STOP_BIT;
+                end
+            end
+
+            STOP_BIT: begin
+                stop_bit <= in;
+                if (!in) begin
+                    done_reg <= 1;
+                    state <= IDLE;
+                end
+            end
+        endcase
+    end
+end
+
+assign done = done_reg;
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_serial/fsm_serial_tb.sv:80: $finish called at 4526 (1ps)
+Hint: Output 'done' has 38 mismatches. First mismatch occurred at time 110.
+Hint: Total mismatched samples is 38 out of 905 samples
+
+Simulation finished at 4526 ps
+Mismatches: 38 in 905 samples
+
+Time to Generate: 7.1759374141693115
+Best ranked response at iteration 0 with response number 2
+Rank of best response: 0.958011049723757
+Best response module:
+module top_module (
+    input clk,
+    input in,
+    input reset,
+    output done
+);
+
+reg [2:0] state;
+reg start_bit;
+reg [7:0] data;
+reg stop_bit;
+reg done_reg;
+
+parameter IDLE = 3'b000;
+parameter START_BIT = 3'b001;
+parameter DATA_BITS = 3'b010;
+parameter STOP_BIT = 3'b011;
+
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        state <= IDLE;
+        start_bit <= 0;
+        data <= 0;
+        stop_bit <= 1;
+        done_reg <= 0;
+    end else begin
+        case (state)
+            IDLE: begin
+                start_bit <= in;
+                if (start_bit) begin
+                    state <= START_BIT;
+                end
+            end
+
+            START_BIT: begin
+                if (!in) begin
+                    state <= DATA_BITS;
+                    data <= in;
+                end
+            end
+
+            DATA_BITS: begin
+                if (!in) begin
+                    data <= {data[6:0], in};
+                end
+
+                if (!$isunknown(data[7]) && $isunknown(data[0])) begin
+                    state <= STOP_BIT;
+                end
+            end
+
+            STOP_BIT: begin
+                stop_bit <= in;
+                if (!in) begin
+                    done_reg <= 1;
+                    state <= IDLE;
+                end
+            end
+        endcase
+    end
+end
+
+assign done = done_reg;
+
+endmodule
+
+

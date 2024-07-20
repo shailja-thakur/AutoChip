@@ -1,0 +1,84 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// A large reservior of water serves several users. In order to keep the level of water succificently high, three sensors are placed vertically at 5-inch intervals. When the water level is above the highest sensor s[3], the input flow rate should be zero. When the level is below the lowest sensor s[1], the flow rate should be at maximum (both Nominal flow valve and Supplemental flow valve opened). The flow rate when the level is between the upper and lower sensors is determined by two factors: the water level and the level previous to the last sensor change. Each water level has a nominal flow rate associated with it as show in the table below. If the sensor change indicates that the previous level was lower than the current level, the flow rate should be increased by opening the Supplemental flow valve (controlled by dfr). \n// Water Level | Sensors Asserted | Nominal Flow Rate Inputs to be Asserted\n// Above s[3] | s[1], s[2], s[3] | None\n// Between s[3] and s[2] | s[1], s[2] | fr1\n// Between s[2] and s[1]  | s[1] | fr1, fr2\n// Below s[1] | None | fr1, fr2, fr3\n// Also include an active-high synchronous reset that resets the state machine to a state equivalent to if the water level had been low for a long time (no sensors asserted, and all four outputs asserted).\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput [3:1] s,\n\toutput reg fr3,\n\toutput reg fr2,\n\toutput reg fr1,\n\toutput reg dfr\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input reset,
+    input [3:1] s,
+    output reg fr3,
+    output reg fr2,
+    output reg fr1,
+    output reg dfr
+);
+
+reg [1:0] state;
+parameter ABOVE_S3 = 2'b11, 
+          BETWEEN_S3_S2 = 2'b10,
+          BETWEEN_S2_S1 = 2'b01,
+          BELOW_S1 = 2'b00;
+
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        state <= BELOW_S1;
+        fr3 <= 1;
+        fr2 <= 1;
+        fr1 <= 1;
+        dfr <= 1;
+    end
+    else begin
+        case (state)
+            ABOVE_S3: begin
+                fr3 <= 0;
+                fr2 <= 0;
+                fr1 <= 0;
+                dfr <= 0;
+                if (!s[3]) begin
+                    state <= BETWEEN_S3_S2;
+                end
+            end
+            BETWEEN_S3_S2: begin
+                fr3 <= 0;
+                fr2 <= 0;
+                fr1 <= 1;
+                dfr <= 0;
+                if (!s[2]) begin
+                    state <= BETWEEN_S2_S1;
+                end
+                else if (!s[3]) begin
+                    state <= BELOW_S1;
+                end
+            end
+            BETWEEN_S2_S1: begin
+                fr3 <= 0;
+                fr2 <= 1;
+                fr1 <= 1;
+                if (s[1]) begin
+                    dfr <= 0;
+                end
+                else begin
+                    dfr <= 1;
+                end
+                if (!s[1]) begin
+                    state <= BELOW_S1;
+                end
+                else if (s[2]) begin
+                    state <= BETWEEN_S3_S2;
+                end
+            end
+            BELOW_S1: begin
+                fr3 <= 1;
+                fr2 <= 1;
+                fr1 <= 1;
+                dfr <= 1;
+                if (s[1]) begin
+                    state <= BETWEEN_S2_S1;
+                end
+            end
+        endcase
+    end
+end
+
+endmodule
+```'}
+
+ Iteration rank: 0.3382352941176471

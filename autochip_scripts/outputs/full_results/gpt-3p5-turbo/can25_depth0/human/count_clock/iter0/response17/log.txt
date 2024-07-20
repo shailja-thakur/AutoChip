@@ -1,0 +1,71 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Create a set of counters suitable for use as a 12-hour clock (with am/pm indicator). Your counters are clocked by a fast-running clk, with a pulse on ena whenever your clock should increment (i.e., once per second, while "clk" is much faster than once per second). The signal "pm" is asserted if the clock is PM, or is otherwise AM. hh, mm, and ss are two BCD (Binary-Coded Decimal) digits each for hours (01-12), minutes (00-59), and seconds (00-59). Reset is the active high synchronous signal that resets the clock to "12:00 AM." Reset has higher priority than enable and can occur even when not enabled.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\tinput ena,\n\toutput reg pm,\n\toutput reg [7:0] hh,\n\toutput reg [7:0] mm,\n\toutput reg [7:0] ss);'}
+{'assistant': 'module top_module(
+    input clk,
+    input reset,
+    input ena,
+    output reg pm,
+    output reg [7:0] hh,
+    output reg [7:0] mm,
+    output reg [7:0] ss);
+
+    reg [3:0] hr_ones;
+    reg [1:0] hr_tens;
+    reg [3:0] min_ones;
+    reg [5:0] min_tens;
+    reg [3:0] sec_ones;
+    reg [5:0] sec_tens;
+
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            hh <= 8'b00000000;
+            mm <= 8'b00000000;
+            ss <= 8'b00000000;
+            pm <= 0;
+            hr_ones <= 4'b0000;
+            hr_tens <= 2'b00;
+            min_ones <= 4'b0000;
+            min_tens <= 6'b000000;
+            sec_ones <= 4'b0000;
+            sec_tens <= 6'b000000;
+        end else if (ena) begin
+            if (sec_ones == 4'b1001 && sec_tens == 6'b010110)
+                min_ones <= min_ones + 4'b0001;
+            
+            if (min_ones == 4'b1001 && min_tens == 6'b010110)
+                hr_ones <= hr_ones + 4'b0001;
+
+            if (hr_ones == 4'b1010 && hr_tens == 2'b0001)
+                hr_ones <= 4'b0000;
+            
+            if (sec_ones == 4'b1010 && sec_tens == 6'b000110)
+                sec_tens <= 6'b000000;
+            
+            if (min_ones == 4'b1010 && min_tens == 6'b000110)
+                min_tens <= 6'b000000;
+            
+            if (hr_ones == 4'b1010 && hr_tens == 2'b0001)
+                hr_tens <= 2'b00;
+            
+            if (sec_ones == 4'b1001 && sec_tens == 6'b001110)
+                sec_ones <= 4'b0000;
+                       
+            if (ena) begin
+                       
+                if (ena && clk % 2'd1 == 0)
+                    ss <= ss + 1;
+                
+                if (sec_ones == 4'b1010 && sec_tens == 6'b010110)
+                    sec_ones <= 4'b0000;
+                
+                if (aa && hr_ones < 4'b1001)
+                    hr_ones <= hr_ones + 1;
+                
+                if (aa && hr_ones == 4'b1001 && hr_tens < 2'b0001)
+                    hr_tens <= hr_tens + 1;
+            end
+        end
+    end
+endmodule'}
+
+ Iteration rank: -1

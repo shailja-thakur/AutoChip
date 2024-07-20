@@ -1,0 +1,19 @@
+module top_module(
+    input clk,
+    input reset,
+    output reg [4:0] q
+);
+
+    always @(*) begin
+        q_next = {q[3:0], q[4] ^ q[0]};
+    end
+
+    always @(posedge clk) begin
+        if (reset) begin
+            q <= 5'h1;
+        end else begin
+            q <= q_next;
+        end
+    end
+
+endmodule

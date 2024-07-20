@@ -1,0 +1,12 @@
+module top_module (
+    input a, 
+    input b, 
+    input c, 
+    input d,
+    output q
+);
+
+// Implement the logic based on the given simulation waveforms
+assign q = (b & c) | (~b & ~c & d) | (a & ~b & ~c) | (a & b & ~c) | (a & b & c);
+
+endmodule

@@ -1,0 +1,39 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Build a 4-digit BCD (binary-coded decimal) counter. Each decimal digit is encoded using 4 bits: q[3:0] is the ones digit, q[7:4] is the tens digit, etc. For digits [3:1], also output an enable signal indicating when each of the upper three digits should be incremented. Include a synchronous active-high reset.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput [3:1] ena,\n\toutput reg [15:0] q);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    output [3:1] ena,
+    output reg [15:0] q
+);
+
+always @(posedge clk) begin
+    if (reset) begin
+        q <= 0;
+    end
+    else begin
+        q[3:0] <= (q[3:0] == 9) ? 0 : q[3:0] + 1;
+        q[7:4] <= (q[3:0] == 9) ? ((q[7:4] == 9) ? 0 : q[7:4] + 1) : q[7:4];
+        q[11:8] <= (q[3:0] == 9 && q[7:4] == 9) ? ((q[11:8] == 9) ? 0 : q[11:8] + 1) : q[11:8];
+        q[15:12] <= (q[3:0] == 9 && q[7:4] == 9 && q[11:8] == 9) ? ((q[15:12] == 9) ? 0 : q[15:12] + 1) : q[15:12];
+    end
+end
+
+assign ena[1] = (q[3:0] == 9);
+assign ena[2] = (q[3:0] == 9 && q[7:4] == 9);
+assign ena[3] = (q[3:0] == 9 && q[7:4] == 9 && q[11:8] == 9);
+
+endmodule
+```
+
+The provided Verilog module implements a 4-digit BCD (Binary-Coded Decimal) counter with a synchronous active-high reset. The counter has the following features:
+
+1. The counter uses a 16-bit register `q` to store the 4-digit BCD value. The least significant 4 bits (`q[3:0]`) represent the ones digit, the next 4 bits (`q[7:4]`) represent the tens digit, and so on.
+2. The counter increments the digits from 0 to 9, and when a digit reaches 9, it resets to 0 and the next higher digit is incremented.
+3. The module provides 3 enable signals (`ena[3:1]`) to indicate when each of the upper three digits (tens, hundreds, and thousands) should be incremented.
+4. The counter resets to 0 when the `reset` input is active-high.
+
+The code uses a single `always` block to handle the counter logic. It checks the current value of each digit and updates the counter accordingly, using conditional statements to handle the carry-over between digits.'}
+
+ Iteration rank: 1.0

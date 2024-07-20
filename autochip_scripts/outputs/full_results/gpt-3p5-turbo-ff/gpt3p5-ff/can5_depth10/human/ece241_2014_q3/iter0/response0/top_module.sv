@@ -1,0 +1,19 @@
+module top_module (
+	input c,
+	input d,
+	output [3:0] mux_in
+);
+
+wire a, b;
+
+// K-map implementation
+assign a = c & (~d);
+assign b = ~c;
+
+// Connection to 4-to-1 multiplexer
+assign mux_in[0] = ~a & ~b;
+assign mux_in[1] = a & ~b;
+assign mux_in[2] = a & b;
+assign mux_in[3] = ~a & b;
+
+endmodule

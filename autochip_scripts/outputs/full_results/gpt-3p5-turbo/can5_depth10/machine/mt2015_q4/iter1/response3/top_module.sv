@@ -1,0 +1,14 @@
+module top_module(
+    input x,
+    input y,
+    output z
+);
+
+wire a;
+wire b;
+
+and gate1(a, y, x);
+and gate2(b, x, y);
+and gate3(z, a, b);
+
+endmodule

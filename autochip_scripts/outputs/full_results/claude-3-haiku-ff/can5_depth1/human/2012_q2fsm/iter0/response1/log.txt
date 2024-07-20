@@ -1,0 +1,61 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider the state machine shown below:\n\n// A (0) --1--> B\n// A (0) --0--> A\n// B (0) --1--> C\n// B (0) --0--> D\n// C (0) --1--> E\n// C (0) --0--> D\n// D (0) --1--> F\n// D (0) --0--> A\n// E (1) --1--> E\n// E (1) --0--> D\n// F (1) --1--> C\n// F (1) --0--> D\n\n// Reset resets into state A and is synchronous active-high. \n\n// Write complete Verilog code that represents this FSM. Use separate **always** blocks for the state table and the state flip-flops. Describe the FSM output, which is called _z_, using either continuous assignment statement(s) or an **always** block (at your discretion). Assign any state codes that you wish to use.\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput w,\n\toutput z\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input reset,
+    input w,
+    output z
+);
+
+// State encoding
+localparam A = 3'b000, B = 3'b001, C = 3'b010, D = 3'b011, E = 3'b100, F = 3'b101;
+
+// State variables
+reg [2:0] state, next_state;
+
+// State table
+always @(*) begin
+    case (state)
+        A: begin
+            if (w) next_state = B;
+            else next_state = A;
+        end
+        B: begin
+            if (w) next_state = C;
+            else next_state = D;
+        end
+        C: begin
+            if (w) next_state = E;
+            else next_state = D;
+        end
+        D: begin
+            if (w) next_state = F;
+            else next_state = A;
+        end
+        E: begin
+            if (w) next_state = E;
+            else next_state = D;
+        end
+        F: begin
+            if (w) next_state = C;
+            else next_state = D;
+        end
+    endcase
+end
+
+// State flip-flops
+always @(posedge clk) begin
+    if (reset)
+        state <= A;
+    else
+        state <= next_state;
+end
+
+// Output logic
+assign z = (state == E) || (state == F);
+
+endmodule
+```'}
+
+ Iteration rank: 1.0

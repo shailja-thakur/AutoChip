@@ -1,0 +1,60 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Consider this Verilog module "full_module":\n\n// module full_module (\n//     input [2:0] r,\n//     input L,\n//     input clk,\n//     output reg [2:0] q\n);\n\n// always @(posedge clk) begin\n//     if (L) begin\n//         q <= r;\n//     end else begin\n//         q <= {q[1] ^ q[2], q[0], q[2]};\n//     end\n// end\n\n// endmodule\n\n// You want to create a hierarchical Verilog design where a flipflop and 2-1 multiplexer are in a submodule, and that submodule is instantiated three times in this code. Create the submodule called "top_module".\n\n\nmodule top_module(\n\tinput clk,\n\tinput L,\n\tinput q_in,\n\tinput r_in,\n\toutput reg Q);'}
+{'assistant': '```verilog
+module full_module (
+    input [2:0] r,
+    input L,
+    input clk,
+    output [2:0] q
+);
+
+    wire q0, q1, q2;
+
+    top_module u0 (
+        .clk(clk),
+        .L(L),
+        .q_in(q[2]),
+        .r_in(r[0]),
+        .Q(q0)
+    );
+
+    top_module u1 (
+        .clk(clk),
+        .L(L),
+        .q_in(q[0]),
+        .r_in(r[1]),
+        .Q(q1)
+    );
+
+    top_module u2 (
+        .clk(clk),
+        .L(L),
+        .q_in(q[1]),
+        .r_in(r[2]),
+        .Q(q2)
+    );
+
+    assign q = {q2, q1, q0};
+
+endmodule
+
+module top_module(
+    input clk,
+    input L,
+    input q_in,
+    input r_in,
+    output reg Q
+);
+
+    wire d;  // Output from the mux
+
+    always @(posedge clk) begin
+        Q <= d;
+    end
+
+    assign d = L ? r_in : q_in;
+
+endmodule
+```'}
+
+ Iteration rank: 0.9949748743718593

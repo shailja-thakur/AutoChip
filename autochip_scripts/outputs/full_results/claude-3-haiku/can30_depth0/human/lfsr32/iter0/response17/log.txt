@@ -1,0 +1,26 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// A linear feedback shift register is a shift register usually with a few XOR gates to produce the next state of the shift register. A Galois LFSR is one particular arrangement where bit positions with a "tap" are XORed with the output bit to produce each bit\'s next value, while bit positions without a tap shift. Build a 32-bit Galois LFSR with taps at bit positions 32, 22, 2, and 1. Reset should be active high synchronous, and should reset the output q to 32\'h1.\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\toutput reg [31:0] q);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    output reg [31:0] q
+);
+
+always @(posedge clk) begin
+    if (reset) begin
+        q <= 32'h1;
+    end else begin
+        q[31] <= q[30] ^ q[21] ^ q[1] ^ q[0];
+        q[30:1] <= q[29:0];
+    end
+end
+
+endmodule
+```
+
+This Verilog module implements a 32-bit Galois LFSR (Linear Feedback Shift Register) with taps at bit positions 32, 22, 2, and 1. The module has two inputs: `clk` (the clock signal) and `reset` (the synchronous reset signal), and one output `q` which represents the 32-bit LFSR value.
+
+The `always` block inside the module handles the LFSR logic. When the `reset` signal is high, the LFSR value `q` is reset to `32'h1`. Otherwise, on each positive edge of the clock signal, the LFSR is updated. The next value of the most significant bit `q[31]` is calculated by XORing the values of `q[30]`, `q[21]`, `q[1]`, and `q[0]`. The remaining bits of the LFSR are shifted one position to the right, effectively implementing the Galois LFSR structure.'}
+
+ Iteration rank: 0.00013735886376747892

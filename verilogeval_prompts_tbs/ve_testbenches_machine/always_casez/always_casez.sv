@@ -1,0 +1,6 @@
+//  This Verilog module is used to determine the position of a given 8-bit input. The module has two ports, an 8-bit input port "in" and a 3-bit output port "pos". The output port "pos" is a register, which means its value is stored until it is changed.  The module contains an always block, which is triggered whenever any of the inputs change. Inside the always block is a casez statement, which is used to compare the value of the 8-bit input "in" to a set of predefined values. Depending on the value of the input, the output port "pos" will be set to a different 3-bit value.  The default case is used to set the output port "pos" to the default value of 0. The other cases are used to set the output port "pos" to a different 3-bit value depending on the value of the 8-bit input "in". For example, if the 8-bit input "in" is equal to 8'bzzzzzzz1, then the output port "pos" will be set to 3'h0. Similarly, if the 8-bit input "in" is equal to 8'bz1zzzzzz, then the output port "pos" will be set to 3'h6.  Once the output port "pos" has been set, its value will remain until the 8-bit input "in" changes. This module can be used to determine the position of a given 8-bit input in a range of values.
+
+module top_module (
+	input [7:0] in,
+	output reg [2:0] pos
+);

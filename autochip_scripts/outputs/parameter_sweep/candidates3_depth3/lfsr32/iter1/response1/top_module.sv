@@ -1,0 +1,18 @@
+module top_module(
+    input clk,
+    input reset,
+    output reg [31:0] q);
+
+	reg [31:0] d;
+
+	always @(posedge clk or posedge reset) begin
+		if (reset) begin
+			q <= 32'h1;
+			d <= 0;
+		end else begin
+			d[31:0] <= {q[30:0], q[20]};
+			q <= d;
+		end
+	end
+
+endmodule

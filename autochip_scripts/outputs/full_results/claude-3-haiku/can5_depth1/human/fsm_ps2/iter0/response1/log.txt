@@ -1,0 +1,70 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The PS/2 mouse protocol sends messages that are three bytes long. However, within a continuous byte stream, it's not obvious where messages start and end. The only indication is that the first byte of each three byte message always has in[3]=1 (but in[3] of the other two bytes may be 1 or 0 depending on data). We want a finite state machine that will search for message boundaries when given an input byte stream. The algorithm we'll use is to discard bytes until we see one with in[3]=1. We then assume that this is byte 1 of a message, and signal the receipt of a message once all 3 bytes have been received (done). The FSM should signal done in the cycle immediately after the third byte of each message was successfully received. Reset should be active high synchronous.\n\nmodule top_module (\n\tinput clk,\n\tinput [7:0] in,\n\tinput reset,\n\toutput done\n);"}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input [7:0] in,
+    input reset,
+    output reg done
+);
+
+localparam [1:0] IDLE = 2'b00, FIRST = 2'b01, SECOND = 2'b10, THIRD = 2'b11;
+reg [1:0] state, next_state;
+
+always @(posedge clk) begin
+    if (reset) begin
+        state <= IDLE;
+        done <= 0;
+    end
+    else begin
+        state <= next_state;
+    end
+end
+
+always @(*) begin
+    case (state)
+        IDLE: begin
+            done = 0;
+            if (in[3]) begin
+                next_state = FIRST;
+            end
+            else begin
+                next_state = IDLE;
+            end
+        end
+        FIRST: begin
+            done = 0;
+            next_state = SECOND;
+        end
+        SECOND: begin
+            done = 0;
+            next_state = THIRD;
+        end
+        THIRD: begin
+            done = 1;
+            next_state = IDLE;
+        end
+        default: begin
+            done = 0;
+            next_state = IDLE;
+        end
+    endcase
+end
+
+endmodule
+```
+
+This Verilog module implements a finite state machine that detects the start and end of three-byte PS/2 mouse protocol messages. The key features of the implementation are:
+
+1. The module has three input signals: `clk`, `in[7:0]`, and `reset`.
+2. The module has one output signal: `done`, which is asserted for one clock cycle immediately after the third byte of a message is received.
+3. The module uses four states to track the message reception process: `IDLE`, `FIRST`, `SECOND`, and `THIRD`.
+4. The `always @(posedge clk)` block updates the state on each clock cycle, resetting to `IDLE` when `reset` is asserted.
+5. The `always @(*)` block implements the state transition logic. It checks the current state and the value of `in[3]` to determine the next state and whether to assert the `done` output.
+6. In the `IDLE` state, the module waits for `in[3]` to be 1, indicating the start of a new message. It then transitions to the `FIRST` state.
+7. In the `FIRST`, `SECOND`, and `THIRD` states, the module sequentially receives the three bytes of the message, asserting `done` in the `THIRD` state.
+8. The module then transitions back to the `IDLE` state, ready to receive the next message.
+
+This implementation correctly handles the PS/2 mouse protocol message detection as specified in the problem statement.'}
+
+ Iteration rank: 0.83

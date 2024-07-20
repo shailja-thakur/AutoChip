@@ -1,0 +1,56 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// This is a Moore state machine with two states, two inputs, and one output. Implement this state machine in Verilog. Reset is an active-high synchronous reset to state OFF.\n\n// OFF (out=0) --j=0--> OFF\n// OFF (out=0) --j=1--> ON\n// ON (out=1) --k=0--> ON\n// ON (out=1) --k=1--> OFF\n\nmodule top_module (\n\tinput clk,\n\tinput j,\n\tinput k,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input j,
+    input k,
+    input reset,
+    output reg out
+);
+
+localparam OFF = 1'b0;
+localparam ON = 1'b1;
+
+reg current_state, next_state;
+
+always @(posedge clk) begin
+    if (reset) begin
+        current_state <= OFF;
+    end
+    else begin
+        current_state <= next_state;
+    end
+end
+
+always @(*) begin
+    case (current_state)
+        OFF: begin
+            if (j) begin
+                next_state = ON;
+            end
+            else begin
+                next_state = OFF;
+            end
+            out = 1'b0;
+        end
+        ON: begin
+            if (k) begin
+                next_state = OFF;
+            end
+            else begin
+                next_state = ON;
+            end
+            out = 1'b1;
+        end
+        default: begin
+            next_state = OFF;
+            out = 1'b0;
+        end
+    endcase
+end
+
+endmodule
+```'}
+
+ Iteration rank: 1.0

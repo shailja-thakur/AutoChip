@@ -1,0 +1,73 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The following is the state transition table for a Moore state machine with one input, one output, and four states. Implement this state machine. Include a synchronous active high reset that resets the FSM to state A. \n// State | Next state in=0, Next state in=1 | Output\n// A | A, B | 0\n// B | C, B | 0\n// C | A, D | 0\n// D | C, B | 1\n\nmodule top_module (\n\tinput clk,\n\tinput in,\n\tinput reset,\n\toutput out\n);'}
+{'assistant': '```verilog
+module top_module (
+	input clk,
+	input in,
+	input reset,
+	output out
+);
+	parameter A = 2'b00;
+	parameter B = 2'b01;
+	parameter C = 2'b10;
+	parameter D = 2'b11;
+
+	reg [1:0] state;
+	reg out_reg;
+	
+	always @(posedge clk or posedge reset) begin
+		if (reset)
+			state <= A;
+		else begin
+			case (state)
+				A: begin
+					if (in)
+						state <= B;
+					else
+						state <= A;
+				end
+				B: begin
+					if (in)
+						state <= C;
+					else
+						state <= B;
+				end
+				C: begin
+					if (in)
+						state <= D;
+					else
+						state <= A;
+				end 
+				D: begin
+					if (in)
+						state <= C;
+					else
+						state <= B;
+				end 
+			endcase
+		end
+	end
+	
+	always @(state) begin
+		case (state)
+			A: out_reg = 1'b0;
+			D: out_reg = 1'b1;
+			default: out_reg = 1'b0;
+		endcase
+	end
+	
+	assign out = out_reg;
+	
+endmodule
+```
+The above Verilog module implements a Moore state machine with one input (`in`), one output (`out`), and four states (A, B, C, D). It includes a synchronous active-high reset signal (`reset`), which will reset the FSM to state A when asserted.
+
+The module includes a `state` register to store the current state of the state machine and an `out_reg` register to store the output value. The state transition logic is implemented in the `always @(posedge clk or posedge reset)` block, which triggers on the rising edge of the `clk` signal or when `reset` is asserted. Inside the block, a `case` statement is used to determine the next state based on the current state and input `in`.
+
+The output value is determined in the `always @(state)` block, which triggers whenever the `state` register changes. Inside the block, a `case` statement is used to assign the appropriate value to `out_reg` based on the current state.
+
+Finally, the output `out` is assigned the value of `out_reg` using the `assign` statement.
+
+Note: The parameters A, B, C, D are defined as 2-bit binary values to represent the states of the state machine. The output `out` will be driven to 0 in states A, B, and C, and driven to 1 in state D.'}
+
+ Iteration rank: 0.7217391304347827

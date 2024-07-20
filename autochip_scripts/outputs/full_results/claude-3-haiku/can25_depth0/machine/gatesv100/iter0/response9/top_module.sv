@@ -1,0 +1,19 @@
+module top_module (
+    input [99:0] in,
+    output [98:0] out_both,
+    output [99:0] out_any,
+    output [99:0] out_different
+);
+
+    // Shift the input signal by one bit
+    reg [99:0] in_shifted;
+    always @(*) begin
+        in_shifted = {in[98:0], in[99]};
+    end
+
+    // Generate the output signals
+    assign out_both = in & in_shifted;
+    assign out_any = in | in_shifted;
+    assign out_different = in ^ in_shifted;
+
+endmodule

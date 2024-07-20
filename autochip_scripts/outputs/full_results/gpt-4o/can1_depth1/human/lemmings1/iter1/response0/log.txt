@@ -1,0 +1,72 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The game Lemmings involves critters with fairly simple brains. So simple that we are going to model it using a finite state machine. In the Lemmings' 2D world, Lemmings can be in one of two states: walking left (walk_left is 1) or walking right (walk_right is 1). It will switch directions if it hits an obstacle. In particular, if a Lemming is bumped on the left (by receiving a 1 on bump_left), it will walk right. If it's bumped on the right (by receiving a 1 on bump_right), it will walk left. If it's bumped on both sides at the same time, it will still switch directions. Implement a Moore state machine with two states, two inputs, and one output (internal to the module) that models this behaviour. areset is positive edge triggered asynchronous reseting the Lemming machine to walk left.\n\nmodule top_module (\n\tinput clk,\n\tinput areset,\n\tinput bump_left,\n\tinput bump_right,\n\toutput walk_left,\n\toutput walk_right\n);"}
+{'role': 'assistant', 'content': "module top_module (\n    input clk,\n    input areset,\n    input bump_left,\n    input bump_right,\n    output reg walk_left,\n    output reg walk_right\n);\n\n    // State encoding\n    typedef enum logic [1:0] {\n        STATE_LEFT = 2'b01,\n        STATE_RIGHT = 2'b10\n    } state_t;\n\n    state_t state, next_state;\n\n    // State transition\n    always_comb begin\n        case (state)\n            STATE_LEFT: \n                if (bump_left)\n                    next_state = STATE_RIGHT;\n                else\n                    next_state = STATE_LEFT;\n            \n            STATE_RIGHT:\n                if (bump_right)\n                    next_state = STATE_LEFT;\n                else\n                    next_state = STATE_RIGHT;\n\n            default:\n                next_state = STATE_LEFT;\n        endcase\n    end\n\n    // State flip-flops with asynchronous reset\n    always_ff @(posedge clk or posedge areset) begin\n        if (areset)\n            state <= STATE_LEFT;\n        else\n            state <= next_state;\n    end\n\n    // Output logic\n    always_ff @(posedge clk or posedge areset) begin\n        if (areset) begin\n            walk_left <= 1'b1;\n            walk_right <= 1'b0;\n        end else begin\n            case (state)\n                STATE_LEFT: begin\n                    walk_left <= 1'b1;\n                    walk_right <= 1'b0;\n                end\n                STATE_RIGHT: begin\n                    walk_left <= 1'b0;\n                    walk_right <= 1'b1;\n                end\n                default: begin\n                    walk_left <= 1'b1;\n                    walk_right <= 1'b0;\n                end\n            endcase\n        end\n    end\n\nendmodule\n\n"}
+{'role': 'user', 'content': "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\nVCD info: dumpfile wave.vcd opened for output.\n/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/lemmings1/lemmings1_tb.sv:102: $finish called at 1146 (1ps)\nHint: Output 'walk_left' has 54 mismatches. First mismatch occurred at time 30.\nHint: Output 'walk_right' has 54 mismatches. First mismatch occurred at time 30.\nHint: Total mismatched samples is 54 out of 229 samples\n\nSimulation finished at 1146 ps\nMismatches: 54 in 229 samples\n"}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+    output reg walk_left,
+    output reg walk_right
+);
+
+    // State encoding
+    typedef enum reg {
+        STATE_LEFT = 1'b0, // Walking left
+        STATE_RIGHT = 1'b1 // Walking right
+    } state_t;
+
+    state_t state, next_state;
+
+    // State transition - Next state logic
+    always @(*) begin
+        case (state)
+            STATE_LEFT: 
+                if (bump_left)
+                    next_state = STATE_RIGHT;
+                else
+                    next_state = STATE_LEFT;
+
+            STATE_RIGHT:
+                if (bump_right)
+                    next_state = STATE_LEFT;
+                else
+                    next_state = STATE_RIGHT;
+
+            default:
+                next_state = STATE_LEFT;
+        endcase
+    end
+
+    // State flip-flops with asynchronous reset
+    always @(posedge clk or posedge areset) begin
+        if (areset)
+            state <= STATE_LEFT;
+        else
+            state <= next_state;
+    end
+
+    // Output logic - Moore machine output logic based on state
+    always @(*) begin
+        case (state)
+            STATE_LEFT: begin
+                walk_left = 1'b1;
+                walk_right = 1'b0;
+            end
+            STATE_RIGHT: begin
+                walk_left = 1'b0;
+                walk_right = 1'b1;
+            end
+            default: begin
+                walk_left = 1'b1;
+                walk_right = 1'b0;
+            end
+        endcase
+    end
+
+endmodule
+```'}
+
+ Iteration rank: 1.0

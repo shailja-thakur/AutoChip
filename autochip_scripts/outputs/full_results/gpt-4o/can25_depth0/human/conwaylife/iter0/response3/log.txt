@@ -1,0 +1,61 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// The "game" is played on a two-dimensional grid of cells, where each cell is either 1 (alive) or 0 (dead). At each time step, each cell changes state depending on how many neighbours it has:\n// (1) 0-1 neighbour: Cell becomes 0.\n// (2) 2 neighbours: Cell state does not change.\n// (3) 3 neighbours: Cell becomes 1.\n// (4) 4+ neighbours: Cell becomes 0.\n// The game is formulated for an infinite grid. In this circuit, we will use a 16x16 grid. To make things more interesting, we will use a 16x16 toroid, where the sides wrap around to the other side of the grid. For example, the corner cell (0,0) has 8 neighbours: (15,1), (15,0), (15,15), (0,1), (0,15), (1,1), (1,0), and (1,15). The 16x16 grid is represented by a length 256 vector, where each row of 16 cells is represented by a sub-vector: q[15:0] is row 0, q[31:16] is row 1, etc. \n// (1) load: Loads data into q at the next clock edge, for loading initial state. Active high synchronous.\n// (2) q: The 16x16 current state of the game, updated every clock cycle.\n// The game state should advance by one timestep every clock cycle.\n\nmodule top_module(\n\tinput clk,\n\tinput load,\n\tinput [255:0] data,\n\toutput reg [255:0] q);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input load,
+    input [255:0] data,
+    output reg [255:0] q);
+
+    // Grid dimensions
+    localparam N = 16;
+
+    // Index conversion from row/col to linear
+    function [7:0] index;
+        input [3:0] row, col;
+        begin
+            index = row * N + col;
+        end
+    endfunction
+
+    // Count alive neighbours
+    function [3:0] count_neighbours;
+        input [3:0] row, col;
+        integer r, c;
+        begin
+            count_neighbours = 0;
+            for (r = -1; r <= 1; r = r + 1) begin
+                for (c = -1; c <= 1; c = c + 1) begin
+                    if ((r != 0 || c != 0) &&
+                        q[index((row + r + N) % N, (col + c + N) % N)]) begin
+                        count_neighbours = count_neighbours + 1;
+                    end
+                end
+            end
+        end
+    endfunction
+
+    // Update state
+    always @(posedge clk) begin
+        if (load) begin
+            q <= data;
+        end else begin
+            reg [255:0] next_q;
+            integer i, j;
+            for (i = 0; i < N; i = i + 1) begin
+                for (j = 0; j < N; j = j + 1) begin
+                    case (count_neighbours(i, j))
+                        0, 1, 4, 5, 6, 7, 8: next_q[index(i, j)] = 0;
+                        2: next_q[index(i, j)] = q[index(i, j)];
+                        3: next_q[index(i, j)] = 1;
+                    endcase
+                end
+            end
+            q <= next_q;
+        end
+    end
+
+endmodule
+```'}
+
+ Iteration rank: 1.0

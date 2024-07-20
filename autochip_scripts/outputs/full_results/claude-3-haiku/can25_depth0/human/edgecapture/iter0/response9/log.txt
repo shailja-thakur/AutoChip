@@ -1,0 +1,34 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// For each bit in a 32-bit vector, capture when the input signal changes from 1 in one clock cycle to 0 the next. "Capture" means that the output will remain 1 until the register is reset (active high synchronous reset).\n\nmodule top_module(\n\tinput clk,\n\tinput reset,\n\tinput [31:0] in,\n\toutput reg [31:0] out);'}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input reset,
+    input [31:0] in,
+    output reg [31:0] out
+);
+
+always @(posedge clk) begin
+    if (reset) begin
+        out <= 0;
+    end
+    else begin
+        out <= (out | ~in) & in;
+    end
+end
+
+endmodule
+```
+
+This Verilog module captures the change of each bit in the 32-bit input vector `in` from 1 to 0 between two consecutive clock cycles. The output `out` is a 32-bit register that is set to 1 for each bit that undergoes the specified transition, and remains 1 until the `reset` signal is asserted.
+
+The logic works as follows:
+1. On the positive edge of the clock, if the `reset` signal is high, the output `out` is set to 0.
+2. Otherwise, the output `out` is updated based on the current input `in` and the previous output `out`:
+   - `~in` gives the bits that are 0 in the current input.
+   - `out | ~in` sets the bits in `out` that correspond to the 0 bits in the current input.
+   - `(out | ~in) & in` then keeps the bits in `out` that correspond to the 1 bits in the current input, effectively capturing the transition from 1 to 0.
+
+This ensures that the output remains high for each bit that transitions from 1 to 0, until the `reset` signal is asserted.'}
+
+ Iteration rank: 0.14661654135338345

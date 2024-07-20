@@ -1,0 +1,1249 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // 	The top module is a state machine. There are 10 states in this state machine, which are S, S1, S11, S110, B0, B1, B2, B3, Count and Wait.
+	The done signal is 1 in the state Wait.
+	The counting signal is 1 in the state Count.
+	The shift_ena signal is 1 if any of the states B3, B2, B1 and B0 is active.
+	The output of the top module B3_next is 1 when the state B2 is active.
+	The output of the top module S_next is 1 when the state S and d is 0, or the state S1 and d is 0, or the state S110 and d is 0, or the state Wait and ack is 1.
+	The output of the top module S1_next is 1 when the state S and d is 1.
+	The output of the top module Count_next is 1 when the state B3 is active, or the state Count and done_counting is 0.
+	The output of the top module Wait_next is 1 when the state Count and done_counting is 1, or the state Wait and ack is 0.
+	
+
+module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output B3_next,
+    output S_next,
+    output S1_next,
+    output Count_next,
+    output Wait_next,
+    output done,
+    output counting,
+    output shift_ena
+ );
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+ 
+  // Define the states
+  parameter S = 10'b0000000001;
+  parameter S1 = 10'b0000000010;
+  parameter S11 = 10'b0000000100;
+  parameter S110 = 10'b0000001000;
+  parameter B0 = 10'b0000010000;
+  parameter B1 = 10'b0000100000;
+  parameter B2 = 10'b0001000000;
+  parameter B3 = 10'b0010000000;
+  parameter Count = 10'b0100000000;
+  parameter Wait = 10'b1000000000;
+
+  // Assign default values to the outputs
+  assign B3_next = 0;
+  assign S_next = 0;
+  assign S1_next = 0;
+  assign Count_next = 0;
+  assign Wait_next = 0;
+  assign done = 0;
+  assign counting = 0;
+  assign shift_ena = 0;
+  
+  // State machine logic
+  always @(state) begin
+    case(state)
+      S: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      S1: begin
+        if (d == 0)
+          S1_next = 1;
+      end
+      S110: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      Wait: begin
+        if (ack == 1)
+          Wait_next = 1;
+      end
+      Count: begin
+        if (done_counting == 0)
+          Count_next = 1;
+        else
+          Wait_next = 1;
+      end
+      B2: begin
+        B3_next = 1;
+      end
+      B3: begin
+        Count_next = 1;
+        shift_ena = 1;
+      end
+    endcase
+  end
+
+  // Output logic
+  always @(posedge clk) begin
+    case(state)
+      Count: begin
+        counting = 1;
+      end
+      Wait: begin
+        done = 1;
+      end
+    endcase
+  end
+
+endmodule
+
+
+user: The design failed to compile. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:43: error: S_next Unable to assign to unresolved wires.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:47: error: S1_next Unable to assign to unresolved wires.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:51: error: S_next Unable to assign to unresolved wires.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:55: error: Wait_next Unable to assign to unresolved wires.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:59: error: Count_next Unable to assign to unresolved wires.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:61: error: Wait_next Unable to assign to unresolved wires.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:64: error: B3_next Unable to assign to unresolved wires.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:67: error: Count_next Unable to assign to unresolved wires.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:68: error: shift_ena Unable to assign to unresolved wires.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:77: error: counting Unable to assign to unresolved wires.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:80: error: done Unable to assign to unresolved wires.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:74: error: Unable to bind wire/reg/memory `clk' in `tb.top_module1'
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter0/response0/top_module.sv:74: error: Failed to evaluate event expression 'posedge clk'.
+13 error(s) during elaboration.
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+ 
+  // Define the states
+  parameter S = 10'b0000000001;
+  parameter S1 = 10'b0000000010;
+  parameter S11 = 10'b0000000100;
+  parameter S110 = 10'b0000001000;
+  parameter B0 = 10'b0000010000;
+  parameter B1 = 10'b0000100000;
+  parameter B2 = 10'b0001000000;
+  parameter B3 = 10'b0010000000;
+  parameter Count = 10'b0100000000;
+  parameter Wait = 10'b1000000000;
+
+  // Assign default values to the outputs
+  always @(state) begin
+    B3_next = 0;
+    S_next = 0;
+    S1_next = 0;
+    Count_next = 0;
+    Wait_next = 0;
+    done = 0;
+    counting = 0;
+    shift_ena = 0;
+  end
+  
+  // State machine logic
+  always @(state, d, ack) begin
+    case(state)
+      S: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      S1: begin
+        if (d == 0)
+          S1_next = 1;
+      end
+      S110: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      Wait: begin
+        if (ack == 1)
+          Wait_next = 1;
+      end
+      Count: begin
+        if (done_counting == 0)
+          Count_next = 1;
+        else
+          Wait_next = 1;
+      end
+      B2: begin
+        B3_next = 1;
+      end
+      B3: begin
+        Count_next = 1;
+        shift_ena = 1;
+      end
+    endcase
+  end
+
+  // Output logic
+  always @(state) begin
+    case(state)
+      Count: begin
+        counting = 1;
+      end
+      Wait: begin
+        done = 1;
+      end
+    endcase
+  end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:70: $finish called at 16516 (1ps)
+Hint: Output 'B3_next' has 1500 mismatches. First mismatch occurred at time 45.
+Hint: Output 'S_next' has 1789 mismatches. First mismatch occurred at time 30.
+Hint: Output 'S1_next' has 767 mismatches. First mismatch occurred at time 185.
+Hint: Output 'Count_next' has 1930 mismatches. First mismatch occurred at time 10.
+Hint: Output 'Wait_next' has 1354 mismatches. First mismatch occurred at time 60.
+Hint: Output 'done' has 1522 mismatches. First mismatch occurred at time 30.
+Hint: Output 'counting' has 1524 mismatches. First mismatch occurred at time 130.
+Hint: Output 'shift_ena' has 2930 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 3214 out of 3303 samples
+
+Simulation finished at 16516 ps
+Mismatches: 3214 in 3303 samples
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+ 
+  // Define the states
+  parameter S = 10'b0000000001;
+  parameter S1 = 10'b0000000010;
+  parameter S11 = 10'b0000000100;
+  parameter S110 = 10'b0000001000;
+  parameter B0 = 10'b0000010000;
+  parameter B1 = 10'b0000100000;
+  parameter B2 = 10'b0001000000;
+  parameter B3 = 10'b0010000000;
+  parameter Count = 10'b0100000000;
+  parameter Wait = 10'b1000000000;
+
+  // Assign default values to the outputs
+  always @(state) begin
+    B3_next = 0;
+    S_next = 0;
+    S1_next = 0;
+    Count_next = 0;
+    Wait_next = 0;
+    done = 0;
+    counting = 0;
+    shift_ena = 0;
+  end
+  
+  // State machine logic
+  always @(state, d, ack) begin
+    case(state)
+      S: begin
+        if (d == 0)
+          S_next = 1;
+        else
+          S_next = 0;
+      end
+      S1: begin
+        if (d == 0)
+          S1_next = 1;
+        else
+          S1_next = 0;
+      end
+      S110: begin
+        if (d == 0)
+          S_next = 1;
+        else
+          S_next = 0;
+      end
+      Wait: begin
+        if (ack == 1)
+          Wait_next = 1;
+        else
+          Wait_next = 0;
+      end
+      Count: begin
+        if (done_counting == 0)
+          Count_next = 1;
+        else
+          Wait_next = 1;
+      end
+      B2: begin
+        B3_next = 1;
+      end
+      B3: begin
+        Count_next = 1;
+        shift_ena = 1;
+      end
+    endcase
+  end
+
+  // Output logic
+  always @(state) begin
+    case(state)
+      Count: begin
+        counting = 1;
+        done = 0;
+      end
+      Wait: begin
+        done = 1;
+        counting = 0;
+      end
+      default: begin
+        done = 0;
+        counting = 0;
+      end
+    endcase
+  end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:70: $finish called at 16516 (1ps)
+Hint: Output 'B3_next' has 1500 mismatches. First mismatch occurred at time 45.
+Hint: Output 'S_next' has 1789 mismatches. First mismatch occurred at time 30.
+Hint: Output 'S1_next' has 767 mismatches. First mismatch occurred at time 185.
+Hint: Output 'Count_next' has 1930 mismatches. First mismatch occurred at time 10.
+Hint: Output 'Wait_next' has 1354 mismatches. First mismatch occurred at time 60.
+Hint: Output 'done' has 1522 mismatches. First mismatch occurred at time 30.
+Hint: Output 'counting' has 1524 mismatches. First mismatch occurred at time 130.
+Hint: Output 'shift_ena' has 2930 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 3214 out of 3303 samples
+
+Simulation finished at 16516 ps
+Mismatches: 3214 in 3303 samples
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+ 
+  // Define the states
+  parameter S = 10'b0000000001;
+  parameter S1 = 10'b0000000010;
+  parameter S11 = 10'b0000000100;
+  parameter S110 = 10'b0000001000;
+  parameter B0 = 10'b0000010000;
+  parameter B1 = 10'b0000100000;
+  parameter B2 = 10'b0001000000;
+  parameter B3 = 10'b0010000000;
+  parameter Count = 10'b0100000000;
+  parameter Wait = 10'b1000000000;
+
+  // Assign default values to the outputs
+    reg B3_next, S_next, S1_next, Count_next, Wait_next, done, counting, shift_ena; 
+  always @(state) begin
+    B3_next = 0;
+    S_next = 0;
+    S1_next = 0;
+  end
+    
+   always @(state) begin
+    case(state)
+      S: begin
+        if (d == 0)
+          S_next = 1;
+        else
+          S_next = 0;
+      end
+      S1: begin
+        if (d == 0)
+          S1_next = 1;
+        else
+          S1_next = 0;
+      end
+   endcase
+  end
+
+  always @(state) begin
+    case(state)
+      Count: begin
+        counting = 1;
+        done = 0;
+      end
+      Wait: begin
+        done = 1;
+        counting = 0;
+      end
+      default: begin
+        done = 0;
+        counting = 0;
+      end
+    endcase
+  end
+  always @(state, d,done_counting) begin
+    case(state)
+      S110: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      Wait: begin
+        if (ack == 1)
+          Wait_next = 1;
+      end
+      Count: begin
+        if (done_counting == 0)
+          Count_next = 1;
+        else
+          Wait_next = 1;
+      end
+      B2: begin
+        B3_next = 1;
+      end
+      B3: begin
+        Count_next = 1;
+        shift_ena = 1;
+      end
+    endcase
+  end
+
+endmodule
+
+
+user: The design failed to compile. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:29: error: 'B3_next' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:6:      : It was declared here as a variable.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:29: error: 'S_next' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:7:      : It was declared here as a variable.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:29: error: 'S1_next' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:8:      : It was declared here as a variable.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:29: error: 'Count_next' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:9:      : It was declared here as a variable.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:29: error: 'Wait_next' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:10:      : It was declared here as a variable.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:29: error: 'done' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:11:      : It was declared here as a variable.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:29: error: 'counting' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:12:      : It was declared here as a variable.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:29: error: 'shift_ena' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter3/response0/top_module.sv:13:      : It was declared here as a variable.
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+ 
+  // Define the states
+  parameter S = 10'b0000000001;
+  parameter S1 = 10'b0000000010;
+  parameter S11 = 10'b0000000100;
+  parameter S110 = 10'b0000001000;
+  parameter B0 = 10'b0000010000;
+  parameter B1 = 10'b0000100000;
+  parameter B2 = 10'b0001000000;
+  parameter B3 = 10'b0010000000;
+  parameter Count = 10'b0100000000;
+  parameter Wait = 10'b1000000000;
+
+  // Assign default values to the outputs
+    always @(state) begin
+    B3_next <= 0;
+    S_next <= 0;
+    S1_next <= 0;
+    Count_next <= 0;
+    Wait_next <= 0;
+    done <= 0;
+    counting <= 0;
+    shift_ena <= 0;
+  end
+    
+   always @(state) begin
+    case(state)
+      S: begin
+        if (d == 0)
+          S_next <= 1;
+        else
+          S_next <= 0;
+      end
+      S1: begin
+        if (d == 0)
+          S1_next <= 1;
+        else
+          S1_next <= 0;
+      end
+   endcase
+  end
+
+  always @(state) begin
+    case(state)
+      Count: begin
+        counting <= 1;
+        done <= 0;
+      end
+      Wait: begin
+        done <= 1;
+        counting <= 0;
+      end
+      default: begin
+        done <= 0;
+        counting <= 0;
+      end
+    endcase
+  end
+  always @(state, d,done_counting) begin
+    case(state)
+      S110: begin
+        if (d == 0)
+          S_next <= 1;
+      end
+      Wait: begin
+        if (ack == 1)
+          Wait_next <= 1;
+      end
+      Count: begin
+        if (done_counting == 0)
+          Count_next <= 1;
+        else
+          Wait_next <= 1;
+      end
+      B2: begin
+        B3_next <= 1;
+      end
+      B3: begin
+        Count_next <= 1;
+        shift_ena <= 1;
+      end
+    endcase
+  end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:70: $finish called at 16516 (1ps)
+Hint: Output 'B3_next' has 1474 mismatches. First mismatch occurred at time 1520.
+Hint: Output 'S_next' has 1769 mismatches. First mismatch occurred at time 30.
+Hint: Output 'S1_next' has 770 mismatches. First mismatch occurred at time 265.
+Hint: Output 'Count_next' has 1889 mismatches. First mismatch occurred at time 1515.
+Hint: Output 'Wait_next' has 1358 mismatches. First mismatch occurred at time 30.
+Hint: Output 'done' has 1522 mismatches. First mismatch occurred at time 30.
+Hint: Output 'counting' has 1524 mismatches. First mismatch occurred at time 130.
+Hint: Output 'shift_ena' has 2902 mismatches. First mismatch occurred at time 45.
+Hint: Total mismatched samples is 3156 out of 3303 samples
+
+Simulation finished at 16516 ps
+Mismatches: 3156 in 3303 samples
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+ 
+  // Define the states
+  parameter S = 10'b0000000001;
+  parameter S1 = 10'b0000000010;
+  parameter S11 = 10'b0000000100;
+  parameter S110 = 10'b0000001000;
+  parameter B0 = 10'b0000010000;
+  parameter B1 = 10'b0000100000;
+  parameter B2 = 10'b0001000000;
+  parameter B3 = 10'b0010000000;
+  parameter Count = 10'b0100000000;
+  parameter Wait = 10'b1000000000;
+
+  // Assign default values to the outputs
+  always @(state) begin
+    B3_next = 0;
+    S_next = 0;
+    S1_next = 0;
+    Count_next = 0;
+    Wait_next = 0;
+    done = 0;
+    counting = 0;
+    shift_ena = 0;
+  end
+  
+  // State machine logic
+  always @(state, d, done_counting, ack) begin
+    case(state)
+      S: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      S1: begin
+        if (d == 0)
+          S1_next = 1;
+      end
+      S110: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      Wait: begin
+        if (ack == 1)
+          Wait_next = 1;
+      end
+      Count: begin
+        if (done_counting == 0)
+          Count_next = 1;
+        else
+          Wait_next = 1;
+      end
+      B2: begin
+        B3_next = 1;
+      end
+      B3: begin
+        Count_next = 1;
+        shift_ena = 1;
+      end
+    endcase
+  end
+
+  // Output logic
+  always @(state) begin
+    case(state)
+      Count: begin
+        counting = 1;
+        done = 0;
+      end
+      Wait: begin
+        done = 1;
+        counting = 0;
+      end
+      default: begin
+        counting = 0;
+        done = 0;
+      end
+    endcase
+  end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:70: $finish called at 16516 (1ps)
+Hint: Output 'B3_next' has 1500 mismatches. First mismatch occurred at time 45.
+Hint: Output 'S_next' has 1789 mismatches. First mismatch occurred at time 30.
+Hint: Output 'S1_next' has 767 mismatches. First mismatch occurred at time 185.
+Hint: Output 'Count_next' has 1930 mismatches. First mismatch occurred at time 10.
+Hint: Output 'Wait_next' has 1354 mismatches. First mismatch occurred at time 60.
+Hint: Output 'done' has 1522 mismatches. First mismatch occurred at time 30.
+Hint: Output 'counting' has 1524 mismatches. First mismatch occurred at time 130.
+Hint: Output 'shift_ena' has 2930 mismatches. First mismatch occurred at time 10.
+Hint: Total mismatched samples is 3214 out of 3303 samples
+
+Simulation finished at 16516 ps
+Mismatches: 3214 in 3303 samples
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+);
+ 
+  // Define the states
+  parameter S = 10'b0000000001;
+  parameter S1 = 10'b0000000010;
+  parameter S11 = 10'b0000000100;
+  parameter S110 = 10'b0000001000;
+  parameter B0 = 10'b0000010000;
+  parameter B1 = 10'b0000100000;
+  parameter B2 = 10'b0001000000;
+  parameter B3 = 10'b0010000000;
+  parameter Count = 10'b0100000000;
+  parameter Wait = 10'b1000000000;
+
+  // Assign default values to the outputs
+  always @* begin
+    B3_next = 0;
+    S_next = 0;
+    S1_next = 0;
+    Count_next = 0;
+    Wait_next = 0;
+    done = 0;
+    counting = 0;
+    shift_ena = 0;
+  end
+  
+  // State machine logic
+  always @* begin
+    case(state)
+      S: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      S1: begin
+        if (d == 0)
+          S1_next = 1;
+      end
+      S110: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      Wait: begin
+        if (ack == 1)
+          Wait_next = 1;
+      end
+      Count: begin
+        if (done_counting == 0)
+          Count_next = 1;
+        else
+          Wait_next = 1;
+      end
+      B2: begin
+        B3_next = 1;
+      end
+      B3: begin
+        Count_next = 1;
+        shift_ena = 1;
+      end
+    endcase
+  end
+
+  // Output logic
+  always @* begin
+    case(state)
+      Count: begin
+        counting = 1;
+        done = 0;
+      end
+      Wait: begin
+        done = 1;
+        counting = 0;
+      end
+      default: begin
+        counting = 0;
+        done = 0;
+      end
+    endcase
+  end
+
+endmodule
+
+
+user: The design compiled with warnings. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter6/response0/top_module.sv:29: warning: @* found no sensitivities so it will never trigger.
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+);
+ 
+  // Define the states
+  parameter S = 10'b0000000001;
+  parameter S1 = 10'b0000000010;
+  parameter S11 = 10'b0000000100;
+  parameter S110 = 10'b0000001000;
+  parameter B0 = 10'b0000010000;
+  parameter B1 = 10'b0000100000;
+  parameter B2 = 10'b0001000000;
+  parameter B3 = 10'b0010000000;
+  parameter Count = 10'b0100000000;
+  parameter Wait = 10'b1000000000;
+
+  // Assign default values to the outputs
+  always @* begin
+    B3_next = 0;
+    S_next = 0;
+    S1_next = 0;
+    Count_next = 0;
+    Wait_next = 0;
+    done = 0;
+    counting = 0;
+    shift_ena = 0;
+  end
+  
+  // State machine logic
+  always @(state, d, done_counting, ack) begin
+    case(state)
+      S: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      S1: begin
+        if (d == 0)
+          S1_next = 1;
+      end
+      S110: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      Wait: begin
+        if (ack == 1)
+          Wait_next = 1;
+      end
+      Count: begin
+        if (done_counting == 0)
+          Count_next = 1;
+        else
+          Wait_next = 1;
+      end
+      B2: begin
+        B3_next = 1;
+      end
+      B3: begin
+        Count_next = 1;
+        shift_ena = 1;
+      end
+    endcase
+  end
+
+  // Output logic
+  always @(state) begin
+    case(state)
+      Count: begin
+        counting = 1;
+        done = 0;
+      end
+      Wait: begin
+        done = 1;
+        counting = 0;
+      end
+      default: begin
+        counting = 0;
+        done = 0;
+      end
+    endcase
+  end
+
+endmodule
+
+
+user: The design compiled with warnings. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter7/response0/top_module.sv:29: warning: @* found no sensitivities so it will never trigger.
+
+assistant: 
+user: No modules found in response
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+
+  // Define the states
+  localparam S = 10'b0000000001;
+  localparam S1 = 10'b0000000010;
+  localparam S11 = 10'b0000000100;
+  localparam S110 = 10'b0000001000;
+  localparam B0 = 10'b0000010000;
+  localparam B1 = 10'b0000100000;
+  localparam B2 = 10'b0001000000;
+  localparam B3 = 10'b0010000000;
+  localparam Count = 10'b0100000000;
+  localparam Wait = 10'b1000000000;
+
+  // Assign default values to the outputs
+  always @*
+    B3_next = 0;
+    S_next = 0;
+    S1_next = 0;
+    Count_next = 0;
+    Wait_next = 0;
+    done = 0;
+    counting = 0;
+    shift_ena = 0;
+  end
+
+  // State machine logic
+  always @(state, d, done_counting, ack) begin
+    case(state)
+      S: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      S1: begin
+        if (d == 0)
+          S1_next = 1;
+      end
+      S110: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      Wait: begin
+        if (ack == 1)
+          Wait_next = 1;
+      end
+      Count: begin
+        if (done_counting == 0)
+          Count_next = 1;
+        else
+          Wait_next = 1;
+      end
+      B2: begin
+        B3_next = 1;
+      end
+      B3: begin
+        Count_next = 1;
+        shift_ena = 1;
+      end
+    endcase
+  end
+
+  // Output logic
+  always @(state) begin
+    case(state)
+      Count: begin
+        counting = 1;
+        done = 0;
+      end
+      Wait: begin
+        done = 1;
+        counting = 0;
+      end
+      default: begin
+        counting = 0;
+        done = 0;
+      end
+    endcase
+  end
+
+endmodule
+
+
+user: The design failed to compile. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:31: syntax error
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:31: error: Invalid module instantiation
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:32: error: Invalid module instantiation
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:33: error: Invalid module instantiation
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:34: error: Invalid module instantiation
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:35: error: Invalid module instantiation
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:36: error: Invalid module instantiation
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:37: error: Invalid module instantiation
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:45: error: Invalid module item.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:46: syntax error
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:49: error: Invalid module item.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:50: syntax error
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:53: error: Invalid module item.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:54: syntax error
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:57: error: Invalid module item.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:58: syntax error
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:61: error: Invalid module item.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:62: syntax error
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:63: error: Invalid module item.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:64: syntax error
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:66: error: Invalid module item.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:67: syntax error
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:69: error: Invalid module item.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:70: syntax error
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:70: error: Invalid module instantiation
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:79: error: Invalid module item.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:80: syntax error
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:80: error: Invalid module instantiation
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:83: error: Invalid module item.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:84: syntax error
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:84: error: Invalid module instantiation
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:87: error: Invalid module item.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:88: syntax error
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:88: error: Invalid module instantiation
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:17: error: Invalid module item.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:19: error: 'S' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:17:      : It was declared here as a parameter.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:19: error: 'S1' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:18:      : It was declared here as a parameter.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:19: error: 'S11' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:19:      : It was declared here as a parameter.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:19: error: 'S110' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:20:      : It was declared here as a parameter.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:19: error: 'B0' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:21:      : It was declared here as a parameter.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:19: error: 'B1' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:22:      : It was declared here as a parameter.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:19: error: 'B2' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:23:      : It was declared here as a parameter.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:19: error: 'B3' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:24:      : It was declared here as a parameter.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:19: error: 'Count' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:25:      : It was declared here as a parameter.
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_machine/review2015_fsmonehot/review2015_fsmonehot_tb.sv:19: error: 'Wait' has already been declared in this scope.
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter9/response0/top_module.sv:26:      : It was declared here as a parameter.
+
+assistant: module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+);
+ 
+  // Define the states
+  localparam S = 10'b0000000001;
+  localparam S1 = 10'b0000000010;
+  localparam S11 = 10'b0000000100;
+  localparam S110 = 10'b0000001000;
+  localparam B0 = 10'b0000010000;
+  localparam B1 = 10'b0000100000;
+  localparam B2 = 10'b0001000000;
+  localparam B3 = 10'b0010000000;
+  localparam Count = 10'b0100000000;
+  localparam Wait = 10'b1000000000;
+
+  // Assign default values to the outputs
+  always @* begin
+    B3_next = 0;
+    S_next = 0;
+    S1_next = 0;
+    Count_next = 0;
+    Wait_next = 0;
+    done = 0;
+    counting = 0;
+    shift_ena = 0;
+  end
+  
+  // State machine logic
+  always @(state, d, done_counting, ack) begin
+    case(state)
+      S: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      S1: begin
+        if (d == 0)
+          S1_next = 1;
+      end
+      S110: begin
+        if (d == 0)
+          S_next = 1;
+      end
+      Wait: begin
+        if (ack == 1)
+          Wait_next = 1;
+      end
+      Count: begin
+        if (done_counting == 0)
+          Count_next = 1;
+        else
+          Wait_next = 1;
+      end
+      B2: begin
+        B3_next = 1;
+      end
+      B3: begin
+        Count_next = 1;
+        shift_ena = 1;
+      end
+    endcase
+  end
+
+  // Output logic
+  always @(state) begin
+    case(state)
+      Count: begin
+        counting = 1;
+        done = 0;
+      end
+      Wait: begin
+        done = 1;
+        counting = 0;
+      end
+      default: begin
+        counting = 0;
+        done = 0;
+      end
+    endcase
+  end
+
+endmodule
+
+
+user: The design compiled with warnings. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth10/machine/review2015_fsmonehot/iter10/response0/top_module.sv:29: warning: @* found no sensitivities so it will never trigger.
+
+Time to Generate: 85.79685091972351
+Best ranked response at iteration 4 with response number 0
+Rank of best response: 0.04450499545867393
+Best response module:
+module top_module(
+    input d,
+    input done_counting,
+    input ack,
+    input [9:0] state,    // 10-bit one-hot current state
+    output reg B3_next,
+    output reg S_next,
+    output reg S1_next,
+    output reg Count_next,
+    output reg Wait_next,
+    output reg done,
+    output reg counting,
+    output reg shift_ena
+ );
+ 
+  // Define the states
+  parameter S = 10'b0000000001;
+  parameter S1 = 10'b0000000010;
+  parameter S11 = 10'b0000000100;
+  parameter S110 = 10'b0000001000;
+  parameter B0 = 10'b0000010000;
+  parameter B1 = 10'b0000100000;
+  parameter B2 = 10'b0001000000;
+  parameter B3 = 10'b0010000000;
+  parameter Count = 10'b0100000000;
+  parameter Wait = 10'b1000000000;
+
+  // Assign default values to the outputs
+    always @(state) begin
+    B3_next <= 0;
+    S_next <= 0;
+    S1_next <= 0;
+    Count_next <= 0;
+    Wait_next <= 0;
+    done <= 0;
+    counting <= 0;
+    shift_ena <= 0;
+  end
+    
+   always @(state) begin
+    case(state)
+      S: begin
+        if (d == 0)
+          S_next <= 1;
+        else
+          S_next <= 0;
+      end
+      S1: begin
+        if (d == 0)
+          S1_next <= 1;
+        else
+          S1_next <= 0;
+      end
+   endcase
+  end
+
+  always @(state) begin
+    case(state)
+      Count: begin
+        counting <= 1;
+        done <= 0;
+      end
+      Wait: begin
+        done <= 1;
+        counting <= 0;
+      end
+      default: begin
+        done <= 0;
+        counting <= 0;
+      end
+    endcase
+  end
+  always @(state, d,done_counting) begin
+    case(state)
+      S110: begin
+        if (d == 0)
+          S_next <= 1;
+      end
+      Wait: begin
+        if (ack == 1)
+          Wait_next <= 1;
+      end
+      Count: begin
+        if (done_counting == 0)
+          Count_next <= 1;
+        else
+          Wait_next <= 1;
+      end
+      B2: begin
+        B3_next <= 1;
+      end
+      B3: begin
+        Count_next <= 1;
+        shift_ena <= 1;
+      end
+    endcase
+  end
+
+endmodule
+
+

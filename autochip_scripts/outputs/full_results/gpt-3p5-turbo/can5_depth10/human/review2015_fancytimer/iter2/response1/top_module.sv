@@ -1,0 +1,65 @@
+module top_module(
+	input wire clk,
+	input wire reset,
+	input wire data,
+    output wire [3:0] count,
+    output reg counting,
+    output reg done,
+    input wire ack );
+
+	reg [3:0] shift_reg;
+	reg [1:0] state;
+	reg [15:0] counter;
+	reg [3:0] delay_count;
+
+	always @(posedge clk or posedge reset) begin
+		if (reset) begin
+			shift_reg <= 4'b0000;
+			state <= 2'b00;
+			counter <= 16'd0;
+			counting <= 0;
+			done <= 0;
+			delay_count <= 4'd0;
+		end else begin
+			case (state)
+				2'b00: begin
+					shift_reg <= {shift_reg[2:0], data};
+					if (shift_reg == 4'b1101) begin
+						state <= 2'b01;
+					end
+				end
+				2'b01: begin
+					shift_reg <= {shift_reg[2:0], data};
+					if (delay_count < shift_reg[3:0]) begin
+						delay_count <= delay_count + 1;
+					end else begin
+						counting <= 1;
+						state <= 2'b10;
+					end
+				end
+				2'b10: begin
+					if (counter < 16'd999) begin
+						counter <= counter + 1;
+					end else begin
+						counter <= 16'd0;
+						if (delay_count > 0) begin
+							delay_count <= delay_count - 1;
+						end else begin
+							state <= 2'b11;
+						end
+					end
+				end
+				2'b11: begin
+					if (ack == 1) begin
+						done <= 1;
+						counting <= 0;
+						state <= 2'b00;
+					end
+				end
+			endcase
+		end
+	end
+
+	assign count = counting ? delay_count : 4'bxxxx;
+
+endmodule

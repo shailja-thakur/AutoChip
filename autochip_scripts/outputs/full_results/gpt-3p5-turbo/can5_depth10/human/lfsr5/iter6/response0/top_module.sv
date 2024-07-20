@@ -1,0 +1,23 @@
+module top_module(
+	input clk,
+	input reset,
+	output reg [4:0] q);
+
+	// Register to store the current state of the LFSR
+	reg [4:0] state;
+
+	always @(posedge clk) begin
+		if (reset)
+			state <= 5'b1;
+		else begin
+			state[0] <= state[2] ^ state[4];
+			state[1] <= state[0];
+			state[2] <= state[1];
+			state[3] <= state[2];
+			state[4] <= state[3];
+		end
+	end
+
+	assign q = state;
+
+endmodule

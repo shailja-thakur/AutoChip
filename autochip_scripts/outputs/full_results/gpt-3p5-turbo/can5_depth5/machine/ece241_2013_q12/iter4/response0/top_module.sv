@@ -1,0 +1,52 @@
+module top_module (
+    input clk,
+    input enable,
+    input S,
+    input A,
+    input B,
+    input C,
+    output reg Z
+);
+    reg [7:0] q;
+    reg [2:0] select;
+
+    always @(posedge clk)
+    begin
+        if (enable)
+        begin
+            q <= {q[6:0], S};
+        end
+    end
+
+    // Decoder to determine select signal
+    always @(A, B, C)
+    begin
+        case ({A, B, C})
+            3'b000: select <= 3'b000;
+            3'b001: select <= 3'b001;
+            3'b010: select <= 3'b010;
+            3'b011: select <= 3'b011;
+            3'b100: select <= 3'b100;
+            3'b101: select <= 3'b101;
+            3'b110: select <= 3'b110;
+            3'b111: select <= 3'b111;
+            default: select <= 3'b000;
+        endcase
+    end
+
+    // Multiplexer to select output bit
+    always @(*)
+    begin
+        case (select)
+            3'b000: Z <= q[0];
+            3'b001: Z <= q[1];
+            3'b010: Z <= q[2];
+            3'b011: Z <= q[3];
+            3'b100: Z <= q[4];
+            3'b101: Z <= q[5];
+            3'b110: Z <= q[6];
+            3'b111: Z <= q[7];
+            default: Z <= 0;
+        endcase
+    end
+endmodule

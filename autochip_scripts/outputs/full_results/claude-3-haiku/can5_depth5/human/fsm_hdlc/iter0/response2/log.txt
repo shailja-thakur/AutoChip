@@ -1,0 +1,89 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': '// Synchronous HDLC framing involves decoding a continuous bit stream of data to look for bit patterns that indicate the beginning and end of frames (packets). Seeing exactly 6 consecutive 1s (i.e., 01111110) is a "flag" that indicate frame boundaries. To avoid the data stream from accidentally containing "flags", the sender inserts a zero after every 5 consecutive 1s which the receiver must detect and discard. We also need to signal an error if there are 7 or more consecutive 1s. Create a Moore-type finite state machine to recognize these three sequences:\n\n// (1) 0111110: Signal a bit needs to be discarded (disc).\n// (2) 01111110: Flag the beginning/end of a frame (flag).\n// (3) 01111111...: Error (7 or more 1s) (err).\n\n// When the FSM is reset, it should be in a state that behaves as though the previous input were 0. The reset signal is active high synchronous. The output signals should be asserted for a complete cycle beginning on the clock cycle after the condition occurs.\n\nmodule top_module (\n\tinput clk,\n\tinput reset,\n\tinput in,\n\toutput disc,\n\toutput flag,\n\toutput err);'}
+{'assistant': '```verilog
+module top_module (
+    input clk,
+    input reset,
+    input in,
+    output reg disc,
+    output reg flag,
+    output reg err
+);
+
+reg [2:0] state, next_state;
+parameter IDLE = 3'b000, DETECT_1 = 3'b001, DETECT_2 = 3'b010, DETECT_3 = 3'b011, DETECT_4 = 3'b100, DETECT_5 = 3'b101, DETECT_6 = 3'b110, DETECT_7 = 3'b111;
+
+// State update logic
+always @(posedge clk) begin
+    if (reset)
+        state <= IDLE;
+    else
+        state <= next_state;
+end
+
+// Next state and output logic
+always @(*) begin
+    disc = 1'b0;
+    flag = 1'b0;
+    err = 1'b0;
+    case (state)
+        IDLE: begin
+            if (in == 1'b1)
+                next_state = DETECT_1;
+            else
+                next_state = IDLE;
+        end
+        DETECT_1: begin
+            if (in == 1'b1)
+                next_state = DETECT_2;
+            else
+                next_state = IDLE;
+        end
+        DETECT_2: begin
+            if (in == 1'b1)
+                next_state = DETECT_3;
+            else
+                next_state = IDLE;
+        end
+        DETECT_3: begin
+            if (in == 1'b1)
+                next_state = DETECT_4;
+            else
+                next_state = IDLE;
+        end
+        DETECT_4: begin
+            if (in == 1'b1)
+                next_state = DETECT_5;
+            else
+                next_state = IDLE;
+        end
+        DETECT_5: begin
+            if (in == 1'b1)
+                next_state = DETECT_6;
+            else begin
+                disc = 1'b1;
+                next_state = IDLE;
+            end
+        end
+        DETECT_6: begin
+            if (in == 1'b1) begin
+                flag = 1'b1;
+                next_state = IDLE;
+            end
+            else begin
+                next_state = IDLE;
+            end
+        end
+        DETECT_7: begin
+            if (in == 1'b1)
+                err = 1'b1;
+            next_state = IDLE;
+        end
+        default: next_state = IDLE;
+    endcase
+end
+
+endmodule
+```'}
+
+ Iteration rank: 0.6666666666666666

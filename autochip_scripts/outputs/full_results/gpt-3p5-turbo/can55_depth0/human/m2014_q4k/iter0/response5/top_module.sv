@@ -1,0 +1,38 @@
+module top_module (
+  input clk,
+  input resetn,
+  input in,
+  output out
+);
+
+  reg [3:0] reg;
+
+  always @(posedge clk or negedge resetn) begin
+    if (~resetn)
+      reg <= 4'b0;
+    else
+      reg <= {reg[2:0], in};
+  end
+
+  assign out = reg[3];
+
+endmodule
+module shift_register (
+  input clk,
+  input resetn,
+  input in,
+  output out
+);
+
+  reg [3:0] reg;
+
+  always @(posedge clk or negedge resetn) begin
+    if (~resetn)
+      reg <= 4'b0;
+    else
+      reg <= {reg[2:0], in};
+  end
+
+  assign out = reg[3];
+
+endmodule

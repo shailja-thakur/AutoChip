@@ -1,0 +1,39 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// Create 16 D flip-flops. It's sometimes useful to only modify parts of a group of flip-flops. The byte-enable inputs control whether each byte of the 16 registers should be written to on that cycle. byteena[1] controls the upper byte d[15:8], while byteena[0] controls the lower byte d[7:0]. resetn is a synchronous, active-low reset. All DFFs should be triggered by the positive edge of clk.\n\nmodule top_module(\n\tinput clk,\n\tinput resetn,\n\tinput [1:0] byteena,\n\tinput [15:0] d,\n\toutput reg [15:0] q);"}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input resetn,
+    input [1:0] byteena,
+    input [15:0] d,
+    output reg [15:0] q
+);
+
+    always @(posedge clk) begin
+        if (!resetn) begin
+            q <= 16'b0;
+        end
+        else begin
+            if (byteena[0]) begin
+                q[7:0] <= d[7:0];
+            end
+            if (byteena[1]) begin
+                q[15:8] <= d[15:8];
+            end
+        end
+    end
+
+endmodule
+```
+
+This Verilog module creates 16 D-flip-flops with the following functionality:
+
+1. The `clk` input is the clock signal, and the flip-flops are triggered on the positive edge of the clock.
+2. The `resetn` input is an active-low synchronous reset. When `resetn` is low, all the flip-flop outputs `q` are set to 0.
+3. The `byteena` input is a 2-bit signal that controls which bytes of the 16-bit input `d` are written to the corresponding bytes of the 16-bit output `q`. `byteena[0]` controls the lower byte of `q` (bits 7:0), and `byteena[1]` controls the upper byte of `q` (bits 15:8).
+4. The `d` input is the 16-bit data to be written to the flip-flops.
+5. The `q` output is the current state of the 16 flip-flops.
+
+The `always` block handles the logic for the flip-flops. On the positive edge of `clk`, if `resetn` is low, all the flip-flop outputs `q` are set to 0. Otherwise, the flip-flop outputs are updated based on the `byteena` signals. If `byteena[0]` is high, the lower byte of `q` is updated with the lower byte of `d`. If `byteena[1]` is high, the upper byte of `q` is updated with the upper byte of `d`.'}
+
+ Iteration rank: 1.0

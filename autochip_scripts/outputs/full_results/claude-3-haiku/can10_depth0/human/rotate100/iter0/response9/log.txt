@@ -1,0 +1,39 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// Build a 100-bit left/right rotator, with synchronous load and left/right enable. A rotator shifts-in the shifted-out bit from the other end of the register, unlike a shifter that discards the shifted-out bit and shifts in a zero. If enabled, a rotator rotates the bits around and does not modify/discard them. \n// (1) load: Loads shift register with data[99:0] instead of rotating. Synchronous active high.\n// (2) ena[1:0]: Synchronous. Chooses whether and which direction to rotate: \n//     (a) 2'b01 rotates right by one bit, \n//     (b) 2'b10 rotates left by one bit, \n//     (c) 2'b00 and 2'b11 do not rotate. \n// (3) q: The contents of the rotator.\n\nmodule top_module(\n\tinput clk,\n\tinput load,\n\tinput [1:0] ena,\n\tinput [99:0] data,\n\toutput reg [99:0] q);"}
+{'assistant': '```verilog
+module top_module(
+    input clk,
+    input load,
+    input [1:0] ena,
+    input [99:0] data,
+    output reg [99:0] q
+);
+
+always @(posedge clk) begin
+    if (load) begin
+        q <= data;
+    end
+    else begin
+        case (ena)
+            2'b01: q <= {q[0], q[99:1]}; // Rotate right
+            2'b10: q <= {q[98:0], q[99]}; // Rotate left
+            default: q <= q; // No rotation
+        endcase
+    end
+end
+
+endmodule
+```
+
+The provided Verilog module specification is complete and correct. The implementation above satisfies all the requirements:
+
+1. The module has a 100-bit shift register `q` to hold the rotated data.
+2. The `load` signal synchronously loads the `data` input into the shift register.
+3. The `ena` signal is used to control the rotation direction:
+   - `2'b01` rotates the bits right by one position
+   - `2'b10` rotates the bits left by one position
+   - `2'b00` and `2'b11` keep the shift register contents unchanged (no rotation)
+
+The module uses a single `always` block to handle the synchronous logic. If `load` is asserted, the `data` input is loaded into the shift register. Otherwise, the shift register is rotated based on the `ena` signal.'}
+
+ Iteration rank: 1.0

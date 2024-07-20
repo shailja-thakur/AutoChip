@@ -1,0 +1,942 @@
+system: You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     
+user: // We want to create a timer that:
+// (1) is started when a particular pattern (1101) is detected,
+// (2) shifts in 4 more bits to determine the duration to delay,
+// (3) waits for the counters to finish counting, and
+// (4) notifies the user and waits for the user to acknowledge the timer.
+// In this problem, implement just the finite-state machine that controls the timer. The data path (counters and some comparators) are not included here.
+// The serial data is available on the data input pin. When the pattern 1101 is received, the state machine must then assert output shift_ena for exactly 4 clock cycles. After that, the state machine asserts its counting output to indicate it is waiting for the counters, and waits until input done_counting is high.At that point, the state machine must assert done to notify the user the timer has timed out, and waits until input ack is 1 before being reset to look for the next occurrence of the start sequence (1101). The state machine should have a active high synchronous reset, setting the state to where it begins searching for the input sequence 1101.
+
+module top_module(
+	input clk,
+	input reset,
+	input data,
+    output reg shift_ena,
+    output reg counting,
+    input done_counting,
+    output reg done,
+    input ack );
+assistant: module top_module(
+    input clk,
+    input reset,
+    input data,
+    output reg shift_ena,
+    output reg counting,
+    input done_counting,
+    output reg done,
+    input ack );
+    
+    reg [3:0] state;
+    reg [3:0] next_state;
+    
+    parameter START = 0;
+    parameter DETECT_PATTERN = 1;
+    parameter SHIFT_ENA = 2;
+    parameter WAIT_COUNTING = 3;
+    parameter TIMEOUT = 4;
+    parameter WAIT_ACK = 5;
+
+    always @(posedge clk) begin
+        if (reset)
+            state <= START;
+        else
+            state <= next_state;
+    end
+
+    always @(state or data or done_counting or ack) begin
+        case (state)
+            START: begin
+                if (data == 4'b1101)
+                    next_state = DETECT_PATTERN;
+                else
+                    next_state = START;
+            end
+            DETECT_PATTERN: begin
+                next_state = SHIFT_ENA;
+            end
+            SHIFT_ENA: begin
+                if (shift_ena_count == 4)
+                    next_state = WAIT_COUNTING;
+                else
+                    next_state = SHIFT_ENA;
+            end
+            WAIT_COUNTING: begin
+                if (done_counting)
+                    next_state = TIMEOUT;
+                else
+                    next_state = WAIT_COUNTING;
+            end
+            TIMEOUT: begin
+                next_state = WAIT_ACK;
+            end
+            WAIT_ACK: begin
+                if (ack)
+                    next_state = START;
+                else
+                    next_state = WAIT_ACK;
+            end
+            default: begin
+                next_state = START;
+            end
+        endcase
+    end
+
+    always @(posedge clk) begin
+        case (state)
+            START: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+            DETECT_PATTERN: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+            SHIFT_ENA: begin
+                shift_ena <= 1;
+                counting <= 0;
+                done <= 0;
+            end
+            WAIT_COUNTING: begin
+                shift_ena <= 0;
+                counting <= 1;
+                done <= 0;
+            end
+            TIMEOUT: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 1;
+            end
+            WAIT_ACK: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 1;
+            end
+            default: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+        endcase
+    end
+
+endmodule
+
+
+user: The design failed to compile. Please fix the module. The output of iverilog is as follows:
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth5/human/review2015_fsm/iter0/response0/top_module.sv:40: error: Unable to bind wire/reg/memory `shift_ena_count' in `tb.top_module1'
+/home/jmb9986/AutoChip/autochip_scripts/outputs/gpt3p5-ff/can1_depth5/human/review2015_fsm/iter0/response0/top_module.sv:40: error: Unable to elaborate condition expression.
+2 error(s) during elaboration.
+
+assistant: module top_module(
+    input clk,
+    input reset,
+    input data,
+    output reg shift_ena,
+    output reg counting,
+    input done_counting,
+    output reg done,
+    input ack );
+    
+    reg [3:0] state;
+    reg [3:0] next_state;
+    reg [2:0] shift_ena_count;
+
+    parameter START = 0;
+    parameter DETECT_PATTERN = 1;
+    parameter SHIFT_ENA = 2;
+    parameter WAIT_COUNTING = 3;
+    parameter TIMEOUT = 4;
+    parameter WAIT_ACK = 5;
+
+    always @(posedge clk) begin
+        if (reset)
+            state <= START;
+        else
+            state <= next_state;
+    end
+
+    always @(state or data or done_counting or ack) begin
+        case (state)
+            START: begin
+                if (data == 4'b1101)
+                    next_state = DETECT_PATTERN;
+                else
+                    next_state = START;
+            end
+            DETECT_PATTERN: begin
+                next_state = SHIFT_ENA;
+            end
+            SHIFT_ENA: begin
+                if (shift_ena_count == 3)
+                    next_state = WAIT_COUNTING;
+                else
+                    next_state = SHIFT_ENA;
+            end
+            WAIT_COUNTING: begin
+                if (done_counting)
+                    next_state = TIMEOUT;
+                else
+                    next_state = WAIT_COUNTING;
+            end
+            TIMEOUT: begin
+                next_state = WAIT_ACK;
+            end
+            WAIT_ACK: begin
+                if (ack)
+                    next_state = START;
+                else
+                    next_state = WAIT_ACK;
+            end
+            default: begin
+                next_state = START;
+            end
+        endcase
+    end
+    
+    always @(posedge clk) begin
+        if (reset)
+            shift_ena_count <= 0;
+        else if (state == SHIFT_ENA)
+            shift_ena_count <= shift_ena_count + 1;
+        else
+            shift_ena_count <= 0;
+    end
+
+    always @(posedge clk) begin
+        case (state)
+            START: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+            DETECT_PATTERN: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+            SHIFT_ENA: begin
+                shift_ena <= 1;
+                counting <= 0;
+                done <= 0;
+            end
+            WAIT_COUNTING: begin
+                shift_ena <= 0;
+                counting <= 1;
+                done <= 0;
+            end
+            TIMEOUT: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 1;
+            end
+            WAIT_ACK: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 1;
+            end
+            default: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+        endcase
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your FSM didn't pass the sample timing diagram posted with the problem statement. Perhaps try debugging that?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/review2015_fsm/review2015_fsm_tb.sv:130: $finish called at 25346 (1ps)
+Hint: Output 'shift_ena' has 256 mismatches. First mismatch occurred at time 90.
+Hint: Output 'counting' has 1872 mismatches. First mismatch occurred at time 130.
+Hint: Output 'done' has 2024 mismatches. First mismatch occurred at time 180.
+Hint: Total mismatched samples is 4152 out of 5069 samples
+
+Simulation finished at 25346 ps
+Mismatches: 4152 in 5069 samples
+
+assistant: module top_module(
+    input clk,
+    input reset,
+    input data,
+    output reg shift_ena,
+    output reg counting,
+    input done_counting,
+    output reg done,
+    input ack );
+    
+    reg [3:0] state;
+    reg [3:0] next_state;
+    reg [2:0] shift_ena_count;
+
+    parameter START = 0;
+    parameter DETECT_PATTERN = 1;
+    parameter SHIFT_ENA = 2;
+    parameter WAIT_COUNTING = 3;
+    parameter TIMEOUT = 4;
+    parameter WAIT_ACK = 5;
+
+    always @(posedge clk) begin
+        if (reset)
+            state <= START;
+        else
+            state <= next_state;
+    end
+
+    always @(state or data or done_counting or ack) begin
+        case (state)
+            START: begin
+                if (data == 4'b1101)
+                    next_state = DETECT_PATTERN;
+                else
+                    next_state = START;
+            end
+            DETECT_PATTERN: begin
+                next_state = SHIFT_ENA;
+            end
+            SHIFT_ENA: begin
+                if (shift_ena_count == 3)
+                    next_state = WAIT_COUNTING;
+                else
+                    next_state = SHIFT_ENA;
+            end
+            WAIT_COUNTING: begin
+                if (done_counting)
+                    next_state = TIMEOUT;
+                else
+                    next_state = WAIT_COUNTING;
+            end
+            TIMEOUT: begin
+                next_state = WAIT_ACK;
+            end
+            WAIT_ACK: begin
+                if (ack)
+                    next_state = START;
+                else
+                    next_state = WAIT_ACK;
+            end
+            default: begin
+                next_state = START;
+            end
+        endcase
+    end
+    
+    always @(posedge clk) begin
+        if (reset)
+            shift_ena_count <= 0;
+        else if (state == SHIFT_ENA)
+            shift_ena_count <= shift_ena_count + 1;
+        else
+            shift_ena_count <= 0;
+    end
+
+    always @(posedge clk) begin
+        case (state)
+            START: begin
+                shift_ena <= 0;
+            end
+            DETECT_PATTERN: begin
+                shift_ena <= 0;
+            end
+            SHIFT_ENA: begin
+                shift_ena <= 1;
+            end
+            WAIT_COUNTING: begin
+                shift_ena <= 0;
+            end
+            TIMEOUT: begin
+                shift_ena <= 0;
+            end
+            WAIT_ACK: begin
+                shift_ena <= 0;
+            end
+            default: begin
+                shift_ena <= 0;
+            end
+        endcase
+    end
+    
+    always @(posedge clk) begin
+        case (state)
+            START: begin
+                counting <= 0;
+                done <= 0;
+            end
+            DETECT_PATTERN: begin
+                counting <= 0;
+                done <= 0;
+            end
+            SHIFT_ENA: begin
+                counting <= 0;
+                done <= 0;
+            end
+            WAIT_COUNTING: begin
+                counting <= 1;
+                done <= 0;
+            end
+            TIMEOUT: begin
+                counting <= 0;
+                done <= 1;
+            end
+            WAIT_ACK: begin
+                counting <= 0;
+                done <= 1;
+            end
+            default: begin
+                counting <= 0;
+                done <= 0;
+            end
+        endcase
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your FSM didn't pass the sample timing diagram posted with the problem statement. Perhaps try debugging that?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/review2015_fsm/review2015_fsm_tb.sv:130: $finish called at 25346 (1ps)
+Hint: Output 'shift_ena' has 256 mismatches. First mismatch occurred at time 90.
+Hint: Output 'counting' has 1872 mismatches. First mismatch occurred at time 130.
+Hint: Output 'done' has 2024 mismatches. First mismatch occurred at time 180.
+Hint: Total mismatched samples is 4152 out of 5069 samples
+
+Simulation finished at 25346 ps
+Mismatches: 4152 in 5069 samples
+
+assistant: module top_module(
+    input clk,
+    input reset,
+    input data,
+    output reg shift_ena,
+    output reg counting,
+    input done_counting,
+    output reg done,
+    input ack );
+    
+    reg [3:0] state;
+    reg [3:0] next_state;
+    reg [2:0] shift_ena_count;
+
+    parameter START = 0;
+    parameter DETECT_PATTERN = 1;
+    parameter SHIFT_ENA = 2;
+    parameter WAIT_COUNTING = 3;
+    parameter TIMEOUT = 4;
+    parameter WAIT_ACK = 5;
+
+    always @(posedge clk) begin
+        if (reset)
+            state <= START;
+        else
+            state <= next_state;
+    end
+
+    always @(state or data or done_counting or ack) begin
+        case (state)
+            START: begin
+                if (data == 4'b1101)
+                    next_state = SHIFT_ENA;
+                else
+                    next_state = START;
+            end
+            DETECT_PATTERN: begin
+                next_state = SHIFT_ENA;
+            end
+            SHIFT_ENA: begin
+                if (shift_ena_count == 3)
+                    next_state = WAIT_COUNTING;
+                else
+                    next_state = SHIFT_ENA;
+            end
+            WAIT_COUNTING: begin
+                if (done_counting)
+                    next_state = TIMEOUT;
+                else
+                    next_state = WAIT_COUNTING;
+            end
+            TIMEOUT: begin
+                next_state = WAIT_ACK;
+            end
+            WAIT_ACK: begin
+                if (ack)
+                    next_state = START;
+                else
+                    next_state = WAIT_ACK;
+            end
+            default: begin
+                next_state = START;
+            end
+        endcase
+    end
+    
+    always @(posedge clk) begin
+        if (reset)
+            shift_ena_count <= 0;
+        else if (state == SHIFT_ENA)
+            shift_ena_count <= shift_ena_count + 1;
+        else
+            shift_ena_count <= 0;
+    end
+
+    always @(posedge clk) begin
+        case (state)
+            START: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+            DETECT_PATTERN: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+            SHIFT_ENA: begin
+                shift_ena <= 1;
+                counting <= 0;
+                done <= 0;
+            end
+            WAIT_COUNTING: begin
+                shift_ena <= 0;
+                counting <= 1;
+                done <= 0;
+            end
+            TIMEOUT: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 1;
+            end
+            WAIT_ACK: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 1;
+            end
+            default: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+        endcase
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your FSM didn't pass the sample timing diagram posted with the problem statement. Perhaps try debugging that?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/review2015_fsm/review2015_fsm_tb.sv:130: $finish called at 25346 (1ps)
+Hint: Output 'shift_ena' has 256 mismatches. First mismatch occurred at time 90.
+Hint: Output 'counting' has 1872 mismatches. First mismatch occurred at time 130.
+Hint: Output 'done' has 2024 mismatches. First mismatch occurred at time 180.
+Hint: Total mismatched samples is 4152 out of 5069 samples
+
+Simulation finished at 25346 ps
+Mismatches: 4152 in 5069 samples
+
+assistant: module top_module(
+    input clk,
+    input reset,
+    input data,
+    output reg shift_ena,
+    output reg counting,
+    input done_counting,
+    output reg done,
+    input ack );
+    
+    reg [3:0] state;
+    reg [3:0] next_state;
+    reg [2:0] shift_ena_count;
+
+    parameter START = 0;
+    parameter DETECT_PATTERN = 1;
+    parameter SHIFT_ENA = 2;
+    parameter WAIT_COUNTING = 3;
+    parameter TIMEOUT = 4;
+    parameter WAIT_ACK = 5;
+
+    always @(posedge clk) begin
+        if (reset)
+            state <= START;
+        else
+            state <= next_state;
+    end
+
+    always @(state or data or done_counting or ack) begin
+        case (state)
+            START: begin
+                if (data == 4'b1101)
+                    next_state = DETECT_PATTERN;
+                else
+                    next_state = START;
+            end
+            DETECT_PATTERN: begin
+                next_state = SHIFT_ENA;
+            end
+            SHIFT_ENA: begin
+                if (shift_ena_count == 3)
+                    next_state = WAIT_COUNTING;
+                else
+                    next_state = SHIFT_ENA;
+            end
+            WAIT_COUNTING: begin
+                if (done_counting)
+                    next_state = TIMEOUT;
+                else
+                    next_state = WAIT_COUNTING;
+            end
+            TIMEOUT: begin
+                next_state = WAIT_ACK;
+            end
+            WAIT_ACK: begin
+                if (ack)
+                    next_state = START;
+                else
+                    next_state = WAIT_ACK;
+            end
+            default: begin
+                next_state = START;
+            end
+        endcase
+    end
+    
+    always @(posedge clk) begin
+        if (reset)
+            shift_ena_count <= 0;
+        else if (state == SHIFT_ENA)
+            shift_ena_count <= shift_ena_count + 1;
+        else
+            shift_ena_count <= 0;
+    end
+
+    always @(posedge clk) begin
+        case (state)
+            START: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+            DETECT_PATTERN: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+            SHIFT_ENA: begin
+                shift_ena <= 1;
+                counting <= 0;
+                done <= 0;
+            end
+            WAIT_COUNTING: begin
+                shift_ena <= 0;
+                counting <= 1;
+                done <= 0;
+            end
+            TIMEOUT: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 1;
+            end
+            WAIT_ACK: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 1;
+            end
+            default: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+        endcase
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your FSM didn't pass the sample timing diagram posted with the problem statement. Perhaps try debugging that?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/review2015_fsm/review2015_fsm_tb.sv:130: $finish called at 25346 (1ps)
+Hint: Output 'shift_ena' has 256 mismatches. First mismatch occurred at time 90.
+Hint: Output 'counting' has 1872 mismatches. First mismatch occurred at time 130.
+Hint: Output 'done' has 2024 mismatches. First mismatch occurred at time 180.
+Hint: Total mismatched samples is 4152 out of 5069 samples
+
+Simulation finished at 25346 ps
+Mismatches: 4152 in 5069 samples
+
+assistant: module top_module(
+    input clk,
+    input reset,
+    input data,
+    output reg shift_ena,
+    output reg counting,
+    input done_counting,
+    output reg done,
+    input ack
+);
+    
+    reg [3:0] state;
+    reg [3:0] next_state;
+    reg [3:0] shift_ena_count;
+
+    parameter START = 0;
+    parameter DETECT_PATTERN = 1;
+    parameter SHIFT_ENA = 2;
+    parameter WAIT_COUNTING = 3;
+    parameter TIMEOUT = 4;
+    parameter WAIT_ACK = 5;
+
+    always @(posedge clk) begin
+        if (reset)
+            state <= START;
+        else
+            state <= next_state;
+    end
+
+    always @(state or data or done_counting or ack) begin
+        case (state)
+            START: begin
+                if (data == 4'b1101)
+                    next_state = DETECT_PATTERN;
+                else
+                    next_state = START;
+            end
+            DETECT_PATTERN: begin
+                next_state = SHIFT_ENA;
+            end
+            SHIFT_ENA: begin
+                if (shift_ena_count == 3)
+                    next_state = WAIT_COUNTING;
+                else
+                    next_state = SHIFT_ENA;
+            end
+            WAIT_COUNTING: begin
+                if (done_counting)
+                    next_state = TIMEOUT;
+                else
+                    next_state = WAIT_COUNTING;
+            end
+            TIMEOUT: begin
+                next_state = WAIT_ACK;
+            end
+            WAIT_ACK: begin
+                if (ack)
+                    next_state = START;
+                else
+                    next_state = WAIT_ACK;
+            end
+            default: begin
+                next_state = START;
+            end
+        endcase
+    end
+    
+    always @(posedge clk) begin
+        if (reset)
+            shift_ena_count <= 0;
+        else if (state == SHIFT_ENA)
+            shift_ena_count <= shift_ena_count + 1;
+        else
+            shift_ena_count <= 0;
+    end
+
+    always @(posedge clk) begin
+        case (state)
+            START: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+            DETECT_PATTERN: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+            SHIFT_ENA: begin
+                shift_ena <= 1;
+                counting <= 0;
+                done <= 0;
+            end
+            WAIT_COUNTING: begin
+                shift_ena <= 0;
+                counting <= 1;
+                done <= 0;
+            end
+            TIMEOUT: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 1;
+            end
+            WAIT_ACK: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 1;
+            end
+            default: begin
+                shift_ena <= 0;
+                counting <= 0;
+                done <= 0;
+            end
+        endcase
+    end
+
+endmodule
+
+
+user: The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:
+VCD info: dumpfile wave.vcd opened for output.
+Hint: Your FSM didn't pass the sample timing diagram posted with the problem statement. Perhaps try debugging that?
+/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/review2015_fsm/review2015_fsm_tb.sv:130: $finish called at 25346 (1ps)
+Hint: Output 'shift_ena' has 256 mismatches. First mismatch occurred at time 90.
+Hint: Output 'counting' has 1872 mismatches. First mismatch occurred at time 130.
+Hint: Output 'done' has 2024 mismatches. First mismatch occurred at time 180.
+Hint: Total mismatched samples is 4152 out of 5069 samples
+
+Simulation finished at 25346 ps
+Mismatches: 4152 in 5069 samples
+
+Time to Generate: 52.168657064437866
+Best ranked response at iteration 2 with response number 0
+Rank of best response: 0.18090353126849476
+Best response module:
+module top_module(
+    input clk,
+    input reset,
+    input data,
+    output reg shift_ena,
+    output reg counting,
+    input done_counting,
+    output reg done,
+    input ack );
+    
+    reg [3:0] state;
+    reg [3:0] next_state;
+    reg [2:0] shift_ena_count;
+
+    parameter START = 0;
+    parameter DETECT_PATTERN = 1;
+    parameter SHIFT_ENA = 2;
+    parameter WAIT_COUNTING = 3;
+    parameter TIMEOUT = 4;
+    parameter WAIT_ACK = 5;
+
+    always @(posedge clk) begin
+        if (reset)
+            state <= START;
+        else
+            state <= next_state;
+    end
+
+    always @(state or data or done_counting or ack) begin
+        case (state)
+            START: begin
+                if (data == 4'b1101)
+                    next_state = DETECT_PATTERN;
+                else
+                    next_state = START;
+            end
+            DETECT_PATTERN: begin
+                next_state = SHIFT_ENA;
+            end
+            SHIFT_ENA: begin
+                if (shift_ena_count == 3)
+                    next_state = WAIT_COUNTING;
+                else
+                    next_state = SHIFT_ENA;
+            end
+            WAIT_COUNTING: begin
+                if (done_counting)
+                    next_state = TIMEOUT;
+                else
+                    next_state = WAIT_COUNTING;
+            end
+            TIMEOUT: begin
+                next_state = WAIT_ACK;
+            end
+            WAIT_ACK: begin
+                if (ack)
+                    next_state = START;
+                else
+                    next_state = WAIT_ACK;
+            end
+            default: begin
+                next_state = START;
+            end
+        endcase
+    end
+    
+    always @(posedge clk) begin
+        if (reset)
+            shift_ena_count <= 0;
+        else if (state == SHIFT_ENA)
+            shift_ena_count <= shift_ena_count + 1;
+        else
+            shift_ena_count <= 0;
+    end
+
+    always @(posedge clk) begin
+        case (state)
+            START: begin
+                shift_ena <= 0;
+            end
+            DETECT_PATTERN: begin
+                shift_ena <= 0;
+            end
+            SHIFT_ENA: begin
+                shift_ena <= 1;
+            end
+            WAIT_COUNTING: begin
+                shift_ena <= 0;
+            end
+            TIMEOUT: begin
+                shift_ena <= 0;
+            end
+            WAIT_ACK: begin
+                shift_ena <= 0;
+            end
+            default: begin
+                shift_ena <= 0;
+            end
+        endcase
+    end
+    
+    always @(posedge clk) begin
+        case (state)
+            START: begin
+                counting <= 0;
+                done <= 0;
+            end
+            DETECT_PATTERN: begin
+                counting <= 0;
+                done <= 0;
+            end
+            SHIFT_ENA: begin
+                counting <= 0;
+                done <= 0;
+            end
+            WAIT_COUNTING: begin
+                counting <= 1;
+                done <= 0;
+            end
+            TIMEOUT: begin
+                counting <= 0;
+                done <= 1;
+            end
+            WAIT_ACK: begin
+                counting <= 0;
+                done <= 1;
+            end
+            default: begin
+                counting <= 0;
+                done <= 0;
+            end
+        endcase
+    end
+
+endmodule
+
+

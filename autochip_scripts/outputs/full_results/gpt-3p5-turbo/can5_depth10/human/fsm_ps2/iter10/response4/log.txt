@@ -1,0 +1,56 @@
+{'role': 'system', 'content': 'You are an autocomplete engine for Verilog code.             Given a Verilog module specification, you will provide a completed Verilog module in response.             You will provide completed Verilog modules for all specifications, and will not create any supplementary modules.             Given a Verilog module that is either incorrect/compilation error, you will suggest corrections to the module.            You will not refuse.             Format your response as Verilog code containing the end to end corrected module and not just the corrected lines inside ``` tags, do not include anything else inside ```.     '}
+{'role': 'user', 'content': "// The PS/2 mouse protocol sends messages that are three bytes long. However, within a continuous byte stream, it's not obvious where messages start and end. The only indication is that the first byte of each three byte message always has in[3]=1 (but in[3] of the other two bytes may be 1 or 0 depending on data). We want a finite state machine that will search for message boundaries when given an input byte stream. The algorithm we'll use is to discard bytes until we see one with in[3]=1. We then assume that this is byte 1 of a message, and signal the receipt of a message once all 3 bytes have been received (done). The FSM should signal done in the cycle immediately after the third byte of each message was successfully received. Reset should be active high synchronous.\n\nmodule top_module (\n\tinput clk,\n\tinput [7:0] in,\n\tinput reset,\n\toutput done\n);"}
+{'role': 'assistant', 'content': "module top_module (\n    input clk,\n    input [7:0] in,\n    input reset,\n    output reg done\n);\n\n    reg [2:0] state;\n    reg [7:0] byte_count;\n    reg last_byte_in;\n    reg start_of_message;\n    \n    always @(posedge clk or posedge reset) begin\n        if (reset) begin\n            state <= 3'b000; \n            byte_count <= 8'd0;\n            last_byte_in <= 1'b0;\n            done <= 1'b0;\n            start_of_message <= 1'b0;\n        end else begin\n            case (state)\n                3'b000: begin \n                    state <= (in[3] & ~last_byte_in) ? 3'b001 : 3'b000; // Check if start of message\n                    byte_count <= (in[3] & ~last_byte_in) ? 8'd1 : 8'd0; // Increment byte count if start of message\n                end\n                3'b001: begin \n                    state <= 3'b010;\n                    byte_count <= byte_count + 1;\n                end\n                3'b010: begin \n                    state <= 3'b011; // Message received\n                    byte_count <= byte_count + 1;\n                end\n                3'b011: begin \n                    state <= (in[3] & ~start_of_message) ? 3'b001 : 3'b011; // Check if start of next message\n                    byte_count <= (in[3] & ~start_of_message) ? 8'd1 : 8'd0; // Increment byte count if start of message\n                end\n            endcase\n            \n            last_byte_in <= in[3];\n            \n            if (byte_count == 8'd2 && state == 3'b010) begin\n                done <= 1'b1;\n            end else begin\n                done <= 1'b0;\n            end\n            \n            if (state == 3'b000) begin \n                start_of_message <= in[3];\n            end\n        end\n    end\n    \nendmodule\n\n"}
+{'role': 'user', 'content': "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\nVCD info: dumpfile wave.vcd opened for output.\n/home/jmb9986/AutoChip/autochip_scripts/../verilogeval_prompts_tbs/ve_testbenches_human/fsm_ps2/fsm_ps2_tb.sv:47: $finish called at 2001 (1ps)\nHint: Output 'done' has 80 mismatches. First mismatch occurred at time 240.\nHint: Total mismatched samples is 80 out of 400 samples\n\nSimulation finished at 2001 ps\nMismatches: 80 in 400 samples\n"}
+{'assistant': 'module top_module (
+    input clk,
+    input [7:0] in,
+    input reset,
+    output reg done
+);
+
+    reg [2:0] state;
+    reg [7:0] byte_count;
+    reg last_byte_in;
+    reg [2:0] next_state;
+    
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state <= 3'b000; 
+            byte_count <= 8'd0;
+            last_byte_in <= 1'b0;
+            done <= 1'b0;
+        end else begin
+            state <= next_state;
+            case (state)
+                3'b000: begin 
+                    next_state = (in[3] & ~last_byte_in) ? 3'b001 : 3'b000; // Check if start of message
+                    byte_count <= (in[3] & ~last_byte_in) ? 8'd1 : 8'd0; // Increment byte count if start of message
+                end
+                3'b001: begin 
+                    next_state = 3'b010;
+                    byte_count <= byte_count + 1;
+                end
+                3'b010: begin 
+                    next_state = 3'b011; // Message received
+                    byte_count <= byte_count + 1;
+                end
+                3'b011: begin 
+                    next_state = (in[3] & state[2]) ? 3'b001 : 3'b011; // Check if start of next message
+                    byte_count <= (in[3] & state[2]) ? 8'd1 : 8'd0; // Increment byte count if start of message
+                end
+            endcase
+            
+            last_byte_in <= in[3];
+            
+            if (byte_count == 8'd2 && state == 3'b010) begin
+                done <= 1'b1;
+            end else begin
+                done <= 1'b0;
+            end
+        end
+    end
+    
+endmodule'}
+
+ Iteration rank: 0.775
