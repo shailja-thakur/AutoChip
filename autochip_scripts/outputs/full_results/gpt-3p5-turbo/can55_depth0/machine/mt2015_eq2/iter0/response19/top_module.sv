@@ -1,9 +1,0 @@
-module top_module(
-	input [1:0] A,
-	input [1:0] B,
-	output z);
-
-	// Comparison logic
-	assign z = (A[1] == B[1]) && (A[0] == B[0]);
-
-endmodule

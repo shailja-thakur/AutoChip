@@ -1,8 +1,0 @@
-module top (
-    input [2:0] in,
-    output [1:0] out
-);
-    // Add the three input bits together and assign the result to the output.
-    assign out = in[0] + in[1] + in[2];
-
-endmodule
