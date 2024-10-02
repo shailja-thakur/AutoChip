@@ -1,27 +1,34 @@
-Usage: auto_create_verilog.py [--help] --prompt=<prompt> --name=<module name> --testbench=<testbench file> --iter=<iterations> --model=<llm family> --model-id=<specific model> --num-candidates=<candidates per request> --outdir=<directory for outputs> --log=<log file>
+Usage: auto_create_verilog.py [options]
 
-	-h|--help: Prints this usage message
+Required Options:
 
-	-p|--prompt: The initial design prompt for the Verilog module
+    -p, --prompt=<prompt>           : File containing the design prompt
 
-	-n|--name: The module name, must match the testbench expected module name
+    -n, --name=<module name>        : The module name, must match the testbench expected module name
 
-	-t|--testbench: The testbench file to be run
+    -t, --testbench=<testbench file>: File containing the testbench
 
-	-i|--iter: [Optional] Number of iterations before the tool quits (defaults to 10)
+    -o, --outdir=<output directory> : Directory to place all run-specific files in
 
-	-m|--model: The LLM family to use. Must be one of the following
-		- ChatGPT
-		- Claude
-		- Mistral
-		- Gemini
-		- CodeLlama
-		- Human (requests user input)
+    -l, --log=<log file>            : Log the output of the model to the given file
 
-	--model-id: The specific model to use for the model family
+    -f, --model-family=<family>     : The LLM family to use (required unless using mixed model config)
+                                      Must be one of the following:
+                                      - ChatGPT
+                                      - Claude
+                                      - Mistral
+                                      - Gemini
+                                      - CodeLlama
+                                      - Human (requests user input)
 
-	--num-candidates: The number of candidates to rank per tree level
+    -m, --model-id=<model ID>       : The specific model to use for the model family (required unless using mixed model config)
 
-	-o|--outdir: Directory to place all run-specific files in
+Optional Options:
 
-	-l|--log: [Optional] Log the output of the model to the given file
+    -h, --help                      : Prints this usage message
+
+    -c, --config=<config file>      : Specify the configuration file (default: config.json)
+
+    -i, --iter=<iterations>         : Number of iterations before the tool quits (default: 10)
+
+    -k, --num-candidates=<number>   : The number of candidates to rank per tree level (default: 1)

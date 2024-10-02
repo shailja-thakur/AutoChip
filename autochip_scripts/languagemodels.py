@@ -25,6 +25,8 @@ import tempfile
 
 ## GENERAL AUTOCHIP
 from conversation import Conversation
+import verilog_handling as vh
+import regex as re
 
 
 # Abstract Large Language Model
@@ -54,9 +56,9 @@ class ChatGPT(AbstractLLM):
         messages = [{"role" : msg["role"], "content" : msg["content"]} for msg in conversation.get_messages()]
 
 
-        print(f"model_id: {self.model_id}")
-        print(f"messages: {messages}")
-        print(f"num_candidates: {num_candidates}")
+        #print(f"model_id: {self.model_id}")
+        #print(f"messages: {messages}")
+        #print(f"num_candidates: {num_candidates}")
 
         response = self.client.chat.completions.create(
             model=self.model_id,
@@ -397,3 +399,95 @@ class RTLCoder(AbstractLLM):
         #print('\n'.join(find_verilog_modules(response)))
         #print('RESPONSE END')
         return responses
+
+
+class LLMResponse():
+    """Class to store the response from the LLM"""
+    def __init__(self, iteration, response_num, full_text):
+        self.iteration = iteration
+        self.response_num = response_num
+
+        self.full_text = full_text
+        self.tokens = 0
+
+        self.parsed_text = ""
+        self.parsed_length = 0
+
+        self.feedback = ""
+        self.compiled = False
+        self.rank = -3
+        self.message = ""
+
+    def set_parsed_text(self, parsed_text):
+        self.parsed_text = parsed_text
+        self.parsed_length = len(parsed_text)
+
+    def parse_verilog(self):
+        module_list = vh.find_verilog_modules(self.full_text)
+        if not module_list:
+            print("No modules found in response")
+            self.parsed_text = ""
+        else:
+            for module in module_list:
+                self.parsed_text += module + "\n\n"
+        self.parsed_length = len(self.parsed_text)
+
+    def calculate_rank(self, outdir, module, testbench):
+        filename = os.path.join(outdir,module+".sv")
+        vvp_file = os.path.join(outdir,module+".vvp")
+
+        compiler_cmd = f"iverilog -Wall -Winfloop -Wno-timescale -g2012 -s tb -o {vvp_file} {filename} {testbench}"
+        simulator_cmd = f"vvp -n {vvp_file}"
+
+        try:
+            comp_return,comp_err,comp_out = vh.compile_iverilog(outdir,module,compiler_cmd,self)
+        except ValueError as e:
+            print(e)
+            self.rank = -2
+            return
+
+        if comp_return != 0:
+            self.feedback = comp_err
+            self.compiled = False
+            print("Compilation error")
+            self.message = "The design failed to compile. Please fix the module. The output of iverilog is as follows:\n"+comp_err
+
+            self.rank = -1
+
+        elif comp_err != "":
+            self.feedback = comp_err
+            self.compiled = True
+            print("Compilation warning")
+            self.message = "The design compiled with warnings. Please fix the module. The output of iverilog is as follows:\n"+comp_err
+
+            self.rank = -0.5
+
+        else:
+            sim_return,sim_err,sim_out = vh.simulate_iverilog(simulator_cmd)
+            mismatch_pattern = r"Mismatches: (\d+) in (\d+) samples"
+            match = re.search(mismatch_pattern, sim_out.splitlines()[-1])
+            #print(f"Match: {match}")
+
+            if match:
+                mismatches = int(match.group(1))
+                samples = int(match.group(2))
+            else:
+                raise ValueError("Simulation output does not contain final mismatch information")
+
+            if mismatches > 0:
+                self.feedback = sim_out
+                self.compiled = True
+                print("Simulation error")
+                self.message = "The testbench simulated, but had errors. Please fix the module. The output of iverilog is as follows:\n"+sim_out
+            else:
+                self.compiled = True
+                print("Testbench ran successfully")
+                self.message = "The testbench completed successfully"
+
+            print(f"Mismatches: {mismatches}")
+            print(f"Samples: {samples}")
+            self.rank = (samples-mismatches)/samples
+
+        #return self.rank
+
+
