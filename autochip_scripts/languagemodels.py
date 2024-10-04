@@ -8,15 +8,8 @@ import openai
 from anthropic import Anthropic
 from anthropic import AsyncAnthropic, HUMAN_PROMPT, AI_PROMPT
 
-<<<<<<< HEAD
-#import google.generativeai as palm
-
-import os
-from conversation import Conversation
-=======
 ## GEMINI
 import google.generativeai as genai
->>>>>>> refactor
 
 ## VERIGEN
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
@@ -106,34 +99,6 @@ class Claude(AbstractLLM):
 class Gemini(AbstractLLM):
     """Gemini Large Language Model."""
 
-<<<<<<< HEAD
-## PaLM IS NOW DEPRECATED, WILL BE REPLACED WITH GEMINI
-## class PaLM(AbstractLLM):
-##     """PaLM Large Language Model."""
-##
-##     def __init__(self):
-##         super().__init__()
-##         palm.configure(api_key=os.environ['PALM_API_KEY'])
-##
-##     def generate(self, conversation: Conversation):
-##
-##         context = None
-##         messages = []
-##         reply = ''
-##
-##         for message in conversation.get_messages():
-##             if message['role'] == 'system':
-##                 context = message['content']
-##             else:
-##                 if message['role'] == 'user':
-##                     messages.append({'author': '0', 'content': message['content']})
-##                 elif message['role'] == 'assistant':
-##                     messages.append({'author': '1', 'content': message['content']})
-##
-##         response = palm.chat(context=context, messages=messages)
-##         #print(response)
-##         return response.last
-=======
     def __init__(self, model_id="gemini-pro"):
         super().__init__()
         genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
@@ -167,8 +132,6 @@ class Gemini(AbstractLLM):
             responses.append(self.model.generate_content(messages).candidates[0].content.parts[0].text)
         return responses
         #return [c.content.parts[0].text for c in response.candidates]
->>>>>>> refactor
-
 
 class CodeLlama(AbstractLLM):
     """CodeLlama Large Language Model."""
@@ -256,22 +219,6 @@ class CodeLlama(AbstractLLM):
                 temperature=0.1,
             )
 
-<<<<<<< HEAD
-        # Move the output tensor to the CPU
-        output = output[0].to("cpu")
-        # Decode the output to get the generated text
-        decoded_output = self.tokenizer.decode(output)
-
-        # Extract only the generated response
-        response = decoded_output.split("[/INST]")[-1].strip()
-
-        #response = find_verilog_modules(decoded_output)[-1]
-
-        print('RESPONSE START')
-        print('\n'.join(find_verilog_modules(response)))
-        print('RESPONSE END')
-        return response
-=======
             # Move the output tensor to the CPU
             output = output[0].to("cpu")
             # Decode the output to get the generated text
@@ -542,5 +489,3 @@ class LLMResponse():
 
         #return self.rank
 
-
->>>>>>> refactor
