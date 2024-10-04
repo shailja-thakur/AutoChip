@@ -1,0 +1,10 @@
+//  This top Verilog module has two outputs, out_assign and out_always, and four inputs, a, b, sel_b1, and sel_b2. The module is used to select either input a or input b depending on the values of sel_b1 and sel_b2.   The out_assign output is assigned the value of either input a or input b using an assign statement. If both sel_b1 and sel_b2 are 1, then the output is assigned the value of input b. Otherwise, the output is assigned the value of input a.   The out_always output is also assigned the value of either input a or input b, but it is done using an always block. This means that the output will be updated whenever the values of the inputs change. If both sel_b1 and sel_b2 are 1, then the output is assigned the value of input b. Otherwise, the output is assigned the value of input a.
+
+module top_module (
+	input a,
+	input b,
+	input sel_b1,
+	input sel_b2,
+	output out_assign,
+	output reg out_always
+);

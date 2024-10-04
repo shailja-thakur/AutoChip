@@ -1,0 +1,7 @@
+// Build a finite-state machine that searches for the sequence 1101 in an input bit stream. When the sequence is found, it should set start_shifting to 1, forever, until reset. Reset is active high synchronous.
+
+module top_module(
+	input clk,
+	input reset,
+	input data,
+	output start_shifting);

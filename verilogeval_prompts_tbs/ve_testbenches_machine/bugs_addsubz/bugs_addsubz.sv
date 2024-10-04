@@ -1,0 +1,9 @@
+// This Verilog module is a top-level module that implements basic arithmetic operations. It has two inputs, do_sub and a and b, and two outputs, out and result_is_zero. The do_sub input is a single bit signal that determines whether the module should perform an addition or a subtraction. The a and b inputs are 8-bit signals that represent the two operands. The out output is an 8-bit signal that contains the result of the operation, and the result_is_zero output is a single bit signal that is set to 1 if the result of the operation is 0.  The module contains an always block that is triggered on any change in the inputs. Inside the always block, a case statement is used to determine which operation to perform based on the do_sub input. If do_sub is 0, then the module performs an addition, and if do_sub is 1, then the module performs a subtraction. The result of the operation is stored in the out output. The result_is_zero output is then set to 1 if the result of the operation is 0, and 0 otherwise.
+
+module top_module (
+	input do_sub,
+	input [7:0] a,
+	input [7:0] b,
+	output reg [7:0] out,
+	output reg result_is_zero
+);

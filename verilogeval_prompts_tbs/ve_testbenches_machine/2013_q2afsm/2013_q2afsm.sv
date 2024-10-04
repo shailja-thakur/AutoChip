@@ -1,0 +1,8 @@
+//  The top Verilog module is a state machine that has 4 states, A, B, C, and D. The inputs to the module are a clock signal (clk), a reset signal (resetn), and a 3-bit vector (r). The outputs of the module are a 3-bit vector (g).   The module has a register, state, that stores the current state of the machine. The register is updated on the rising edge of the clock signal. If the reset signal is low, the state register is set to A. Otherwise, the state register is set to the value of the next register.  The next register stores the next state of the machine. It is updated in the always block. The logic for the next register is a case statement that depends on the current state and the 3-bit vector, r. If the current state is A, then the next state is determined by the value of r. If r[1] is high, then the next state is B. If r[2] is high, then the next state is C. If r[3] is high, then the next state is D. If none of the bits of r are high, then the next state is A. If the current state is B, then the next state is B if r[1] is high, otherwise the next state is A. If the current state is C, then the next state is C if r[2] is high, otherwise the next state is A. If the current state is D, then the next state is D if r[3] is high, otherwise the next state is A.  The 3-bit vector, g, is assigned based on the current state of the machine. If the current state is B, then g[1] is high. If the current state is C, then g[2] is high. If the current state is D, then g[3] is high. Otherwise, all the bits of g are low.
+
+module top_module (
+	input clk,
+	input resetn,
+	input [3:1] r,
+	output [3:1] g
+);
