@@ -117,6 +117,29 @@ To use the tool, follow the steps below:
 
 2. Set up a `config.json` file as described above, or call `generate_verilog.py` with command line arguments defined in `usage.txt`
 
+
+## Citation
+
+If you find our work helpful, please cite as
+```
+
+@misc{thakur2024autochipautomatinghdlgeneration,
+      title={AutoChip: Automating HDL Generation Using LLM Feedback}, 
+      author={Shailja Thakur and Jason Blocklove and Hammond Pearce and Benjamin Tan and Siddharth Garg and Ramesh Karri},
+      year={2024},
+      eprint={2311.04887},
+      archivePrefix={arXiv},
+      primaryClass={cs.PL},
+      url={https://arxiv.org/abs/2311.04887}, 
+}
+
+```
+
+## LICENCE
+
+Please note that this repo is under [Apache License](LICENSE)
+
+
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=shailja-thakur/AutoChip&type=Date)](https://star-history.com/#shailja-thakur/AutoChip&Date)
