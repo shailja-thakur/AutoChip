@@ -116,3 +116,7 @@ To use the tool, follow the steps below:
 1. Prepare your initial Verilog design prompt and a testbench file that matches your module's requirements.
 
 2. Set up a `config.json` file as described above, or call `generate_verilog.py` with command line arguments defined in `usage.txt`
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=shailja-thakur/AutoChip&type=Date)](https://star-history.com/#shailja-thakur/AutoChip&Date)
