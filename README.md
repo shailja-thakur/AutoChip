@@ -55,7 +55,7 @@ An exmaple general section of `config.json`:
 ```
 The command line arguments are defined in `usage.txt` as follows:
 ```
-Usage: auto_create_verilog.py [options]
+Usage: generate_verilog.py [options]
 
 Required Options:
 
