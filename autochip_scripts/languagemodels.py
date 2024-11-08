@@ -16,8 +16,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 import torch
 
 ## MISTRAL
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+from mistralai import Mistral
 
 ## HUMAN INPUT
 import subprocess
@@ -240,7 +239,7 @@ class Mistral(AbstractLLM):
 
     def __init__(self, model_id="open-mixtral-8x22b"):
         super().__init__()
-        self.client = MistralClient(api_key=os.environ['MISTRAL_API_KEY'])
+        self.client = Mistral(api_key=os.environ['MISTRAL_API_KEY'])
         self.model_id = model_id
 
     def generate(self, conversation: Conversation, num_candidates=1):
@@ -253,7 +252,7 @@ class Mistral(AbstractLLM):
 
         responses = []
         for n in range(num_candidates):
-            response = self.client.chat(
+            response = self.client.chat.complete(
                 model=self.model_id,
                 messages=messages,
             )
