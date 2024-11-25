@@ -6,7 +6,7 @@ AutoChip is designed to generate functional Verilog modules from an initial desi
 
 ### Prerequisites
 
-- Python 3.6 or newer
+- Python 3.10 or newer
 - `pip` for installing dependencies
 - [Icarus Verilog](https://github.com/steveicarus/iverilog)
 
