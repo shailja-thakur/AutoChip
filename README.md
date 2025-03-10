@@ -122,18 +122,18 @@ To use the tool, follow the steps below:
 
 If you find our work helpful, please cite as
 ```
-
-@misc{thakur2024autochipautomatinghdlgeneration,
-      title={AutoChip: Automating HDL Generation Using LLM Feedback}, 
-      author={Shailja Thakur and Jason Blocklove and Hammond Pearce and Benjamin Tan and Siddharth Garg and Ramesh Karri},
-      year={2024},
-      eprint={2311.04887},
+@misc{blocklove2025automaticallyimprovingllmbasedverilog,
+      title={Automatically Improving LLM-based Verilog Generation using EDA Tool Feedback},
+      author={Jason Blocklove and Shailja Thakur and Benjamin Tan and Hammond Pearce and Siddharth Garg and Ramesh Karri},
+      year={2025},
+      eprint={2411.11856},
       archivePrefix={arXiv},
-      primaryClass={cs.PL},
-      url={https://arxiv.org/abs/2311.04887}, 
+      primaryClass={cs.AR},
+      url={https://arxiv.org/abs/2411.11856},
 }
 
 ```
+This work has been accepted for publication in the ACM Transactions on Design Automation of Electronic Systems (TODAES) special issue on Large Language Models for Electronic System Design Automation
 
 ## LICENCE
 
